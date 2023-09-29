@@ -37,5 +37,16 @@
   <p>.jr.</p>
 </div>
 
-</body>
-</html>
+<script>
+var a = 10;
+var b = 100;
+var c = 1000;
+
+function showVars() {
+  a = '.jr.';
+  return "local var 'a' = " + a + "\nGlobal variable 'b' = " + b;
+}
+
+var message = showVars();
+alert(message + '.jr.' + 'b');
+<script>
