@@ -18,9 +18,11 @@
   }
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
 .box {
   background-color: lightgray;
   width: 200px;
@@ -40,14 +42,38 @@
 			background-position: center center;
 			background-size: 10px 100%, 100% 10px;
 		}
+	    .container {
+            width: 100%;
+            overflow: auto; /* Ensures proper layout */
+        }
+
+        .left {
+            float: left;
+            width: 80%; /* Adjust as needed */
+        }
+
+        .right {
+            float: right;
+            width: 20%; /* Adjust as needed */
+            background-color: red; /* Example background color */
+        }
 </style>
 </head>
 <body>
+ <div class="container">
+        <div class="left">
+            <!-- Your existing .box or .circle content goes here --
 
 <div class="box">
   <p>.jr.</p>
 </div>
-
+<div class="right">
+	<!content for the right side -->
+	<p>Right side content</p>
+	</div>
+ </div>
+</body>
+</html>
 icon : score I v I
   	<div class="circle" id="myCircle"></div>
 
