@@ -36,8 +36,8 @@
             const centerY = canvas.height / 2;
 
             ctx.beginPath();
-            ctx.moveTo(centerX - 100, 50); // Start point (left of center)
-            ctx.lineTo(centerX + 100, 50); // End point (right of center)
+            ctx.moveTo(centerX - 100, centerY); // Start point (left of center)
+            ctx.lineTo(centerX + 100, centerY); // End point (right of center)
             ctx.stroke();
         }
 
@@ -53,13 +53,13 @@
         ctx.save(); // Save the current state
         ctx.translate(centerX, centerY); // Translate to the center
         ctx.rotate(rotationAngle); // Rotate
-        ctx.fillText(yinYangSymbol, 0, 0); // Draw the rotated symbol
+        ctx.fillText(yinYangSymbol, centerX, centerY + 30); // Draw the rotated symbol
         ctx.restore();
 
         // Draw a small circle regenerating with each rotation
         const circleRadius = 10;
         const circleX = centerX + 100; // Position to the right of the line
-        const circleY = centerY;
+        const circleY = centerY + 50;
         ctx.beginPath();
         ctx.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
         ctx.fillStyle = 'green'; // Keep the green color
