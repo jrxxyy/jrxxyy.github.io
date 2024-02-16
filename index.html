@@ -18,45 +18,39 @@
   <p>.jr.</p>
 </div>
 
-    <canvas id="canvas" height="100" width="300"></canvas>
-    <script>
-        function draw() {
-            const canvas = document.querySelector('#canvas');
-            if (!canvas.getContext) {
-                return;
-            }
-            const ctx = canvas.getContext('2d');
-            
-            // Set line stroke and line width
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 5;
-
-            // Calculate the center of the canvas
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-
-            ctx.beginPath();
-            ctx.moveTo(centerX - 100, centerY); // Start point (left of center)
-            ctx.lineTo(centerX + 100, centerY); // End point (right of center)
-            ctx.stroke();
+<canvas id="canvas" height="100" width="300"></canvas>
+<script>
+    function draw() {
+        const canvas = document.querySelector('#canvas');
+        if (!canvas.getContext) {
+            return;
         }
+        const ctx = canvas.getContext('2d');
 
-            // Display the yin and yang symbol below the line
+        // Set line stroke and line width
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 5;
+
+        // Calculate the center of the canvas
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        // Draw the red line centered horizontally
+        ctx.beginPath();
+        ctx.moveTo(centerX - 100, centerY);
+        ctx.lineTo(centerX + 100, centerY);
+        ctx.stroke();
+
+        // Display the yin and yang symbol below the line
         const yinYangSymbol = '\u262F'; // Unicode for ☯
         ctx.font = '20px Arial'; // Set font size and type
         ctx.fillStyle = 'green'; // Set text color
         ctx.textAlign = 'center'; // Center the text horizontally
+        ctx.fillText(yinYangSymbol, centerX, centerY + 30); // Position the symbol below the line
+    }
 
-            // Toggle visibility every 5 seconds
-        setInterval(() => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
-            ctx.fillText(yinYangSymbol, centerX, centerY + 30); // Position the symbol below the line
-    }, 5000);
-}
-        
-      
-      // Call the draw function
+    // Call the draw function
     draw();
-    </script>
+</script>
 </body>
 </html>
