@@ -31,12 +31,15 @@
             ctx.strokeStyle = 'red';
             ctx.lineWidth = 5;
 
-            // Draw a red line from (20, 50) to (220, 50)
+            // Calculate the center of the canvas
+            const centerX = canvas.width / 2;
+
             ctx.beginPath();
-            ctx.moveTo(20, 50);
-            ctx.lineTo(220, 50);
+            ctx.moveTo(centerX - 100, 50); // Start point (left of center)
+            ctx.lineTo(centerX + 100, 50); // End point (right of center)
             ctx.stroke();
         }
+
 
         // Call the draw function
         draw();
