@@ -46,29 +46,17 @@
         ctx.font = '20px Arial'; // Set font size and type
         ctx.fillStyle = 'green'; // Set text color
         ctx.textAlign = 'center'; // Center the text horizontally
-        ctx.fillText(yinYangSymbol, centerX, centerY + 30);
 
-        const rotationSpeed = 0.01; // Adjust the rotation speed as desired
-        const rotationAngle = performance.now() * rotationSpeed;
-        ctx.save(); // Save the current state
-        ctx.translate(centerX, centerY); // Translate to the center
-        ctx.rotate(rotationAngle); // Rotate
-        ctx.fillText(yinYangSymbol, centerX, centerY + 30); // Draw the rotated symbol
-        ctx.restore();
-
-        // Draw a small circle regenerating with each rotation
-        const circleRadius = 10;
-        const circleX = centerX + 100; // Position to the right of the line
-        const circleY = centerY + 50;
-        ctx.beginPath();
-        ctx.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
-        ctx.fillStyle = 'green'; // Keep the green color
-        ctx.fill();
-        }
+            // Toggle visibility every 5 seconds
+        setInterval(() => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+            ctx.fillText(yinYangSymbol, centerX, centerY + 30); // Position the symbol below the line
+    }, 5000);
+}
         
       
       // Call the draw function
-      draw();
+    draw();
     </script>
 </body>
 </html>
