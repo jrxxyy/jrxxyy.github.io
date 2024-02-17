@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 .box {
   background-color: lightgray;
@@ -10,6 +12,23 @@
   text-align: center;
   padding-top: 40px;
 }
+          /* Styling for the beaker */
+        .beaker {
+            width: 100px;
+            height: 200px;
+            background: linear-gradient(to bottom, #00ff00, #ffffff);
+            position: relative;
+        }
+
+        /* Styling for the measurement numbers */
+        .measurement {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #333;
+        }
 </style>
 </head>
 <body>
@@ -19,7 +38,17 @@
 </div>
 
 <canvas id="canvas" height="100" width="300"></canvas>
-<script>
+
+     <!-- Beaker section -->
+    <div class="beaker">
+        <!-- Measurement numbers -->
+        <div class="measurement">1</div>
+        <div class="measurement">2</div>
+        <div class="measurement">3</div>
+        <!-- ... Repeat for numbers 4 to 10 ... -->
+    </div> 
+  
+  <script>
     function draw() {
         const canvas = document.querySelector('#canvas');
         if (!canvas.getContext) {
