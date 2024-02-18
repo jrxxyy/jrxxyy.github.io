@@ -36,6 +36,19 @@
             bottom: 10px; /* Adjust this value as needed */
             right: 20px; /* Adjust this value as needed */
         }
+
+                /* Placeholder for the yin-yang symbol */
+        .yinyang {
+            /* Add your yin-yang styling here */
+                    // Display the yin and yang symbol below the line
+            const yinYangSymbol = '\u262F'; // Unicode for ☯
+            ctx.font = '20px Arial'; // Set font size and type
+            ctx.fillStyle = 'green'; // Set text color
+            ctx.textAlign = 'center'; // Center the text horizontally
+            ctx.fillText(yinYangSymbol, centerX, centerY + 20); // Complete the y-coordinate
+        }
+        }
+    
     </style>
 </head>
 <body>
