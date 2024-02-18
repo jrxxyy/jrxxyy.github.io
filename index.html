@@ -31,8 +31,65 @@
         }
 </style>
 </head>
+<style>
 <body>
+          /* Basic styling for the container */
+        body {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
 
+        .container {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style the button */
+        button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+  </style>
+</head>
+  
+      <div class="container">
+        <h2>Random Index Generator</h2>
+        <p>Press the button to get a random outcome:</p>
+        <button onclick="getRandomOutcome()">Generate</button>
+        <p id="output"></p>
+    </div>
+
+    <script>
+        function getRandomIndex() {
+            const min = 0;
+            const max = 13;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getRandomOutcome() {
+            const outcomes = [
+                "ASC|| call initiated.",
+                "Index 1 selected.",
+                "Index 2 chosen.",
+                // ... (continue for other indices)
+                "Lucky number 13!"
+            ];
+
+            const randomIndex = getRandomIndex();
+            document.getElementById("output").textContent = outcomes[randomIndex];
+        }
+  </style>
 <div class="box">
   <p>.jr.</p>
 </div>
