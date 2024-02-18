@@ -47,6 +47,30 @@
         <!-- ... Repeat for numbers 4 to 10 ... -->
     </div>
 
+        <!-- Generator code -->
+    <button onclick="getRandomOutcome()">Generate Outcome</button>
+    <div id="output"></div>
+
+    <script>
+        function getRandomIndex() {
+            const min = 0;
+            const max = 13;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getRandomOutcome() {
+            const outcomes = [
+                "ASC|| call initiated.",
+                "Index 1 selected.",
+                "Index 2 chosen.",
+                // ... (continue for other indices)
+                "Lucky number 13!"
+            ];
+
+            const randomIndex = getRandomIndex();
+            document.getElementById("output").textContent = outcomes[randomIndex];
+        }
+
     <script>
         function draw() {
             const canvas = document.querySelector('#canvas');
