@@ -29,6 +29,13 @@
             font-size: 12px;
             color: #333;
         }
+
+                /* Adjust the generator button position */
+        .generator-button {
+            position: absolute;
+            bottom: 10px; /* Adjust this value as needed */
+            right: 20px; /* Adjust this value as needed */
+        }
     </style>
 </head>
 <body>
@@ -47,8 +54,8 @@
         <!-- ... Repeat for numbers 4 to 10 ... -->
     </div>
 
-        <!-- Generator code -->
-    <button onclick="getRandomOutcome()">Generate Outcome</button>
+    <!-- Generator button -->
+    <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
     <div id="output"></div>
 
     <script>
