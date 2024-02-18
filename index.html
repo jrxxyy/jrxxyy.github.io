@@ -1,49 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-          /* Basic styling for the entire page */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            position: relative;
-        }
-          /* Styling for the main content area */
-        .content {
-            max-width: 800px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Your CSS styles go here */
+        .box {
+            background-color: lightgray;
+            width: 200px;
+            height: 100px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border: 1px solid #ccc;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding-top: 40px;
         }
-          /* Style the button */
-        button {
-            background-color: #007bff;
-            color: #ffffff;
-            border: none;
-            padding: 8px 16px;
-            cursor: pointer;
-        }
-          /* Position the generator box at the bottom */
-        .generator-box {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-        }
-.box {
-  background-color: lightgray;
-  width: 200px;
-  height: 100px;
-  margin: 0 auto;
-  text-align: center;
-  padding-top: 40px;
-}
-          /* Styling for the beaker */
+
         .beaker {
             width: 100px;
             height: 200px;
@@ -51,7 +21,6 @@
             position: relative;
         }
 
-        /* Styling for the measurement numbers */
         .measurement {
             position: absolute;
             bottom: 0;
@@ -60,105 +29,56 @@
             font-size: 12px;
             color: #333;
         }
-  </style>
+    </style>
 </head>
 <body>
-
-<script>
-          /* Basic styling for the container */
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-
-        .container {
-            background-color: #ffffff;
-            border: 1px solid #ccc;
-            padding: 20px;
-            width: 300px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-</head>
-  
-      <div class="container">
-        <h2>Random Index Generator</h2>
-        <p>Press the button to get a random outcome:</p>
-        <button onclick="getRandomOutcome()">Generate</button>
-        <p id="output"></p>
+    <div class="box">
+        <p>.jr.</p>
     </div>
-  </script>
 
-    <script>
-        function getRandomIndex() {
-            const min = 0;
-            const max = 13;
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
+    <canvas id="canvas" height="100" width="300"></canvas>
 
-        function getRandomOutcome() {
-            const outcomes = [
-                "ASC|| call initiated.",
-                "Index 1 selected.",
-                "Index 2 chosen.",
-                // ... (continue for other indices)
-                "Lucky number 13!"
-            ];
-
-            const randomIndex = getRandomIndex();
-            document.getElementById("output").textContent = outcomes[randomIndex];
-        }
-  </style>
-<div class="box">
-  <p>.jr.</p>
-</div>
-
-<canvas id="canvas" height="100" width="300"></canvas>
-
-     <!-- Beaker section -->
+    <!-- Beaker section -->
     <div class="beaker">
         <!-- Measurement numbers -->
         <div class="measurement">1</div>
         <div class="measurement">5</div>
         <div class="measurement">10</div>
         <!-- ... Repeat for numbers 4 to 10 ... -->
-    </div> 
-  
-  <script>
-    function draw() {
-        const canvas = document.querySelector('#canvas');
-        if (!canvas.getContext) {
-            return;
+    </div>
+
+    <script>
+        function draw() {
+            const canvas = document.querySelector('#canvas');
+            if (!canvas.getContext) {
+                return;
+            }
+            const ctx = canvas.getContext('2d');
+
+            // Set line stroke and line width
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 5;
+
+            // Calculate the center of the canvas
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Draw the red line centered horizontally
+            ctx.beginPath();
+            ctx.moveTo(centerX - 100, centerY);
+            ctx.lineTo(centerX + 100, centerY);
+            ctx.stroke();
+
+            // Display the yin and yang symbol below the line
+            const yinYangSymbol = '\u262F'; // Unicode for ☯
+            ctx.font = '20px Arial'; // Set font size and type
+            ctx.fillStyle = 'green'; // Set text color
+            ctx.textAlign = 'center'; // Center the text horizontally
+            ctx.fillText(yinYangSymbol, centerX, centerY + 20); // Complete the y-coordinate
         }
-        const ctx = canvas.getContext('2d');
 
-        // Set line stroke and line width
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 5;
-
-        // Calculate the center of the canvas
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-
-        // Draw the red line centered horizontally
-        ctx.beginPath();
-        ctx.moveTo(centerX - 100, centerY);
-        ctx.lineTo(centerX + 100, centerY);
-        ctx.stroke();
-
-        // Display the yin and yang symbol below the line
-        const yinYangSymbol = '\u262F'; // Unicode for ☯
-        ctx.font = '20px Arial'; // Set font size and type
-        ctx.fillStyle = 'green'; // Set text color
-        ctx.textAlign = 'center'; // Center the text horizontally
-        ctx.fillText(yinYangSymbol, centerX, centerY + 30); // Position the symbol below the line
-    }
-
-    // Call the draw function
-    draw();
-</script>
+        // Call the draw function
+        draw();
+    </script>
 </body>
 </html>
