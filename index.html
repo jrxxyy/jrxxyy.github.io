@@ -70,6 +70,13 @@
 
     <canvas id="canvas" height="100" width="300"></canvas>
 
+// Assume you have an HTML element with the id "myClickableWindow"
+<div id="myClickableWindow" style="background-color: lightblue;
+boarder: 1px solid gray; padding: 10px;">
+    TEXTEX
+</div>
+
+
     <!-- Beaker section -->
     <div class="beaker">
         <!-- Measurement numbers -->
@@ -78,6 +85,16 @@
         <div class="measurement">10</div>
         <!-- ... Repeat for numbers 4 to 10 ... -->
     </div>
+
+    <script>
+    const clickableWindow = document.getElementById("myClickableWindow");
+
+    clickableWindow.addEventListener("click", () => {
+        // Perform actions when the window is clicked
+        // For example, open a new tab or perform other tasks
+        window.open(".", "_blank");
+    });
+</script>
 
     <!-- Yin-Yang symbol -->
     <div class="yinyang"></div>
