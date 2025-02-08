@@ -17,6 +17,7 @@
         .main-container {
             display: flex;
             align-items: center;
+            z-index: 1; /* Bring forward */
         }
 
         .grey-box {
@@ -31,6 +32,7 @@
             font-size: 3em;
             position: relative;
             overflow: hidden;
+            z-index: 2; /* Bring forward */
         }
 
         .dot {
@@ -58,6 +60,7 @@
             position: relative;
             overflow: hidden;
             border: 1px solid #fff;
+            z-index: 1; /* Bring forward */
         }
 
         .box {
@@ -67,6 +70,7 @@
             margin: 0 auto;
             text-align: center;
             padding-top: 40px;
+            z-index: 1; /* Bring forward */
         }
 
         .beaker {
@@ -74,6 +78,7 @@
             height: 200px;
             background: linear-gradient(to bottom, #00ff00, #ffffff);
             position: relative;
+            z-index: 1; /* Bring forward */
         }
 
         .measurement {
@@ -101,6 +106,7 @@
             background: #fff;
             border: 2px solid #000;
             border-radius: 69%;
+            z-index: 2; /* Bring forward */
         }
 
         .yinyang:before {
@@ -177,7 +183,7 @@
             }
         }
 
-        // Create 15 dots instead of 100
+        // Create 15 dots
         for (let i = 0; i < 15; i++) {
             createDot();
         }
