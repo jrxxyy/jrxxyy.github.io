@@ -76,9 +76,9 @@
             background-color: lightgray;
             width: 100px;
             height: 50px;
-            margin: 20px 0; /* Add vertical margin */
+            margin: 0; /* Removed vertical margin */
+            padding: 0; /* Removed padding */
             text-align: center;
-            padding-top: 20px;
         }
 
         .transparent-image {
@@ -86,9 +86,9 @@
             height: 100%;
             object-fit: cover;
             opacity: 0.5; /* Adjust transparency level */
-            filter: brightness(0.5);
-            margin: 0;
-            padding: 0;
+            filter: brightness(0.3); /* Darkens the image even more */
+            margin: 0; /* Ensure no margin */
+            padding: 0; /* Ensure no padding */
         }
 
         .beaker {
