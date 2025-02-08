@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neon Dots Box</title>
     <style>
-        /* Your CSS styles */
         body {
             display: flex;
             justify-content: center;
@@ -30,14 +29,8 @@
             margin-left: 20px;
             color: #fff;
             font-size: 3em;
-        }
-
-        .container {
-            width: 300px;
-            height: 300px;
             position: relative;
             overflow: hidden;
-            border: 1px solid #fff;
         }
 
         .dot {
@@ -55,11 +48,18 @@
             75% { transform: translate(0, 280px); }
         }
 
-        .container:hover .dot {
+        .grey-box:hover .dot {
             transform: scale(5);
         }
 
-        /* Additional CSS styles */
+        .container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #fff;
+        }
+
         .box {
             background-color: lightgray;
             width: 200px;
@@ -121,7 +121,7 @@
         <div class="container">
             <!-- Dots will be added here by JavaScript -->
         </div>
-        <div class="grey-box">
+        <div class="grey-box" id="jr-box">
             .jr.
         </div>
         <!-- Additional content beside the grey box -->
@@ -168,12 +168,12 @@
             dot.style.top = `${Math.random() * 280}px`;
             dot.style.left = `${Math.random() * 280}px`;
 
-            // Check if the container element exists
-            const container = document.querySelector('.container');
-            if (container) {
-                container.appendChild(dot);
+            // Check if the grey box element exists
+            const jrBox = document.getElementById('jr-box');
+            if (jrBox) {
+                jrBox.appendChild(dot);
             } else {
-                console.error("Container element not found!");
+                console.error("Grey box element not found!");
             }
         }
 
