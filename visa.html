@@ -85,7 +85,14 @@
       dot.style.backgroundColor = getRandomColor();
       dot.style.top = `${Math.random() * 280}px`;
       dot.style.left = `${Math.random() * 280}px`;
-      document.querySelector('.container').appendChild(dot);
+
+      // Check if the container element exists
+      const container = document.querySelector('.container');
+      if (container) {
+        container.appendChild(dot);
+      } else {
+        console.error("Container element not found!");
+      }
     }
 
     for (let i = 0; i < 100; i++) {
