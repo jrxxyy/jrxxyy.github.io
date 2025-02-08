@@ -28,6 +28,7 @@
         .main-container {
             display: flex;
             align-items: center;
+            flex-direction: column;
         }
 
         .grey-box {
@@ -125,6 +126,12 @@
             background: #000;
             border-radius: 50%;
         }
+
+        .input-box {
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -162,6 +169,11 @@
 
         <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
         <div id="output"></div>
+        
+        <div class="input-box">
+            <textarea id="text-input" placeholder="Paste text here" rows="4" cols="30"></textarea><br>
+            <input type="file" id="image-input" accept="image/*">
+        </div>
     </div>
 
     <script>
