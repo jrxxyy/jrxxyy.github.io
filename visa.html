@@ -1,1 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Dots</title>
+    <style>
+        .container, .grey-box {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            border: 1px solid #000;
+        }
 
+        .dot {
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .grey-box {
+            background-color: grey;
+        }
+    </style>
+</head>
+<body>
+    <div class="container"></div>
+    <div id="jr-box" class="grey-box"></div>
+
+    <script>
+        // Function to get a random color
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Function to create a dot
+        function createDot(container) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.style.backgroundColor = getRandomColor();
+            dot.style.top = `${Math.random() * 280}px`;
+            dot.style.left = `${Math.random() * 280}px`;
+            container.appendChild(dot);
+        }
+
+        // Function to populate dots in a container
+        function populateDots(container, numDots) {
+            for (let i = 0; i < numDots; i++) {
+                createDot(container);
+            }
+        }
+
+        // Function to count occurrences of a value in an array
+        const countOccurrences = value => array =>
+            array.filter(item => item === value).length;
+
+        // Populate dots in the containers when the DOM content is loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            const mainContainer = document.querySelector('.container');
+            if (mainContainer) {
+                populateDots(mainContainer, 15);
+            } else {
+                console.error("Container element not found!");
+            }
+
+            const greyBox = document.getElementById('jr-box');
+            if (greyBox) {
+                populateDots(greyBox, 15);
+            } else {
+                console.error("Grey box element not found!");
+            }
+
+            // Example usage of countOccurrences
+            const exampleArray = [1, 2, 3, 1, 2, 1, 4];
+            const occurrencesOfOne = countOccurrences(1)(exampleArray);
+            console.log(`Occurrences of 1: ${occurrencesOfOne}`);
+        });
+    </script>
+</body>
+</html>
