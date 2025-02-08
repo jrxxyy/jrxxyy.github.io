@@ -200,4 +200,60 @@
             createDot();
         }
 
-        const clickableWindow
+        const clickableWindow = document.getElementById("難楽");
+        if (clickableWindow) {
+            clickableWindow.addEventListener("click", () => {
+                window.open(".", "_blank");
+            });
+        } else {
+            console.error("Clickable window element not found!");
+        }
+
+        function getRandomIndex() {
+            const min = 0;
+            const max = 13;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getRandomOutcome() {
+            const outcomes = [
+                "ASC|| call initiated.",
+                "Index 1 selected.",
+                "Index 2 chosen.",
+                // ... (continue for other indices)
+                "Lucky number 13!"
+            ];
+
+            const randomIndex = getRandomIndex();
+            document.getElementById("output").textContent = outcomes[randomIndex];
+        }
+
+        function draw() {
+            const canvas = document.querySelector('#canvas');
+            if (!canvas.getContext) {
+                return;
+            }
+            const ctx = canvas.getContext('2d');
+
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 3;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            ctx.beginPath();
+            ctx.moveTo(centerX - 50, centerY);
+            ctx.lineTo(centerX + 50, centerY);
+            ctx.stroke();
+
+            const yinYangSymbol = '\u262F';
+            ctx.font = '10px Arial';
+            ctx.fillStyle = 'green';
+            ctx.textAlign = 'center';
+            ctx.fillText(yinYangSymbol, centerX, centerY + 10);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
