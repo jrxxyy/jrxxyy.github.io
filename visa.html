@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmet Background with Random Dots</title>
-        <script>
-        // Set the background image
-        const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
-        const backgroundDiv = document.getElementById('background');
-        backgroundDiv.style.backgroundImage = `url('${backgroundImageUrl}')`;
-    </script>
+    <title>Helmet Background with Random Dots and Ripple Wave</title>
     <style>
         body {
             margin: 0;
@@ -52,6 +46,13 @@
         .grey-box {
             background-color: grey;
         }
+
+        canvas {
+            background: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            right: 0;
+            z-index: 0;
+        }
     </style>
 </head>
 <body>
@@ -61,6 +62,7 @@
     </div>
     <div class="container"></div>
     <div id="jr-box" class="grey-box"></div>
+    <canvas id="waveCanvas"></canvas>
 
     <script>
         // Function to get a random color
@@ -115,6 +117,32 @@
             const occurrencesOfOne = countOccurrences(1)(exampleArray);
             console.log(`Occurrences of 1: ${occurrencesOfOne}`);
         });
+
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = 1.2;
+        const height = 3.5;
+        const amplitude = 20;
+        const frequency = 5;
+        canvas.width = 400;
+        canvas.height = 400 * height / width;
+        const xScale = canvas.width / width;
+        const yScale = canvas.height / height;
+
+        function drawWave() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    const waveValue = amplitude * Math.sin(frequency * (x / xScale + y / yScale));
+                    ctx.fillStyle = `rgb(${waveValue + 128}, ${waveValue + 128}, 255)`;
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+            ctx.stroke();
+        }
+
+        drawWave();
     </script>
 </body>
 </html>
