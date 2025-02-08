@@ -3,8 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Dots</title>
+    <title>Helmet Background with Random Dots</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('https://th.bing.com/th/id/OIP.aigncqA0DpDT8KwDunjG4gHaEK?w=228&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .overlay {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
         .container, .grey-box {
             width: 300px;
             height: 300px;
@@ -25,6 +45,10 @@
     </style>
 </head>
 <body>
+    <div class="overlay">
+        <h1>Welcome to the High-Tech World!</h1>
+        <p>Experience the future, today.</p>
+    </div>
     <div class="container"></div>
     <div id="jr-box" class="grey-box"></div>
 
