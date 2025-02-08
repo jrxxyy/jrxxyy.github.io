@@ -38,7 +38,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-left: 10px;
+            margin: 20px 0; /* Add vertical margin */
             color: #fff;
             font-size: 1.5em;
             position: relative;
@@ -76,7 +76,7 @@
             background-color: lightgray;
             width: 100px;
             height: 50px;
-            margin: 0 auto;
+            margin: 20px 0; /* Add vertical margin */
             text-align: center;
             padding-top: 20px;
         }
@@ -86,6 +86,7 @@
             height: 100px;
             background: linear-gradient(to bottom, #00ff00, #ffffff);
             position: relative;
+            margin: 20px 0; /* Add vertical margin */
         }
 
         .measurement {
@@ -151,7 +152,7 @@
 
         <canvas id="canvas" height="50" width="150"></canvas>
         
-        <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px;">
+        <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 20px 0;">
             TEXTEX
         </div>
 
@@ -163,12 +164,12 @@
 
         <div class="yinyang"></div>
 
-        <svg height="50" width="150">
+        <svg height="50" width="150" style="margin: 20px 0;">
             <line x1="0" y1="25" x2="150" y2="25" stroke="red" stroke-width="3" />
         </svg>
 
         <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
-        <div id="output"></div>
+        <div id="output" style="margin: 20px 0;"></div>
         
         <div class="input-box">
             <textarea id="text-input" placeholder="Paste text here" rows="4" cols="30"></textarea><br>
