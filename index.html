@@ -181,6 +181,14 @@
         canvas {
             display: none;
         }
+        .image-holder {
+            width: 300px;
+            height: 300px;
+            background-color: white;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+            z-index: 1; /* Ensure it's above the background */
+        }
     </style>
 </head>
 <body>
@@ -228,6 +236,8 @@
             <div class="box box2"></div>
             <div class="box box3"></div>
         </div>
+
+        <div class="image-holder"></div>
     </div>
 
     <script>
