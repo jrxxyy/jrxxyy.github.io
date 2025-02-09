@@ -132,7 +132,7 @@
         }
 
         .yinyang {
-            position: absolute;
+            position: relative;
             width: 25px;
             height: 25px;
             background: #fff;
@@ -141,9 +141,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            top: calc(100% + 10px); /* Adjust this value as needed to position below */
-            left: 50%;
             transform: translateX(-50%);
+            margin-top: 10px;
         }
 
         .yinyang:before {
@@ -170,6 +169,7 @@
             margin-top: 20px;
             text-align: center;
             color: white;
+            position: relative;
         }
 
         .three-boxes {
