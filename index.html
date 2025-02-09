@@ -75,7 +75,6 @@
         }
 
         .box {
-            background-color: lightgray;
             width: 100px;
             height: 50px;
             margin: 0; /* Removed vertical margin */
@@ -147,6 +146,26 @@
             color: white;
         }
 
+        .three-boxes {
+            display: flex;
+            justify-content: flex-end;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            gap: 10px;
+        }
+
+        .three-boxes .box {
+            width: 3rem;
+            height: 3rem;
+            background-color: lightgray;
+            border: 1px solid #fff;
+            text-align: center;
+            line-height: 3rem;
+            font-size: 1.5rem;
+            color: black;
+        }
+
         canvas {
             background: rgba(0, 0, 0, 0.5);
             position: absolute;
@@ -195,6 +214,12 @@
             <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea><br>
             <input type="file" id="image-input" accept="image/*">
         </div>
+        <div class="three-boxes">
+            <div class="box">1</div>
+            <div class="box">2</div>
+            <div class="box">3</div>
+        </div>
+        <canvas id="waveCanvas"></canvas>
     </div>
 
     <script src="rippleWave.js"></script>
