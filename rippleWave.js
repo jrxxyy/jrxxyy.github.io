@@ -9,16 +9,17 @@ document.addEventListener("DOMContentLoaded", function() {
             invisibleContainer.style.width = '100%';
             invisibleContainer.style.height = '100%';
             invisibleContainer.style.pointerEvents = 'none'; // Makes it invisible to interactions
+            invisibleContainer.style.overflow = 'hidden';
 
             const canvas = document.createElement('canvas');
-            canvas.width = 25;
-            canvas.height = 25;
+            canvas.width = 100; // Adjust for better visibility
+            canvas.height = 100; // Adjust for better visibility
             invisibleContainer.appendChild(canvas);
             box.appendChild(invisibleContainer);
 
             const ctx = canvas.getContext('2d');
-            const amplitude = 5;
-            const frequency = 2;
+            const amplitude = 10;
+            const frequency = 0.5;
             const xScale = canvas.width / 1.2;
             const yScale = canvas.height / 1.2;
 
@@ -26,14 +27,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.beginPath();
                 for (let y = 0; y < canvas.height; y++) {
-                    for (let x = 0; x < canvas.width; x++) {
-                        const waveValue = amplitude * Math.sin(frequency * (x / xScale + y / yScale));
-                        const adjustedValue = Math.abs(Math.sin(waveValue)); // Adjusting wave value to create lines
-
-                        ctx.fillStyle = `rgba(255, 255, 255, ${adjustedValue})`;
-                        ctx.fillRect(x, y, 1, 1);
-                    }
+                    const waveValue = amplitude * Math.sin(frequency * (y / yScale));
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y + waveValue);
                 }
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
                 ctx.stroke();
             }
 
