@@ -141,18 +141,29 @@
             background: #fff;
             border: 1px solid #000;
             border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .yinyang:before {
             content: '';
             position: absolute;
-            top: 9px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 7px;
-            height: 7px;
-            background: #000;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
+            background: #000;
+            top: 25%;
+        }
+
+        .yinyang:after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fff;
+            bottom: 25%;
         }
 
         .input-box {
@@ -196,7 +207,6 @@
             opacity: 0.5; /* Adjust opacity for transparency */
             filter: blur(2px); /* Apply blur filter for blending */
         }
-
     </style>
 </head>
 <body>
@@ -247,7 +257,7 @@
         </div>
 
     </div>
-
+    
     <script>
         // Set the background image
         const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
