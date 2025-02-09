@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
             ctx.clearRect(0, 0, width, height);
             ctx.beginPath();
             for (let y = 0; y < height; y++) {
-                const waveValue = amplitude * Math.sin(frequency * (y / height * 2 * Math.PI));
+                const waveValue = amplitude * Math.sin(frequency * y);
                 ctx.moveTo(0, y);
                 ctx.lineTo(width, y + waveValue);
             }
