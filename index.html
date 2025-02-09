@@ -79,10 +79,21 @@
             height: 25px; /* Reduced by 75% */
             margin: 0; /* Removed vertical margin */
             padding: 0; /* Removed padding */
-            text-align: center;
-            line-height: 25px; /* Reduced by 75% */
-            font-size: 1.5rem;
-            color: black;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .box1 {
+            background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
+        }
+
+        .box2 {
+            background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
+        }
+
+        .box3 {
+            background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
         }
 
         .transparent-image {
@@ -159,17 +170,6 @@
             gap: 10px;
         }
 
-        .three-boxes .box {
-            width: 25px; /* Reduced by 75% */
-            height: 25px; /* Reduced by 75% */
-            background-color: lightgray;
-            border: 1px solid #fff;
-            text-align: center;
-            line-height: 25px; /* Reduced by 75% */
-            font-size: 1.5rem;
-            color: black;
-        }
-
         canvas {
             width: 100px; /* Reduced by 75% */
             height: 100px; /* Reduced by 75% */
@@ -221,9 +221,9 @@
             <input type="file" id="image-input" accept="image/*">
         </div>
         <div class="three-boxes">
-            <div class="box">1</div>
-            <div class="box">2</div>
-            <div class="box">3</div>
+            <div class="box box1"></div>
+            <div class="box box2"></div>
+            <div class="box box3"></div>
         </div>
         <canvas id="waveCanvas" width="100" height="100"></canvas>
     </div>
