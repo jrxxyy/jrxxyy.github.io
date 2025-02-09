@@ -6,10 +6,10 @@ document.addEventListener("DOMContentLoaded", function() {
             canvas.width = 25;
             canvas.height = 25;
             box.appendChild(canvas);
-            
+
             const ctx = canvas.getContext('2d');
-            const amplitude = 20;
-            const frequency = 5;
+            const amplitude = 5;
+            const frequency = 2;
             const xScale = canvas.width / 1.2;
             const yScale = canvas.height / 1.2;
 
@@ -19,14 +19,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 for (let y = 0; y < canvas.height; y++) {
                     for (let x = 0; x < canvas.width; x++) {
                         const waveValue = amplitude * Math.sin(frequency * (x / xScale + y / yScale));
-                        ctx.fillStyle = `rgb(${waveValue + 128}, ${waveValue + 128}, 255)`;
+                        const adjustedValue = Math.abs(Math.sin(waveValue)); // Adjusting wave value to create lines
+
+                        ctx.fillStyle = `rgba(255, 255, 255, ${adjustedValue})`;
                         ctx.fillRect(x, y, 1, 1);
                     }
                 }
                 ctx.stroke();
             }
 
-            setInterval(drawWave, 5000);
+            setInterval(drawWave, 100); // Apply the ripple effect continuously
+            drawWave(); // Draw the initial ripple wave
         });
     }
 
