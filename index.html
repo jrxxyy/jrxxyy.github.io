@@ -48,12 +48,22 @@
         }
 
         .dot {
-            width: 25px;
-            height: 25px;
-            background-color: red;
+            position: absolute;
+            width: 0.1em;
+            height: 0.1em;
             border-radius: 50%;
-            display: inline-block;
-            margin: 0 10px;
+            animation: moveDot 5s infinite;
+        }
+
+        @keyframes moveDot {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(140px, 0); }
+            50% { transform: translate(140px, 140px); }
+            75% { transform: translate(0, 140px); }
+        }
+
+        .grey-box:hover .dot {
+            transform: scale(2.5);
         }
 
         .container {
@@ -122,6 +132,7 @@
         }
 
         .yinyang {
+            position: relative;
             width: 25px;
             height: 25px;
             background: #fff;
@@ -130,7 +141,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0 10px;
+            transform: translateX(-50%);
+            margin-top: 10px;
         }
 
         .yinyang:before {
@@ -182,49 +194,57 @@
         }
 
         .image-holder {
-            width: 100px;
+            width: 100px; /* Make the image holder smaller */
             height: 100px;
             border: 1px solid #ccc;
             margin-top: 10px;
-            z-index: 1;
-            position: relative;
-            right: 0;
+            z-index: 1; /* Ensure it's above the background */
+            position: relative; /* Position it properly */
+            right: 0; /* Align to the right */
             background-image: url('https://www.bing.com/th/id/OGC.4286e6951be9f6eadf0f676f2ea7ec36?pid=1.7&rurl=https%3a%2f%2fmedia.giphy.com%2fmedia%2fLpp52J6KNZqhi%2fgiphy.gif&ehk=8uBILnCEppN5i%2fVy4ZACcYt9LEk1JKrbxnBxq3ikfQc%3d');
             background-size: cover;
             background-position: center;
-            opacity: 0.5;
-            filter: blur(2px);
+            opacity: 0.5; /* Adjust opacity for transparency */
+            filter: blur(2px); /* Apply blur filter for blending */
         }
     </style>
 </head>
 <body>
     <div class="background" id="background"></div>
     <div class="main-container">
-        <div class="container"></div>
+        <div class="container">
+            <!-- Dots will be added here by JavaScript -->
+        </div>
         <div class="grey-box" id="jr-box">
             .jr.
+            <!-- Dots will be added here by JavaScript -->
         </div>
+        <!-- Additional content beside the grey box -->
         <div class="box">
             <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1" alt="Image" class="transparent-image">
         </div>
+
         <canvas id="canvas" height="50" width="150"></canvas>
+        
         <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 20px 0;">
             TEXTEX
-            <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
-                <div class="dot"></div>
-                <div class="yinyang"></div>
-            </div>
         </div>
+
         <div class="beaker">
             <div class="measurement">1</div>
             <div class="measurement">5</div>
             <div class="measurement">10</div>
         </div>
+
+        <div class="yinyang"></div>
+
         <svg height="50" width="150" style="margin: 20px 0;">
             <line x1="0" y1="25" x2="150" y2="25" stroke="red" stroke-width="3" />
         </svg>
+
         <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
         <div id="output" style="margin: 20px 0;"></div>
+        
         <div class="input-box">
             <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea><br>
             <input type="file" id="image-input" accept="image/*">
@@ -235,8 +255,11 @@
             <div class="box box3"></div>
             <div class="image-holder"></div>
         </div>
+
     </div>
+    
     <script>
+        // Set the background image
         const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
         const backgroundDiv = document.getElementById('background');
         backgroundDiv.style.backgroundImage = `url('${backgroundImageUrl}')`;
