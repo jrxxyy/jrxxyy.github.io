@@ -132,16 +132,15 @@
         }
 
         .yinyang {
-            width: 50px;
-            height: 50px;
-            background: #fff;
-            border: 1px solid #000;
-            border-radius: 50%;
+            width: 50px; /* Increase the size */
+            height: 50px; /* Increase the size */
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            margin-top: 0 10px;
+            margin: 0 10px;
+            font-size: 40px; /* Adjust font size for Unicode symbol */
         }
+
 
         .yinyang:before {
             content: '';
@@ -226,6 +225,14 @@
         
         <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 20px 0;">
             TEXTEX
+
+            <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
+                <div class="dot"></div>
+                <div class="yinyang">☯</div>
+            </div>
+        </div>
+        
+        
         </div>
 
         <div class="beaker">
