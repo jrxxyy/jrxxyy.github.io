@@ -1,11 +1,20 @@
 document.addEventListener("DOMContentLoaded", function() {
     function applyRippleEffect() {
         const boxes = document.querySelectorAll('.box');
-        boxes.forEach((box, index) => {
+        boxes.forEach((box) => {
+            const invisibleContainer = document.createElement('div');
+            invisibleContainer.style.position = 'absolute';
+            invisibleContainer.style.top = '0';
+            invisibleContainer.style.left = '0';
+            invisibleContainer.style.width = '100%';
+            invisibleContainer.style.height = '100%';
+            invisibleContainer.style.pointerEvents = 'none'; // Makes it invisible to interactions
+
             const canvas = document.createElement('canvas');
             canvas.width = 25;
             canvas.height = 25;
-            box.appendChild(canvas);
+            invisibleContainer.appendChild(canvas);
+            box.appendChild(invisibleContainer);
 
             const ctx = canvas.getContext('2d');
             const amplitude = 5;
