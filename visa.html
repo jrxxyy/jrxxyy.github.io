@@ -53,6 +53,15 @@
             right: 0;
             z-index: 0;
         }
+
+        .image-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 300px;
+            height: 300px;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
@@ -63,6 +72,9 @@
     <div class="container"></div>
     <div id="jr-box" class="grey-box"></div>
     <canvas id="waveCanvas"></canvas>
+    <div class="image-container">
+        <img src="https://www.bing.com/th/id/OGC.4774f0c6383d71b780d8cf736606b3d7?pid=1.7&rurl=https%3a%2f%2fi.stack.imgur.com%2fn7Lqs.gif&ehk=IjygwGpdrHZS0I04evJyPKib7opz%2be3%2bhU9KJIIUvWw%3d" alt="Gif Image" width="300" height="300">
+    </div>
 
     <script>
         // Function to get a random color
