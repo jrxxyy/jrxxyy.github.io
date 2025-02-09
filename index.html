@@ -40,7 +40,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 20px 0; /* Add vertical margin */
+            margin: 20px 0;
             color: #fff;
             font-size: 3.5em;
             position: relative;
@@ -75,14 +75,14 @@
         }
 
         .box {
-            width: 25px; /* Reduced by 75% */
-            height: 25px; /* Reduced by 75% */
-            margin: 0; /* Removed vertical margin */
-            padding: 0; /* Removed padding */
+            width: 25px;
+            height: 25px;
+            margin: 0;
+            padding: 0;
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
-            position: relative; /* Required for canvas placement */
+            position: relative;
         }
 
         .box1 {
@@ -101,10 +101,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.9; /* Adjust transparency level */
-            filter: brightness(0.1); /* Darkens the image even more */
-            margin: 0; /* Ensure no margin */
-            padding: 0; /* Ensure no padding */
+            opacity: 0.9;
+            filter: brightness(0.1);
+            margin: 0;
+            padding: 0;
             transform: scale(2.0);
         }
 
@@ -113,7 +113,7 @@
             height: 100px;
             background: linear-gradient(to bottom, #00ff00, #ffffff);
             position: relative;
-            margin: 20px 0; /* Add vertical margin */
+            margin: 20px 0;
         }
 
         .measurement {
@@ -179,7 +179,7 @@
         }
 
         canvas {
-            display: none; /* Hides the main canvas */
+            display: none;
         }
     </style>
 </head>
@@ -253,7 +253,6 @@
             dot.style.top = `${Math.random() * 140}px`;
             dot.style.left = `${Math.random() * 140}px`;
 
-            // Check if the grey box element exists
             const jrBox = document.getElementById('jr-box');
             if (jrBox) {
                 jrBox.appendChild(dot);
