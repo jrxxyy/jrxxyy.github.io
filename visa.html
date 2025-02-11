@@ -36,11 +36,9 @@
             z-index: 1;
         }
 
-        .dot {
-            width: 10px;
-            height: 10px;
+        .character {
             position: absolute;
-            border-radius: 50%;
+            font-size: 20px;
         }
 
         .grey-box {
@@ -61,9 +59,9 @@
         }
 
         .photo-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image covers the container */
         }
 
         canvas {
@@ -91,7 +89,7 @@
     <div class="container"></div>
     <div id="jr-box" class="grey-box">
         <div class="photo-container">
-            <img src="https://cdn.myonlinestore.eu/944ccdd9-6be1-11e9-a722-44a8421b9960/image/cache/article/cc8ffd2c78840df2548263c494a8972641be007f.jpg" alt="Photo">
+            <img src="your-photo-url.jpg" alt="Photo">
         </div>
     </div>
     <canvas id="waveCanvas"></canvas>
@@ -100,57 +98,44 @@
     </div>
 
     <script>
-        // Function to get a random color
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
+        // Function to get a random character
+        function getRandomCharacter() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            return characters.charAt(Math.floor(Math.random() * characters.length));
         }
 
-        // Function to create a dot
-        function createDot(container) {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            dot.style.backgroundColor = getRandomColor();
-            dot.style.top = `${Math.random() * 280}px`;
-            dot.style.left = `${Math.random() * 280}px`;
-            container.appendChild(dot);
+        // Function to create a character span
+        function createCharacter(container) {
+            const character = document.createElement('span');
+            character.className = 'character';
+            character.textContent = getRandomCharacter();
+            character.style.top = `${Math.random() * 280}px`;
+            character.style.left = `${Math.random() * 280}px`;
+            container.appendChild(character);
         }
 
-        // Function to populate dots in a container
-        function populateDots(container, numDots) {
-            for (let i = 0; i < numDots; i++) {
-                createDot(container);
+        // Function to populate characters in a container
+        function populateCharacters(container, numCharacters) {
+            for (let i = 0; i < numCharacters; i++) {
+                createCharacter(container);
             }
         }
 
-        // Function to count occurrences of a value in an array
-        const countOccurrences = value => array =>
-            array.filter(item => item === value).length;
-
-        // Populate dots in the containers when the DOM content is loaded
+        // Populate characters in the containers when the DOM content is loaded
         document.addEventListener("DOMContentLoaded", function() {
             const mainContainer = document.querySelector('.container');
             if (mainContainer) {
-                populateDots(mainContainer, 15);
+                populateCharacters(mainContainer, 15);
             } else {
                 console.error("Container element not found!");
             }
 
             const greyBox = document.getElementById('jr-box');
             if (greyBox) {
-                populateDots(greyBox, 15);
+                populateCharacters(greyBox, 15);
             } else {
                 console.error("Grey box element not found!");
             }
-
-            // Example usage of countOccurrences
-            const exampleArray = [1, 2, 3, 1, 2, 1, 4];
-            const occurrencesOfOne = countOccurrences(1)(exampleArray);
-            console.log(`Occurrences of 1: ${occurrencesOfOne}`);
         });
 
         const canvas = document.getElementById('waveCanvas');
@@ -170,7 +155,8 @@
             for (let y = 0; y < canvas.height; y++) {
                 for (let x = 0; x < canvas.width; x++) {
                     const waveValue = amplitude * Math.sin(frequency * (x / xScale + y / yScale));
-                    ctx.fillStyle = `rgba(${greyValue}, ${greyValue}, 0.2)`;
+                    const greyValue = waveValue + 128;
+                    ctx.fillStyle = `rgba(${greyValue}, ${greyValue}, ${greyValue}, 0.2)`; // Light grey and partially transparent
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
