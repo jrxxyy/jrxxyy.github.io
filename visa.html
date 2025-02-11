@@ -125,12 +125,14 @@
             object-fit: cover;
         }
 
-        @media screen and (max-width: 600px) {
-            .container, .grey-box, .image-container {
-                width: 76.5%;
-                height: auto;
-                background-size: cover;
-            }
+@media screen and (max-width: 600px) {
+    .container, .grey-box, .image-container {
+        width: 76.5%;
+        height: auto;
+        background: url('https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1') no-repeat center center fixed; /* Add your image path */
+        background-size: cover; /* Ensures the image covers the container */
+    }
+}
 
             .character {
                 font-size: 13.6px;
