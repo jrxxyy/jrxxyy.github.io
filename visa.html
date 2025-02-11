@@ -216,6 +216,25 @@
 
         document.addEventListener('touchstart', handleTouchStart, false);
         document.addEventListener('touchend', handleTouchEnd, false);
+
+        // Character generator sequence
+        (function generateCharacter() {
+            const characters = ['A', 'B', 'C', 'D', 'E'];
+            const container = document.querySelector('.container');
+            container.innerHTML = ''; // Clear previous characters
+
+            characters.forEach(char => {
+                const charElem = document.createElement('div');
+                charElem.className = 'character';
+                charElem.style.top = `${Math.random() * (container.clientHeight - 20)}px`;
+                charElem.style.left = `${Math.random() * (container.clientWidth - 20)}px`;
+                charElem.textContent = char;
+                container.appendChild(charElem);
+            });
+
+            // Repeat the function every 5 seconds
+            setTimeout(generateCharacter, 5000);
+        })();
     </script>
 </body>
 </html>
