@@ -33,12 +33,13 @@
             height: 300px;
             position: relative;
             border: 1px solid #000;
-            z-index: 1;
+            z-index: 3; /* Ensures the grey box and its contents are on top of the canvas */
         }
 
         .character {
             position: absolute;
             font-size: 20px;
+            z-index: 4; /* Ensures characters are on top of the image */
         }
 
         .grey-box {
@@ -46,16 +47,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
         .photo-container {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            border: 1px solid #fff;
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 3; /* Ensures the image is above the canvas */
         }
 
         .photo-container img {
@@ -68,7 +70,7 @@
             background: rgba(0, 0, 0, 0.5);
             position: absolute;
             right: 0;
-            z-index: 0;
+            z-index: 2; /* Ensures the canvas is behind the grey box and its contents */
         }
 
         .image-container {
@@ -89,7 +91,7 @@
     <div class="container"></div>
     <div id="jr-box" class="grey-box">
         <div class="photo-container">
-            <img src="https://cdn.myonlinestore.eu/944ccdd9-6be1-11e9-a722-44a8421b9960/image/cache/article/cc8ffd2c78840df2548263c494a8972641be007f.jpg" alt="Photo">
+            <img src="your-photo-url.jpg" alt="Photo">
         </div>
     </div>
     <canvas id="waveCanvas"></canvas>
