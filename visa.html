@@ -12,7 +12,7 @@
             color: white;
             font-family: Arial, sans-serif;
             position: relative;
-            overflow: hidden;
+            overflow: auto; /* Enable scrolling by default */
             background-image: url('https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1');
             background-size: cover;
             background-position: center;
@@ -34,14 +34,14 @@
             height: 300px;
             position: relative;
             border: 1px solid #000;
-            z-index: 3; /* Ensures the grey box and its contents are on top of the canvas */
+            z-index: 3;
             margin: 10px;
         }
 
         .character {
             position: absolute;
             font-size: 20px;
-            z-index: 4; /* Ensures characters are on top of the image */
+            z-index: 4;
         }
 
         .grey-box {
@@ -59,13 +59,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 3; /* Ensures the image is above the canvas */
+            z-index: 3;
         }
 
         .photo-container img {
-            width: 85%; /* Reduce size by 15% */
-            height: 85%; /* Reduce size by 15% */
-            object-fit: cover; /* Ensures the image covers the container */
+            width: 85%;
+            height: 85%;
+            object-fit: cover;
         }
 
         .scroll-link {
@@ -77,7 +77,7 @@
             background: rgba(255, 255, 255, 0.2);
             padding: 5px 10px;
             border-radius: 5px;
-            z-index: 5; /* Ensure it's on top */
+            z-index: 5;
         }
 
         canvas {
@@ -86,7 +86,7 @@
             top: 50%;
             right: 15%;
             transform: translateY(-50%);
-            z-index: 2; /* Ensures the canvas is behind the grey box and its contents */
+            z-index: 2;
         }
 
         .image-container {
@@ -114,7 +114,7 @@
             canvas {
                 width: 50%;
                 height: auto;
-                right: 15%; /* Move canvas 15% from the right */
+                right: 15%;
             }
         }
     </style>
@@ -204,10 +204,11 @@
         }
 
         drawWave();
-        
+
         // Scroll functionality
         document.getElementById('scrollLink').addEventListener('click', function(event) {
             event.preventDefault();
+            document.body.style.overflow = 'hidden'; // Disable scrolling
 
             const scrollInterval = setInterval(() => {
                 window.scrollBy(0, 10); // Adjust scroll speed here
@@ -215,11 +216,8 @@
 
             setTimeout(() => {
                 clearInterval(scrollInterval);
+                document.body.style.overflow = 'auto'; // Re-enable scrolling
             }, 5000); // Scroll for 5 seconds
-
-            setTimeout(() => {
-                window.onscroll = function() {}; // Reset scroll ability to normal
-            }, 5000); // Reset after 5 seconds
         });
     </script>
 </body>
