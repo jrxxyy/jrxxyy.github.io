@@ -28,19 +28,28 @@
             z-index: 1;
         }
 
-        .container, .grey-box {
-            width: 80%;
-            max-width: 300px;
-            height: 300px;
+        .alpha-parent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 1;
+        }
+
+        .container, .grey-box, .image-container, canvas {
+            width: 68%;
+            max-width: 255px;
+            height: 255px;
             position: relative;
-            border: 1px solid #000;
             z-index: 3;
-            margin: 10px;
+            margin: 8.5px;
         }
 
         .character {
             position: absolute;
-            font-size: 20px;
+            font-size: 17px;
             z-index: 4;
         }
 
@@ -93,51 +102,28 @@
             visibility: visible;
         }
 
-        canvas {
-            background: rgba(0, 0, 0, 0.5);
-            position: absolute;
-            top: 50%;
-            right: 15%;
-            transform: translateY(-50%);
-            z-index: 2;
-        }
-
-        .image-container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 80%;
-            max-width: 300px;
-            height: auto;
-            z-index: 1;
-        }
-
-        #canvasImage {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 80%;
-            max-width: 300px;
-            height: 300px;
+        .image-container img {
+            width: 68%;
+            max-width: 255px;
+            height: 255px;
             z-index: 3;
             opacity: 0.13;
         }
 
         @media screen and (max-width: 600px) {
             .container, .grey-box, .image-container {
-                width: 90%;
+                width: 76.5%;
                 height: auto;
             }
 
             .character {
-                font-size: 16px;
-                top: ${Math.random() * 280}px;
-                left: ${Math.random() * 280}px;
+                font-size: 13.6px;
+                top: ${Math.random() * 238}px;
+                left: ${Math.random() * 238}px;
             }
 
             canvas {
-                width: 50%;
+                width: 42.5%;
                 height: auto;
                 right: 15%;
             }
@@ -145,23 +131,25 @@
     </style>
 </head>
 <body>
-    <div class="overlay">
-        <h1>Welcome to the High-Tech World!</h1>
-        <p>Experience the future, today.</p>
-        <div class="scroll-container">
-            <a href="#" id="scrollLink" class="scroll-link">Activate Scroll</a>
-        </div>
-    </div>
-    <div class="container">
-        <canvas id="waveCanvas" width="100" height="100"></canvas>
-        <img id="canvasImage" src="https://th.bing.com/th/id/OIP.pih7GL-6zTPJWQdZxkuYYAAAAA?w=167&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Canvas Image">
-        <div id="jr-box" class="grey-box">
-            <div class="photo-container">
-                <img src="https://cdn.myonlinestore.eu/944ccdd9-6be1-11e9-a722-44a8421b9960/image/cache/article/cc8ffd2c78840df2548263c494a8972641be007f.jpg" alt="Photo">
+    <div class="alpha-parent">
+        <div class="overlay">
+            <h1>Welcome to the High-Tech World!</h1>
+            <p>Experience the future, today.</p>
+            <div class="scroll-container">
+                <a href="#" id="scrollLink" class="scroll-link">Activate Scroll</a>
             </div>
         </div>
-        <div class="image-container">
-            <img src="https://www.bing.com/th/id/OGC.4774f0c6383d71b780d8cf736606b3d7?pid=1.7&rurl=https%3a%2f%2fi.stack.imgur.com%2fn7Lqs.gif&ehk=IjygwGpdrHZS0I04evJyPKib7opz%2be3%2bhU9KJIIUvWw%3d" alt="Gif Image" width="300" height="300">
+        <div class="container">
+            <canvas id="waveCanvas" width="85" height="85"></canvas>
+            <img id="canvasImage" src="https://th.bing.com/th/id/OIP.pih7GL-6zTPJWQdZxkuYYAAAAA?w=167&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Canvas Image">
+            <div id="jr-box" class="grey-box">
+                <div class="photo-container">
+                    <img src="https://cdn.myonlinestore.eu/944ccdd9-6be1-11e9-a722-44a8421b9960/image/cache/article/cc8ffd2c78840df2548263c494a8972641be007f.jpg" alt="Photo">
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="https://www.bing.com/th/id/OGC.4774f0c6383d71b780d8cf736606b3d7?pid=1.7&rurl=https%3a%2f%2fi.stack.imgur.com%2fn7Lqs.gif&ehk=IjygwGpdrHZS0I04evJyPKib7opz%2be3%2bhU9KJIIUvWw%3d" alt="Gif Image" width="255" height="255">
+            </div>
         </div>
     </div>
 
@@ -200,7 +188,7 @@
         let touchEndY = 0;
         let swipeStartTime = 0;
         let swipeCount = 0;
-        const swipeThreshold = 150; // Minimum distance in pixels for a swipe
+        const swipeThreshold = 127.5; // Minimum distance in pixels for a swipe
         const swipeTimeThreshold = 300; // Maximum time in ms for a quick swipe
 
         function handleTouchStart(event) {
@@ -255,25 +243,6 @@
 
         document.addEventListener('touchstart', handleTouchStart, false);
         document.addEventListener('touchend', handleTouchEnd, false);
-
-        // Character generator sequence
-        (function generateCharacter() {
-            const characters = ['A', 'B', 'C', 'D', 'E'];
-            const container = document.querySelector('.container');
-            container.innerHTML = ''; // Clear previous characters
-
-            characters.forEach(char => {
-                const charElem = document.createElement('div');
-                charElem.className = 'character';
-                charElem.style.top = `${Math.random() * (container.clientHeight - 20)}px`;
-                charElem.style.left = `${Math.random() * (container.clientWidth - 20)}px`;
-                charElem.textContent = char;
-                container.appendChild(charElem);
-            });
-
-            // Repeat the function every 5 seconds
-            setTimeout(generateCharacter, 5000);
-        })();
     </script>
 </body>
 </html>
