@@ -45,6 +45,24 @@
 
         .grey-box {
             background-color: grey;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo-container {
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            border: 1px solid #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo-container img {
+            max-width: 100%;
+            max-height: 100%;
         }
 
         canvas {
@@ -70,7 +88,11 @@
         <p>Experience the future, today.</p>
     </div>
     <div class="container"></div>
-    <div id="jr-box" class="grey-box"></div>
+    <div id="jr-box" class="grey-box">
+        <div class="photo-container">
+            <img src="your-photo-url.jpg" alt="Photo">
+        </div>
+    </div>
     <canvas id="waveCanvas"></canvas>
     <div class="image-container">
         <img src="https://www.bing.com/th/id/OGC.4774f0c6383d71b780d8cf736606b3d7?pid=1.7&rurl=https%3a%2f%2fi.stack.imgur.com%2fn7Lqs.gif&ehk=IjygwGpdrHZS0I04evJyPKib7opz%2be3%2bhU9KJIIUvWw%3d" alt="Gif Image" width="300" height="300">
@@ -147,7 +169,7 @@
             for (let y = 0; y < canvas.height; y++) {
                 for (let x = 0; x < canvas.width; x++) {
                     const waveValue = amplitude * Math.sin(frequency * (x / xScale + y / yScale));
-                    ctx.fillStyle = `rgb(${waveValue + 128}, ${waveValue + 128}, 1, 0)`;
+                    ctx.fillStyle = `rgb(${waveValue + 128}, 0, 0)`;
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
