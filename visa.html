@@ -26,14 +26,17 @@
             padding: 20px;
             border-radius: 10px;
             z-index: 1;
+            text-align: center;
         }
 
         .container, .grey-box {
-            width: 300px;
+            width: 80%;
+            max-width: 300px;
             height: 300px;
             position: relative;
             border: 1px solid #000;
             z-index: 3; /* Ensures the grey box and its contents are on top of the canvas */
+            margin: 10px;
         }
 
         .character {
@@ -70,8 +73,8 @@
             background: rgba(0, 0, 0, 0.5);
             position: absolute;
             top: 50%;
-            right: 1in; /* 1 inch from the right side */
-            transform: translateY(-50%);
+            left: 50%;
+            transform: translate(-50%, -50%);
             z-index: 2; /* Ensures the canvas is behind the grey box and its contents */
         }
 
@@ -79,9 +82,26 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 300px;
-            height: 300px;
+            width: 80%;
+            max-width: 300px;
+            height: auto;
             z-index: 1;
+        }
+
+        @media screen and (max-width: 600px) {
+            .container, .grey-box, .image-container {
+                width: 90%;
+                height: auto;
+            }
+
+            .character {
+                font-size: 16px;
+            }
+
+            canvas {
+                width: 50%;
+                height: auto;
+            }
         }
     </style>
 </head>
@@ -113,8 +133,8 @@
             const character = document.createElement('span');
             character.className = 'character';
             character.textContent = getRandomCharacter();
-            character.style.top = `${Math.random() * 280}px`;
-            character.style.left = `${Math.random() * 280}px`;
+            character.style.top = `${Math.random() * 90}%`;
+            character.style.left = `${Math.random() * 90}%`;
             container.appendChild(character);
         }
 
