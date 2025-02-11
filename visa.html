@@ -18,6 +18,8 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
         }
 
         .overlay {
@@ -41,15 +43,12 @@
         }
 
         .container {
-            width: 68%;
-            max-width: 255px;
-            height: 255px;
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
+            flex: 1; /* Ensures container takes up remaining space */
+            width: 100%;
+            height: 100%;
+            position: relative;
             z-index: 3;
-            margin: 8.5px;
+            margin: 0;
         }
 
         .character {
@@ -82,8 +81,8 @@
         }
 
         .photo-container img {
-            width: 99%;
-            height: 99%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             opacity: 0.3;
         }
@@ -113,22 +112,22 @@
             height: 81px;
             position: absolute;
             bottom: 10px;
-            left: 10px
+            left: 10px;
             transform: translateY(0);
             z-index: 3;
             opacity: 0.49;
         }
 
         .image-container img {
-            width: 177%;
-            height: 177%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
         }
 
         @media screen and (max-width: 600px) {
             .container, .grey-box, .image-container {
-                width: 76.5%;
-                height: auto;
+                width: 100%;
+                height: 100%;
             }
 
             .character {
