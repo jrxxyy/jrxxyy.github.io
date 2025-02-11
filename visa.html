@@ -147,7 +147,7 @@
             for (let y = 0; y < canvas.height; y++) {
                 for (let x = 0; x < canvas.width; x++) {
                     const waveValue = amplitude * Math.sin(frequency * (x / xScale + y / yScale));
-                    ctx.fillStyle = `rgb(${waveValue + 128}, ${waveValue + 128}, 255)`;
+                    ctx.fillStyle = `rgb(${waveValue + 128}, ${waveValue + 128}, 0, 0)`;
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
