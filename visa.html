@@ -73,7 +73,7 @@
             object-fit: cover;
             opacity: 0.3;
         }
-        
+
         .scroll-link {
             position: fixed;
             top: 10px;
@@ -167,14 +167,19 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Activate Scroll button functionality
-        document.querySelector('.scroll-link').addEventListener('click', function(event) {
-            event.preventDefault();
-            disableScroll(); // Disable scroll when the link is clicked
+        // Independent Scroll Activation function
+        function activateScroll() {
+            disableScroll(); // Disable scroll when the function is called
 
             setTimeout(function() {
                 enableScroll(); // Enable scroll after 5 seconds
             }, 5000); // 5000 milliseconds = 5 seconds
+        }
+
+        // Attach activateScroll function to the click event of the Activate Scroll button
+        document.querySelector('.scroll-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            activateScroll(); // Call the independent activateScroll function
         });
 
         // Swipe detection variables
