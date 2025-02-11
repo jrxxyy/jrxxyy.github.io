@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmet Background with Random Dots and Ripple Wave</title>
+    <title>Swipe Gesture Detection</title>
     <style>
         body {
             margin: 0;
@@ -46,7 +45,7 @@
         }
 
         .grey-box {
-            background-color: rgba(128, 128, 128, 0.3); /* Increased transparency */
+            background-color: rgba(128, 128, 128, 0.3);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -55,7 +54,7 @@
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 4; /* Ensure it's above the canvas image */
+            z-index: 4;
         }
 
         .photo-container {
@@ -72,7 +71,7 @@
             width: 85%;
             height: 85%;
             object-fit: cover;
-            opacity: 0.3; /* Increased transparency */
+            opacity: 0.3;
         }
 
         .scroll-link {
@@ -115,7 +114,7 @@
             max-width: 300px;
             height: 300px;
             z-index: 3;
-            opacity: 0.13; /* Set to 13% opacity */
+            opacity: 0.13;
         }
 
         @media screen and (max-width: 600px) {
@@ -144,7 +143,7 @@
         <p>Experience the future, today.</p>
     </div>
     <div class="container">
-        <a href="#" id="scrollLink" class="scroll-link">ARE YOU A ROBOT</a>
+        <a href="#" id="scrollLink" class="scroll-link">Activate Scroll</a>
     </div>
     <canvas id="waveCanvas" width="100" height="100"></canvas>
     <img id="canvasImage" src="https://th.bing.com/th/id/OIP.pih7GL-6zTPJWQdZxkuYYAAAAA?w=167&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Canvas Image">
@@ -158,87 +157,65 @@
     </div>
 
     <script>
-        // Function to get a random character
-        function getRandomCharacter() {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            return characters.charAt(Math.floor(Math.random() * characters.length));
+        // Swipe detection variables
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        let swipeStartTime = 0;
+        let swipeCount = 0;
+        const swipeThreshold = 150; // Minimum distance in pixels for a swipe
+        const swipeTimeThreshold = 300; // Maximum time in ms for a quick swipe
+
+        function handleTouchStart(event) {
+            const touch = event.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            swipeStartTime = new Date().getTime();
         }
 
-        // Function to create a character span
-        function createCharacter(container) {
-            const character = document.createElement('span');
-            character.className = 'character';
-            character.textContent = getRandomCharacter();
-            character.style.top = `${Math.random() * 280}px`;
-            character.style.left = `${Math.random() * 280}px`;
-            container.appendChild(character);
-        }
+        function handleTouchEnd(event) {
+            const touch = event.changedTouches[0];
+            touchEndX = touch.clientX;
+            touchEndY = touch.clientY;
+            const swipeEndTime = new Date().getTime();
+            const timeDiff = swipeEndTime - swipeStartTime;
 
-        // Function to populate characters in a container
-        function populateCharacters(container, numCharacters) {
-            for (let i = 0; i < numCharacters; i++) {
-                createCharacter(container);
-            }
-        }
-
-        // Populate characters in the containers when the DOM content is loaded
-        document.addEventListener("DOMContentLoaded", function() {
-            const mainContainer = document.querySelector('.container');
-            if (mainContainer) {
-                populateCharacters(mainContainer, 15);
-            } else {
-                console.error("Container element not found!");
-            }
-
-            const greyBox = document.getElementById('jr-box');
-            if (greyBox) {
-                populateCharacters(greyBox, 15);
-            } else {
-                console.error("Grey box element not found!");
-            }
-        });
-
-        const canvas = document.getElementById('waveCanvas');
-        const ctx = canvas.getContext('2d');
-        const width = 1.2;
-        const height = 3.5;
-        const amplitude = 20;
-        const frequency = 5;
-        canvas.width = 100;
-        canvas.height = 100; // Smaller canvas size
-        const xScale = canvas.width / width;
-        const yScale = canvas.height / height;
-
-        function drawWave() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath();
-            for (let y = 0; y < canvas.height; y++) {
-                for (let x = 0; x < canvas.width; x++) {
-                    const waveValue = amplitude * Math.sin(frequency * (x / xScale + y / yScale));
-                    const greyValue = waveValue + 128;
-                    ctx.fillStyle = `rgba(${greyValue}, ${greyValue}, ${greyValue}, 0.2)`; // Light grey and partially transparent
-                    ctx.fillRect(x, y, 1, 1);
+            if (timeDiff < swipeTimeThreshold) {
+                const diffX = touchEndX - touchStartX;
+                const diffY = touchEndY - touchStartY;
+                if (Math.abs(diffX) > swipeThreshold || Math.abs(diffY) > swipeThreshold) {
+                    swipeCount++;
+                    if (swipeCount === 2) {
+                        if (Math.abs(diffX) > Math.abs(diffY)) {
+                            // Horizontal swipe
+                            if (diffX > 0) {
+                                // Swipe right
+                                window.location.href = 'https://github.com/jrxxyy/jrxxyy.github.io/blob/main/visad.html';
+                            } else {
+                                // Swipe left
+                                window.location.href = 'https://github.com/jrxxyy/jrxxyy.github.io/blob/main/visas.html';
+                            }
+                        } else {
+                            // Vertical swipe
+                            if (diffY > 0) {
+                                // Swipe down
+                                window.location.href = 'https://github.com/jrxxyy/jrxxyy.github.io/blob/main/visax.html';
+                            } else {
+                                // Swipe up
+                                window.location.href = 'https://github.com/jrxxyy/jrxxyy.github.io/blob/main/visaa.html';
+                            }
+                        }
+                    }
                 }
             }
-            ctx.stroke();
+            setTimeout(() => {
+                swipeCount = 0;
+            }, 500); // Reset swipe count after 500ms
         }
 
-        drawWave();
-
-        // Scroll functionality
-        document.getElementById('scrollLink').addEventListener('click', function(event) {
-            event.preventDefault();
-            document.body.style.overflow = 'hidden'; // Disable scrolling
-
-            const scrollInterval = setInterval(() => {
-                window.scrollBy(0, 10); // Adjust scroll speed here
-            }, 30);
-
-            setTimeout(() => {
-                clearInterval(scrollInterval);
-                document.body.style.overflow = 'auto'; // Re-enable scrolling
-            }, 5000); // Scroll for 5 seconds
-        });
+        document.addEventListener('touchstart', handleTouchStart, false);
+        document.addEventListener('touchend', handleTouchEnd, false);
     </script>
 </body>
 </html>
