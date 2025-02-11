@@ -68,6 +68,18 @@
             object-fit: cover; /* Ensures the image covers the container */
         }
 
+        .scroll-link {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 5; /* Ensure it's on top */
+        }
+
         canvas {
             background: rgba(0, 0, 0, 0.5);
             position: absolute;
@@ -112,7 +124,9 @@
         <h1>Welcome to the High-Tech World!</h1>
         <p>Experience the future, today.</p>
     </div>
-    <div class="container"></div>
+    <div class="container">
+        <a href="#" id="scrollLink" class="scroll-link">Activate Scroll</a>
+    </div>
     <div id="jr-box" class="grey-box" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">
         <div class="photo-container">
             <img src="https://cdn.myonlinestore.eu/944ccdd9-6be1-11e9-a722-44a8421b9960/image/cache/article/cc8ffd2c78840df2548263c494a8972641be007f.jpg" alt="Photo">
@@ -190,6 +204,19 @@
         }
 
         drawWave();
+        
+        // Scroll functionality
+        document.getElementById('scrollLink').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            const scrollInterval = setInterval(() => {
+                window.scrollBy(0, 10); // Adjust scroll speed here
+            }, 30);
+
+            setTimeout(() => {
+                clearInterval(scrollInterval);
+            }, 15000); // Scroll for 15 seconds
+        });
     </script>
 </body>
 </html>
