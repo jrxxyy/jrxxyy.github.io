@@ -75,7 +75,7 @@
         }
 
         .scroll-link {
-            position: fixed; /* Changed from absolute to fixed */
+            position: fixed;
             bottom: 10px;
             right: 10px;
             color: white;
@@ -83,7 +83,7 @@
             background: rgba(255, 255, 255, 0.2);
             padding: 5px 10px;
             border-radius: 5px;
-            z-index: 9999; /* Adjusted z-index */
+            z-index: 9999;
         }
 
         canvas {
@@ -157,6 +157,25 @@
     </div>
 
     <script>
+        // Disable and enable scroll functions
+        function disableScroll() {
+            document.body.style.overflow = 'hidden';
+        }
+
+        function enableScroll() {
+            document.body.style.overflow = 'auto';
+        }
+
+        // Activate Scroll button functionality
+        document.querySelector('.scroll-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            disableScroll(); // Disable scroll when the link is clicked
+
+            setTimeout(function() {
+                enableScroll(); // Enable scroll after 5 seconds
+            }, 5000); // 5000 milliseconds = 5 seconds
+        });
+
         // Swipe detection variables
         let touchStartX = 0;
         let touchStartY = 0;
