@@ -73,17 +73,18 @@
             object-fit: cover;
             opacity: 0.3;
         }
-
+        
         .scroll-link {
             position: fixed;
-            bottom: 10px;
-            right: 10px;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             color: white;
             text-decoration: none;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.8); /* Increased opacity */
             padding: 5px 10px;
             border-radius: 5px;
-            z-index: 9999;
+            z-index: 10000; /* Ensured highest z-index */
         }
 
         canvas {
