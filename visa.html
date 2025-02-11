@@ -74,19 +74,23 @@
             opacity: 0.3;
         }
 
-        .scroll-link {
+        .scroll-container {
             position: fixed;
             top: 10px;
-            left: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+        }
+
+        .scroll-link {
             color: white;
             text-decoration: none;
-            background: rgba(0, 0, 0, 0.8); /* Increased opacity */
+            background: rgba(0, 0, 0, 0.8);
             padding: 10px 20px;
             border-radius: 5px;
-            z-index: 10001; /* Ensured highest z-index */
+            z-index: 10001;
             display: block;
             visibility: visible;
-            background-color: red;
         }
 
         canvas {
@@ -144,44 +148,49 @@
     <div class="overlay">
         <h1>Welcome to the High-Tech World!</h1>
         <p>Experience the future, today.</p>
-    </div>
-    <div class="container">
-        <a href="#" id="scrollLink" class="scroll-link">Activate Scroll</a>
-    </div>
-    <canvas id="waveCanvas" width="100" height="100"></canvas>
-    <img id="canvasImage" src="https://th.bing.com/th/id/OIP.pih7GL-6zTPJWQdZxkuYYAAAAA?w=167&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Canvas Image">
-    <div id="jr-box" class="grey-box">
-        <div class="photo-container">
-            <img src="https://cdn.myonlinestore.eu/944ccdd9-6be1-11e9-a722-44a8421b9960/image/cache/article/cc8ffd2c78840df2548263c494a8972641be007f.jpg" alt="Photo">
+        <div class="scroll-container">
+            <a href="#" id="scrollLink" class="scroll-link">Activate Scroll</a>
         </div>
     </div>
-    <div class="image-container">
-        <img src="https://www.bing.com/th/id/OGC.4774f0c6383d71b780d8cf736606b3d7?pid=1.7&rurl=https%3a%2f%2fi.stack.imgur.com%2fn7Lqs.gif&ehk=IjygwGpdrHZS0I04evJyPKib7opz%2be3%2bhU9KJIIUvWw%3d" alt="Gif Image" width="300" height="300">
+    <div class="container">
+        <canvas id="waveCanvas" width="100" height="100"></canvas>
+        <img id="canvasImage" src="https://th.bing.com/th/id/OIP.pih7GL-6zTPJWQdZxkuYYAAAAA?w=167&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Canvas Image">
+        <div id="jr-box" class="grey-box">
+            <div class="photo-container">
+                <img src="https://cdn.myonlinestore.eu/944ccdd9-6be1-11e9-a722-44a8421b9960/image/cache/article/cc8ffd2c78840df2548263c494a8972641be007f.jpg" alt="Photo">
+            </div>
+        </div>
+        <div class="image-container">
+            <img src="https://www.bing.com/th/id/OGC.4774f0c6383d71b780d8cf736606b3d7?pid=1.7&rurl=https%3a%2f%2fi.stack.imgur.com%2fn7Lqs.gif&ehk=IjygwGpdrHZS0I04evJyPKib7opz%2be3%2bhU9KJIIUvWw%3d" alt="Gif Image" width="300" height="300">
+        </div>
     </div>
 
     <script>
         // Disable and enable scroll functions
         function disableScroll() {
             document.body.style.overflow = 'hidden';
+            console.log('Scroll disabled'); // Debug log
         }
 
         function enableScroll() {
             document.body.style.overflow = 'auto';
+            console.log('Scroll enabled'); // Debug log
         }
 
         // Independent Scroll Activation function
         function activateScroll() {
-            disableScroll(); // Disable scroll when the function is called
+            disableScroll();
 
             setTimeout(function() {
-                enableScroll(); // Enable scroll after 5 seconds
-            }, 5000); // 5000 milliseconds = 5 seconds
+                enableScroll();
+            }, 5000);
         }
 
         // Attach activateScroll function to the click event of the Activate Scroll button
-        document.querySelector('.scroll-link').addEventListener('click', function(event) {
+        document.querySelector('#scrollLink').addEventListener('click', function(event) {
             event.preventDefault();
-            activateScroll(); // Call the independent activateScroll function
+            console.log('Scroll link clicked'); // Debug log
+            activateScroll();
         });
 
         // Swipe detection variables
@@ -199,6 +208,7 @@
             touchStartX = touch.clientX;
             touchStartY = touch.clientY;
             swipeStartTime = new Date().getTime();
+            console.log('Touch start:', touchStartX, touchStartY); // Debug log
         }
 
         function handleTouchEnd(event) {
@@ -211,25 +221,27 @@
             if (timeDiff < swipeTimeThreshold) {
                 const diffX = touchEndX - touchStartX;
                 const diffY = touchEndY - touchStartY;
+                console.log('Touch end:', touchEndX, touchEndY); // Debug log
                 if (Math.abs(diffX) > swipeThreshold || Math.abs(diffY) > swipeThreshold) {
                     swipeCount++;
+                    console.log('Swipe detected:', swipeCount); // Debug log
                     if (swipeCount === 2) {
                         if (Math.abs(diffX) > Math.abs(diffY)) {
                             // Horizontal swipe
                             if (diffX > 0) {
-                                // Swipe right
+                                console.log('Swipe right'); // Debug log
                                 window.location.href = 'https://github.com/jrxxyy/jrxxyy.github.io/blob/main/visad.html';
                             } else {
-                                // Swipe left
+                                console.log('Swipe left'); // Debug log
                                 window.location.href = 'https://github.com/jrxxyy/jrxxyy.github.io/blob/main/visas.html';
                             }
                         } else {
                             // Vertical swipe
                             if (diffY > 0) {
-                                // Swipe down
+                                console.log('Swipe down'); // Debug log
                                 window.location.href = 'https://github.com/jrxxyy/jrxxyy.github.io/blob/main/visax.html';
                             } else {
-                                // Swipe up
+                                console.log('Swipe up'); // Debug log
                                 window.location.href = 'https://github.com/jrxxyy/jrxxyy.github.io/blob/main/visaa.html';
                             }
                         }
