@@ -24,9 +24,6 @@
             position: absolute;
             z-index: 2; /* Ensure the tetrahedron is above the canvas */
             opacity: 0.5; /* Set alpha declaration to make it semi-transparent */
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
         }
     </style>
 </head>
@@ -67,6 +64,7 @@
             canvasElement.width = window.innerWidth * 0.75;
             canvasElement.height = window.innerHeight * 0.75;
             positionVectorPoints();
+            positionTetrahedron();
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -113,6 +111,20 @@
             // Position for the center
             vectorCenter.style.left = (canvasElement.offsetLeft + canvasElement.width / 2 - 5) + 'px';
             vectorCenter.style.top = (canvasElement.offsetTop + canvasElement.height / 2 - 5) + 'px';
+        }
+
+        // Function to position the tetrahedron
+        function positionTetrahedron() {
+            const tetrahedron = document.querySelector('.tetrahedron');
+            const canvasRect = canvasElement.getBoundingClientRect();
+            const canvasCenterX = canvasRect.width / 2;
+            const canvasCenterY = canvasRect.height / 2;
+            const tetrahedronWidth = tetrahedron.getBoundingClientRect().width;
+            const tetrahedronHeight = tetrahedron.getBoundingClientRect().height;
+
+            // Center the tetrahedron within the canvas
+            tetrahedron.style.left = (canvasRect.left + canvasCenterX - tetrahedronWidth / 2) + 'px';
+            tetrahedron.style.top = (canvasRect.top + canvasCenterY - tetrahedronHeight / 2) + 'px';
         }
     </script>
 </body>
