@@ -10,6 +10,7 @@
             width: 75vw;
             height: 75vh;
             border: 1px solid black;
+            position: relative; /* Make canvas position relative */
         }
         .vector-point {
             width: 10px;
@@ -120,8 +121,8 @@
             const vectorCenterRect = vectorCenter.getBoundingClientRect();
 
             // Position the tetrahedron at the center point of the canvas
-            tetrahedron.style.left = (canvasRect.width / 2 - tetrahedron.clientWidth / 2) + 'px';
-            tetrahedron.style.top = (canvasRect.height / 2 - tetrahedron.clientHeight / 2) + 'px';
+            tetrahedron.style.left = (canvasRect.left + canvas.width / 2 - tetrahedron.clientWidth / 2) + 'px';
+            tetrahedron.style.top = (canvasRect.top + canvas.height / 2 - tetrahedron.clientHeight / 2) + 'px';
         }
     </script>
 </body>
