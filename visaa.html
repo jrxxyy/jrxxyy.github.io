@@ -1,3 +1,7 @@
+I will update the `visaa.html` file to ensure that the tetrahedron is always displayed at the center point of the canvas, where the red dot is located.
+
+### Updated `visaa.html`
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,11 +25,7 @@
         }
         .tetrahedron {
             display: block;
-            margin: 20px auto;
             position: absolute;
-            left: 50%; /* Center horizontally */
-            top: 50%; /* Center vertically */
-            transform: translate(-50%, -50%); /* Adjust to center the element */
             z-index: 0; /* Ensure the tetrahedron is behind the red dot */
         }
     </style>
@@ -67,6 +67,7 @@
             canvas.width = window.innerWidth * 0.75;
             canvas.height = window.innerHeight * 0.75;
             positionVectorPoints();
+            positionTetrahedron();
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -114,6 +115,19 @@
             vectorCenter.style.left = (canvas.offsetLeft + canvas.width / 2 - 5) + 'px';
             vectorCenter.style.top = (canvas.offsetTop + canvas.height / 2 - 5) + 'px';
         }
+
+        // Function to position the tetrahedron
+        function positionTetrahedron() {
+            const tetrahedron = document.querySelector('.tetrahedron');
+            const vectorCenter = document.getElementById('vectorCenter');
+
+            // Position the tetrahedron at the center point
+            tetrahedron.style.left = vectorCenter.style.left;
+            tetrahedron.style.top = vectorCenter.style.top;
+        }
     </script>
 </body>
 </html>
+```
+
+This code ensures that the tetrahedron is always centered on the canvas at the position of the red dot in the middle.
