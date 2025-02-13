@@ -21,6 +21,7 @@
         }
         .tetrahedron {
             display: block;
+            margin: 20px auto;
             position: absolute;
             left: 50%; /* Center horizontally */
             top: 50%; /* Center vertically */
@@ -40,9 +41,10 @@
     <canvas id="drawingCanvas"></canvas>
 
     <!-- Vector points -->
+    <div class="vector-point" id="vectorLeft"></div>
     <div class="vector-point" id="vectorRight"></div>
     <div class="vector-point" id="vectorAboveCenter"></div>
-    <div class="vector-point" id="vectorCenter"></div> <!-- Center point for reference -->
+    <div class="vector-point" id="vectorCenter"></div> <!-- Added a new center point for reference -->
 
     <!-- SVG drawing of a tetrahedron centered with the red dot -->
     <svg class="tetrahedron" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -91,9 +93,14 @@
 
         // Function to position the vector points
         function positionVectorPoints() {
+            const vectorLeft = document.getElementById('vectorLeft');
             const vectorRight = document.getElementById('vectorRight');
             const vectorAboveCenter = document.getElementById('vectorAboveCenter');
             const vectorCenter = document.getElementById('vectorCenter');
+
+            // Position for the left corner
+            vectorLeft.style.left = canvas.offsetLeft + 'px';
+            vectorLeft.style.top = canvas.offsetTop + 'px';
 
             // Position for the right corner
             vectorRight.style.left = (canvas.offsetLeft + canvas.width - 10) + 'px';
