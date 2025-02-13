@@ -14,8 +14,8 @@ const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true 
 const geometry = new THREE.TetrahedronGeometry();
 const tetrahedron = new THREE.Mesh(geometry, material);
 
-// Position the tetrahedron slightly below the red vector in the center
-tetrahedron.position.set(0, -0.5, 0);  // Adjust the Y position to place it slightly below
+// Position the tetrahedron at the center of the scene
+tetrahedron.position.set(0, 0, 0);  // Center the tetrahedron
 
 // Add the tetrahedron to the scene
 scene.add(tetrahedron);
