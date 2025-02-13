@@ -36,21 +36,21 @@
     <p>CPU-A: <a href="https://education.ti.com/en/customer-support/knowledge-base/other-graphing/product-usage/11806" target="_blank">TI-89</a></p>
 
     <!-- Canvas element for drawing -->
-    <canvas id="drawingCanvas"></canvas>
+    <canvas id="drawingCanvas">
+        <!-- SVG drawing of a tetrahedron centered with the red dot -->
+        <svg class="tetrahedron" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="100,10 40,190 190,190" stroke="black" fill="none"/>
+            <polygon points="100,10 150,150 40,190" stroke="black" fill="none"/>
+            <polygon points="100,10 50,150 190,190" stroke="black" fill="none"/>
+            <polygon points="40,190 150,150 190,190" stroke="black" fill="none"/>
+        </svg>
+    </canvas>
 
     <!-- Vector points -->
     <div class="vector-point" id="vectorLeft"></div>
     <div class="vector-point" id="vectorRight"></div>
     <div class="vector-point" id="vectorAboveCenter"></div>
     <div class="vector-point" id="vectorCenter"></div> <!-- Added a new center point for reference -->
-
-    <!-- SVG drawing of a tetrahedron centered with the red dot -->
-    <svg class="tetrahedron" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="100,10 40,190 190,190" stroke="black" fill="none"/>
-        <polygon points="100,10 150,150 40,190" stroke="black" fill="none"/>
-        <polygon points="100,10 50,150 190,190" stroke="black" fill="none"/>
-        <polygon points="40,190 150,150 190,190" stroke="black" fill="none"/>
-    </svg>
 
     <!-- Include the drawing script -->
     <script src="drawing.js"></script>
