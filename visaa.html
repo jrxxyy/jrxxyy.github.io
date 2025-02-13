@@ -1,6 +1,7 @@
-I will update the `visaa.html` file to ensure that the tetrahedron is always displayed at the center point of the canvas, where the red dot is located.
+The error might arise from the way the `tetrahedron` element is being positioned using the `vectorCenter` element's `left` and `top` styles. These styles are in `px` but do not account for the actual position of the `vectorCenter` element on the page.
 
-### Updated `visaa.html`
+To fix this, you need to convert the `vectorCenter` element's position from `px` to the correct canvas coordinates. Here's the corrected `positionTetrahedron` function:
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -120,14 +121,16 @@ I will update the `visaa.html` file to ensure that the tetrahedron is always dis
         function positionTetrahedron() {
             const tetrahedron = document.querySelector('.tetrahedron');
             const vectorCenter = document.getElementById('vectorCenter');
+            const canvasRect = canvas.getBoundingClientRect();
+            const vectorCenterRect = vectorCenter.getBoundingClientRect();
 
-            // Position the tetrahedron at the center point
-            tetrahedron.style.left = vectorCenter.style.left;
-            tetrahedron.style.top = vectorCenter.style.top;
+            // Position the tetrahedron at the center point of the canvas
+            tetrahedron.style.left = (vectorCenterRect.left - canvasRect.left) + 'px';
+            tetrahedron.style.top = (vectorCenterRect.top - canvasRect.top) + 'px';
         }
     </script>
 </body>
 </html>
 ```
 
-This code ensures that the tetrahedron is always centered on the canvas at the position of the red dot in the middle.
+This adjustment ensures that the tetrahedron's position is set relative to the canvas's coordinates, aligning it with the center point (red dot).
