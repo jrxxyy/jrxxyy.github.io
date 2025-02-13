@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Page Title</title>
+    <style>
+        /* Ensure the canvas occupies 3/4 of the page */
+        #drawingCanvas {
+            width: 75vw;
+            height: 75vh;
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
     <h1>.JR.XXYY</h1>
@@ -14,5 +22,43 @@
 
     <!-- Adding a clickable link -->
     <p>CPU-A: <a href="https://education.ti.com/en/customer-support/knowledge-base/other-graphing/product-usage/11806" target="_blank">TI-89</a></p>
+
+    <!-- Canvas element for drawing -->
+    <canvas id="drawingCanvas"></canvas>
+
+    <script>
+        // JavaScript code for drawing on the canvas
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        // Resize the canvas
+        function resizeCanvas() {
+            canvas.width = window.innerWidth * 0.75;
+            canvas.height = window.innerHeight * 0.75;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Start drawing
+        canvas.addEventListener('mousedown', function(e) {
+            drawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        });
+
+        // Drawing
+        canvas.addEventListener('mousemove', function(e) {
+            if (drawing) {
+                ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+                ctx.stroke();
+            }
+        });
+
+        // Stop drawing
+        canvas.addEventListener('mouseup', function() {
+            drawing = false;
+        });
+    </script>
 </body>
 </html>
