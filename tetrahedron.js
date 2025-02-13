@@ -7,9 +7,17 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Create a black and white material for the tetrahedron
+const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+
+// Create a geometry for the tetrahedron
 const geometry = new THREE.TetrahedronGeometry();
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 const tetrahedron = new THREE.Mesh(geometry, material);
+
+// Position the tetrahedron slightly below the red vector in the center
+tetrahedron.position.set(0, -0.5, 0);  // Adjust the Y position to place it slightly below
+
+// Add the tetrahedron to the scene
 scene.add(tetrahedron);
 
 function animate() {
