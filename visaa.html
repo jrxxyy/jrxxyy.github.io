@@ -59,7 +59,7 @@
             canvasElement.width = window.innerWidth * 0.75;
             canvasElement.height = window.innerHeight * 0.75;
             positionVectorPoints();
-            placeSVG(canvasElement.width / 2, canvasElement.height / 2);
+            placeTetrahedron(canvasElement.width / 2, canvasElement.height / 2);
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -108,20 +108,41 @@
             vectorCenter.style.top = (canvasElement.offsetTop + canvasElement.height / 2 - 5) + 'px';
         }
 
-        // Function to create and place the SVG using D3.js
-        function placeSVG(x, y) {
+        // Function to create and place the tetrahedron using D3.js
+        function placeTetrahedron(x, y) {
             const svgContainer = d3.select("#svgContainer")
                 .append("svg")
-                .attr("width", "100%")
-                .attr("height", "100%");
+                .attr("width", "200")
+                .attr("height", "200")
+                .attr("viewBox", "0 0 200 200")
+                .style("position", "absolute")
+                .style("left", `${x - 100}px`)
+                .style("top", `${y - 100}px`);
 
-            svgContainer.append("circle")
-                .attr("cx", x)
-                .attr("cy", y)
-                .attr("r", 40)
+            const points1 = "100,10 40,190 190,190";
+            const points2 = "100,10 150,150 40,190";
+            const points3 = "100,10 50,150 190,190";
+            const points4 = "40,190 150,150 190,190";
+
+            svgContainer.append("polygon")
+                .attr("points", points1)
                 .attr("stroke", "black")
-                .attr("stroke-width", 3)
-                .attr("fill", "red");
+                .attr("fill", "none");
+
+            svgContainer.append("polygon")
+                .attr("points", points2)
+                .attr("stroke", "black")
+                .attr("fill", "none");
+
+            svgContainer.append("polygon")
+                .attr("points", points3)
+                .attr("stroke", "black")
+                .attr("fill", "none");
+
+            svgContainer.append("polygon")
+                .attr("points", points4)
+                .attr("stroke", "black")
+                .attr("fill", "none");
         }
     </script>
 </body>
