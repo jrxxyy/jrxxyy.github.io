@@ -55,14 +55,14 @@
     <script src="drawing.js"></script>
     <script>
         // JavaScript code for drawing on the canvas and positioning elements
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
+        const canvasElement = document.getElementById('drawingCanvas'); // Ensure this is only declared once
+        const ctx = canvasElement.getContext('2d');
         let drawing = false;
 
         // Resize the canvas
         function resizeCanvas() {
-            canvas.width = window.innerWidth * 0.75;
-            canvas.height = window.innerHeight * 0.75;
+            canvasElement.width = window.innerWidth * 0.75;
+            canvasElement.height = window.innerHeight * 0.75;
             positionVectorPoints();
             positionTetrahedron();
         }
@@ -70,22 +70,22 @@
         resizeCanvas();
 
         // Start drawing
-        canvas.addEventListener('mousedown', function(e) {
+        canvasElement.addEventListener('mousedown', function(e) {
             drawing = true;
             ctx.beginPath();
-            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            ctx.moveTo(e.clientX - canvasElement.offsetLeft, e.clientY - canvasElement.offsetTop);
         });
 
         // Drawing
-        canvas.addEventListener('mousemove', function(e) {
+        canvasElement.addEventListener('mousemove', function(e) {
             if (drawing) {
-                ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+                ctx.lineTo(e.clientX - canvasElement.offsetLeft, e.clientY - canvasElement.offsetTop);
                 ctx.stroke();
             }
         });
 
         // Stop drawing
-        canvas.addEventListener('mouseup', function() {
+        canvasElement.addEventListener('mouseup', function() {
             drawing = false;
         });
 
@@ -97,32 +97,32 @@
             const vectorCenter = document.getElementById('vectorCenter');
 
             // Position for the left corner
-            vectorLeft.style.left = canvas.offsetLeft + 'px';
-            vectorLeft.style.top = canvas.offsetTop + 'px';
+            vectorLeft.style.left = canvasElement.offsetLeft + 'px';
+            vectorLeft.style.top = canvasElement.offsetTop + 'px';
 
             // Position for the right corner
-            vectorRight.style.left = (canvas.offsetLeft + canvas.width - 10) + 'px';
-            vectorRight.style.top = canvas.offsetTop + 'px';
+            vectorRight.style.left = (canvasElement.offsetLeft + canvasElement.width - 10) + 'px';
+            vectorRight.style.top = canvasElement.offsetTop + 'px';
 
             // Position slightly above the center
-            vectorAboveCenter.style.left = (canvas.offsetLeft + canvas.width / 2 - 5) + 'px';
-            vectorAboveCenter.style.top = (canvas.offsetTop + canvas.height / 2 - 50) + 'px';
+            vectorAboveCenter.style.left = (canvasElement.offsetLeft + canvasElement.width / 2 - 5) + 'px';
+            vectorAboveCenter.style.top = (canvasElement.offsetTop + canvasElement.height / 2 - 50) + 'px';
 
             // Position for the center
-            vectorCenter.style.left = (canvas.offsetLeft + canvas.width / 2 - 5) + 'px';
-            vectorCenter.style.top = (canvas.offsetTop + canvas.height / 2 - 5) + 'px';
+            vectorCenter.style.left = (canvasElement.offsetLeft + canvasElement.width / 2 - 5) + 'px';
+            vectorCenter.style.top = (canvasElement.offsetTop + canvasElement.height / 2 - 5) + 'px';
         }
 
         // Function to position the tetrahedron
         function positionTetrahedron() {
             const tetrahedron = document.querySelector('.tetrahedron');
             const vectorCenter = document.getElementById('vectorCenter');
-            const canvasRect = canvas.getBoundingClientRect();
+            const canvasRect = canvasElement.getBoundingClientRect();
             const vectorCenterRect = vectorCenter.getBoundingClientRect();
 
             // Position the tetrahedron at the center point of the canvas
-            tetrahedron.style.left = (canvasRect.left + canvas.width / 2 - tetrahedron.clientWidth / 2) + 'px';
-            tetrahedron.style.top = (canvasRect.top + canvas.height / 2 - tetrahedron.clientHeight / 2) + 'px';
+            tetrahedron.style.left = (canvasRect.left + canvasElement.width / 2 - tetrahedron.clientWidth / 2) + 'px';
+            tetrahedron.style.top = (canvasRect.top + canvasElement.height / 2 - tetrahedron.clientHeight / 2) + 'px';
         }
     </script>
 </body>
