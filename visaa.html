@@ -17,10 +17,16 @@
             background-color: red;
             position: absolute;
             border-radius: 50%;
+            z-index: 1; /* Ensure the red dot is on top */
         }
         .tetrahedron {
             display: block;
             margin: 20px auto;
+            position: absolute;
+            left: 50%; /* Center horizontally */
+            top: 50%; /* Center vertically */
+            transform: translate(-50%, -50%); /* Adjust to center the element */
+            z-index: 0; /* Ensure the tetrahedron is behind the red dot */
         }
     </style>
 </head>
@@ -38,6 +44,7 @@
     <div class="vector-point" id="vectorLeft"></div>
     <div class="vector-point" id="vectorRight"></div>
     <div class="vector-point" id="vectorAboveCenter"></div>
+    <div class="vector-point" id="vectorCenter"></div> <!-- Added a new center point for reference -->
 
     <!-- SVG drawing of a tetrahedron -->
     <svg class="tetrahedron" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -49,5 +56,64 @@
 
     <!-- Include the drawing script -->
     <script src="drawing.js"></script>
+    <script>
+        // JavaScript code for drawing on the canvas and positioning elements
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        // Resize the canvas
+        function resizeCanvas() {
+            canvas.width = window.innerWidth * 0.75;
+            canvas.height = window.innerHeight * 0.75;
+            positionVectorPoints();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Start drawing
+        canvas.addEventListener('mousedown', function(e) {
+            drawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        });
+
+        // Drawing
+        canvas.addEventListener('mousemove', function(e) {
+            if (drawing) {
+                ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+                ctx.stroke();
+            }
+        });
+
+        // Stop drawing
+        canvas.addEventListener('mouseup', function() {
+            drawing = false;
+        });
+
+        // Function to position the vector points
+        function positionVectorPoints() {
+            const vectorLeft = document.getElementById('vectorLeft');
+            const vectorRight = document.getElementById('vectorRight');
+            const vectorAboveCenter = document.getElementById('vectorAboveCenter');
+            const vectorCenter = document.getElementById('vectorCenter');
+
+            // Position for the left corner
+            vectorLeft.style.left = canvas.offsetLeft + 'px';
+            vectorLeft.style.top = canvas.offsetTop + 'px';
+
+            // Position for the right corner
+            vectorRight.style.left = (canvas.offsetLeft + canvas.width - 10) + 'px';
+            vectorRight.style.top = canvas.offsetTop + 'px';
+
+            // Position slightly above the center
+            vectorAboveCenter.style.left = (canvas.offsetLeft + canvas.width / 2 - 5) + 'px';
+            vectorAboveCenter.style.top = (canvas.offsetTop + canvas.height / 2 - 50) + 'px';
+
+            // Position for the center
+            vectorCenter.style.left = (canvas.offsetLeft + canvas.width / 2 - 5) + 'px';
+            vectorCenter.style.top = (canvas.offsetTop + canvas.height / 2 - 5) + 'px';
+        }
+    </script>
 </body>
 </html>
