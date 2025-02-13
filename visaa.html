@@ -59,7 +59,7 @@
             canvasElement.width = window.innerWidth * 0.75;
             canvasElement.height = window.innerHeight * 0.75;
             positionVectorPoints();
-            placeTetrahedron(canvasElement.width / 2, canvasElement.height / 2);
+            placeTetrahedron(canvasElement.width / 2, 0); // Centered at the top
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -117,7 +117,7 @@
                 .attr("viewBox", "0 0 200 200")
                 .style("position", "absolute")
                 .style("left", `${x - 100}px`)
-                .style("top", `${y - 100}px`);
+                .style("top", `${y}px`); // Top of the canvas
 
             const points1 = "100,10 40,190 190,190";
             const points2 = "100,10 150,150 40,190";
