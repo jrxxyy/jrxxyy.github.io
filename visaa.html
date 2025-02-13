@@ -43,13 +43,7 @@
     <div class="vector-point" id="vectorAboveCenter"></div>
     <div class="vector-point" id="vectorCenter"></div> <!-- Added a new center point for reference -->
 
-    <!-- SVG drawing of a tetrahedron centered with the red dot -->
-    <svg class="tetrahedron" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="100,10 40,190 190,190" stroke="black" fill="none"/>
-        <polygon points="100,10 150,150 40,190" stroke="black" fill="none"/>
-        <polygon points="100,10 50,150 190,190" stroke="black" fill="none"/>
-        <polygon points="40,190 150,150 190,190" stroke="black" fill="none"/>
-    </svg>
+    <div id="svgContainer"></div>
 
     <!-- Include the drawing script -->
     <script src="drawing.js"></script>
@@ -64,7 +58,7 @@
             canvasElement.width = window.innerWidth * 0.75;
             canvasElement.height = window.innerHeight * 0.75;
             positionVectorPoints();
-            positionTetrahedron();
+            createAndPlaceSVG(canvasElement.width / 2, canvasElement.height / 2);
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -113,23 +107,43 @@
             vectorCenter.style.top = (canvasElement.offsetTop + canvasElement.height / 2 - 5) + 'px';
         }
 
-        // Function to position the tetrahedron
-        function positionTetrahedron() {
-            const tetrahedron = document.querySelector('.tetrahedron');
-            const canvasRect = canvasElement.getBoundingClientRect();
-            const canvasCenterX = canvasRect.width / 2;
-            const canvasCenterY = canvasRect.height / 2;
-            const tetrahedronWidth = tetrahedron.getBoundingClientRect().width;
-            const tetrahedronHeight = tetrahedron.getBoundingClientRect().height;
+        // Function to create and place the SVG
+        function createAndPlaceSVG(x, y) {
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("width", "200");
+            svg.setAttribute("height", "200");
+            svg.setAttribute("viewBox", "0 0 200 200");
+            svg.style.left = `${x - 100}px`; // Center the SVG
+            svg.style.top = `${y - 100}px`; // Center the SVG
+            svg.classList.add('tetrahedron');
 
-            // Center the tetrahedron within the canvas
-            tetrahedron.style.left = (canvasRect.left + canvasCenterX - tetrahedronWidth / 2) + 'px';
-            tetrahedron.style.top = (canvasRect.top + canvasCenterY - tetrahedronHeight / 2) + 'px';
+            const polygon1 = document.createElementNS(svgNS, "polygon");
+            polygon1.setAttribute("points", "100,10 40,190 190,190");
+            polygon1.setAttribute("stroke", "black");
+            polygon1.setAttribute("fill", "none");
 
-            // Apply the direct location to the red dot
-            const vectorCenter = document.getElementById('vectorCenter');
-            vectorCenter.style.left = (canvasRect.left + canvasCenterX - 5) + 'px';
-            vectorCenter.style.top = (canvasRect.top + canvasCenterY - 5) + 'px';
+            const polygon2 = document.createElementNS(svgNS, "polygon");
+            polygon2.setAttribute("points", "100,10 150,150 40,190");
+            polygon2.setAttribute("stroke", "black");
+            polygon2.setAttribute("fill", "none");
+
+            const polygon3 = document.createElementNS(svgNS, "polygon");
+            polygon3.setAttribute("points", "100,10 50,150 190,190");
+            polygon3.setAttribute("stroke", "black");
+            polygon3.setAttribute("fill", "none");
+
+            const polygon4 = document.createElementNS(svgNS, "polygon");
+            polygon4.setAttribute("points", "40,190 150,150 190,190");
+            polygon4.setAttribute("stroke", "black");
+            polygon4.setAttribute("fill", "none");
+
+            svg.appendChild(polygon1);
+            svg.appendChild(polygon2);
+            svg.appendChild(polygon3);
+            svg.appendChild(polygon4);
+
+            document.getElementById('svgContainer').appendChild(svg);
         }
     </script>
 </body>
