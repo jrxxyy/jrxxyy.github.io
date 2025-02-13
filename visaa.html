@@ -56,7 +56,7 @@
     <script>
         // JavaScript code for drawing on the canvas and positioning elements
         const canvasElement = document.getElementById('drawingCanvas'); // Ensure this is only declared once
-        const ctx = canvasElement.getContext('2d');
+        let ctx = canvasElement.getContext('2d'); // Ensure this is only declared once
         let drawing = false;
 
         // Resize the canvas
