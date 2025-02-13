@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Page Title</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         /* Ensure the canvas occupies 3/4 of the page */
         #drawingCanvas {
@@ -19,12 +20,6 @@
             position: absolute;
             border-radius: 50%;
             z-index: 1; /* Ensure the red dot is on top */
-        }
-        .tetrahedron {
-            position: absolute;
-            z-index: 3; /* Ensure the tetrahedron is above other elements */
-            opacity: 0.5; /* Set alpha declaration to make it semi-transparent */
-            transform: translate(-50%, -50%); /* Center the SVG */
         }
         #svgContainer {
             position: relative;
@@ -64,7 +59,7 @@
             canvasElement.width = window.innerWidth * 0.75;
             canvasElement.height = window.innerHeight * 0.75;
             positionVectorPoints();
-            createAndPlaceSVG(canvasElement.width / 2, canvasElement.height / 2);
+            placeSVG(canvasElement.width / 2, canvasElement.height / 2);
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -113,43 +108,20 @@
             vectorCenter.style.top = (canvasElement.offsetTop + canvasElement.height / 2 - 5) + 'px';
         }
 
-        // Function to create and place the SVG
-        function createAndPlaceSVG(x, y) {
-            const svgNS = "http://www.w3.org/2000/svg";
-            const svg = document.createElementNS(svgNS, "svg");
-            svg.setAttribute("width", "200");
-            svg.setAttribute("height", "200");
-            svg.setAttribute("viewBox", "0 0 200 200");
-            svg.style.left = `${x}px`; // Center the SVG
-            svg.style.top = `${y}px`; // Center the SVG
-            svg.classList.add('tetrahedron');
+        // Function to create and place the SVG using D3.js
+        function placeSVG(x, y) {
+            const svgContainer = d3.select("#svgContainer")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%");
 
-            const polygon1 = document.createElementNS(svgNS, "polygon");
-            polygon1.setAttribute("points", "100,10 40,190 190,190");
-            polygon1.setAttribute("stroke", "black");
-            polygon1.setAttribute("fill", "none");
-
-            const polygon2 = document.createElementNS(svgNS, "polygon");
-            polygon2.setAttribute("points", "100,10 150,150 40,190");
-            polygon2.setAttribute("stroke", "black");
-            polygon2.setAttribute("fill", "none");
-
-            const polygon3 = document.createElementNS(svgNS, "polygon");
-            polygon3.setAttribute("points", "100,10 50,150 190,190");
-            polygon3.setAttribute("stroke", "black");
-            polygon3.setAttribute("fill", "none");
-
-            const polygon4 = document.createElementNS(svgNS, "polygon");
-            polygon4.setAttribute("points", "40,190 150,150 190,190");
-            polygon4.setAttribute("stroke", "black");
-            polygon4.setAttribute("fill", "none");
-
-            svg.appendChild(polygon1);
-            svg.appendChild(polygon2);
-            svg.appendChild(polygon3);
-            svg.appendChild(polygon4);
-
-            document.getElementById('svgContainer').appendChild(svg);
+            svgContainer.append("circle")
+                .attr("cx", x)
+                .attr("cy", y)
+                .attr("r", 40)
+                .attr("stroke", "black")
+                .attr("stroke-width", 3)
+                .attr("fill", "red");
         }
     </script>
 </body>
