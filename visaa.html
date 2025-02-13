@@ -23,7 +23,7 @@
         .tetrahedron {
             display: block;
             position: absolute;
-            z-index: 0; /* Ensure the tetrahedron is behind the red dot */
+            z-index: 2; /* Ensure the tetrahedron is above the canvas */
             opacity: 0.5; /* Set alpha declaration to make it semi-transparent */
         }
     </style>
@@ -36,21 +36,21 @@
     <p>CPU-A: <a href="https://education.ti.com/en/customer-support/knowledge-base/other-graphing/product-usage/11806" target="_blank">TI-89</a></p>
 
     <!-- Canvas element for drawing -->
-    <canvas id="drawingCanvas">
-        <!-- SVG drawing of a tetrahedron centered with the red dot -->
-        <svg class="tetrahedron" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="100,10 40,190 190,190" stroke="black" fill="none"/>
-            <polygon points="100,10 150,150 40,190" stroke="black" fill="none"/>
-            <polygon points="100,10 50,150 190,190" stroke="black" fill="none"/>
-            <polygon points="40,190 150,150 190,190" stroke="black" fill="none"/>
-        </svg>
-    </canvas>
+    <canvas id="drawingCanvas"></canvas>
 
     <!-- Vector points -->
     <div class="vector-point" id="vectorLeft"></div>
     <div class="vector-point" id="vectorRight"></div>
     <div class="vector-point" id="vectorAboveCenter"></div>
     <div class="vector-point" id="vectorCenter"></div> <!-- Added a new center point for reference -->
+
+    <!-- SVG drawing of a tetrahedron centered with the red dot -->
+    <svg class="tetrahedron" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="100,10 40,190 190,190" stroke="black" fill="none"/>
+        <polygon points="100,10 150,150 40,190" stroke="black" fill="none"/>
+        <polygon points="100,10 50,150 190,190" stroke="black" fill="none"/>
+        <polygon points="40,190 150,150 190,190" stroke="black" fill="none"/>
+    </svg>
 
     <!-- Include the drawing script -->
     <script src="drawing.js"></script>
@@ -119,8 +119,8 @@
             const tetrahedron = document.querySelector('.tetrahedron');
             const canvasRect = canvasElement.getBoundingClientRect();
             // Center the tetrahedron within the canvas
-            tetrahedron.style.left = (canvasRect.width / 2 - tetrahedron.clientWidth / 2) + 'px';
-            tetrahedron.style.top = (canvasRect.height / 2 - tetrahedron.clientHeight / 2) + 'px';
+            tetrahedron.style.left = (canvasRect.left + canvasElement.width / 2 - tetrahedron.clientWidth / 2) + 'px';
+            tetrahedron.style.top = (canvasRect.top + canvasElement.height / 2 - tetrahedron.clientHeight / 2) + 'px';
             tetrahedron.style.transform = 'translate(-50%, -50%)'; // Adjust to center properly
         }
     </script>
