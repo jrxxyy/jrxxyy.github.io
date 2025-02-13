@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Page Title</title>
+    <title>Your VISA Page Title</title>
     <style>
         /* Ensure the canvas occupies 3/4 of the page */
         #drawingCanvas {
@@ -24,9 +24,6 @@
     <h1>.JR.XXYY</h1>
     <p>LOG.</p>
 
-    <!-- Your JavaScript code will be included here -->
-    <script src="https://education.ti.com/en/customer-support/knowledge-base/other-graphing/product-usage/11806"></script>
-
     <!-- Adding a clickable link -->
     <p>CPU-A: <a href="https://education.ti.com/en/customer-support/knowledge-base/other-graphing/product-usage/11806" target="_blank">TI-89</a></p>
 
@@ -38,59 +35,9 @@
     <div class="vector-point" id="vectorRight"></div>
     <div class="vector-point" id="vectorAboveCenter"></div>
 
-    <script>
-        // JavaScript code for drawing on the canvas
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
-        let drawing = false;
-
-        // Resize the canvas
-        function resizeCanvas() {
-            canvas.width = window.innerWidth * 0.75;
-            canvas.height = window.innerHeight * 0.75;
-            positionVectorPoints();
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        // Start drawing
-        canvas.addEventListener('mousedown', function(e) {
-            drawing = true;
-            ctx.beginPath();
-            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-        });
-
-        // Drawing
-        canvas.addEventListener('mousemove', function(e) {
-            if (drawing) {
-                ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-                ctx.stroke();
-            }
-        });
-
-        // Stop drawing
-        canvas.addEventListener('mouseup', function() {
-            drawing = false;
-        });
-
-        // Function to position the vector points
-        function positionVectorPoints() {
-            const vectorLeft = document.getElementById('vectorLeft');
-            const vectorRight = document.getElementById('vectorRight');
-            const vectorAboveCenter = document.getElementById('vectorAboveCenter');
-
-            // Position for the left corner
-            vectorLeft.style.left = canvas.offsetLeft + 'px';
-            vectorLeft.style.top = canvas.offsetTop + 'px';
-
-            // Position for the right corner
-            vectorRight.style.left = (canvas.offsetLeft + canvas.width - 10) + 'px';
-            vectorRight.style.top = canvas.offsetTop + 'px';
-
-            // Position slightly above the center
-            vectorAboveCenter.style.left = (canvas.offsetLeft + canvas.width / 2 - 5) + 'px';
-            vectorAboveCenter.style.top = (canvas.offsetTop + canvas.height / 2 - 50) + 'px';
-        }
-    </script>
+    <!-- Include the drawing and tetrahedron scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="drawing.js"></script>
+    <script src="tetrahedron.js"></script>
 </body>
 </html>
