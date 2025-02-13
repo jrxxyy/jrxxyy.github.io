@@ -11,6 +11,13 @@
             height: 75vh;
             border: 1px solid black;
         }
+        .vector-point {
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            position: absolute;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -26,6 +33,11 @@
     <!-- Canvas element for drawing -->
     <canvas id="drawingCanvas"></canvas>
 
+    <!-- Vector points -->
+    <div class="vector-point" id="vectorLeft"></div>
+    <div class="vector-point" id="vectorRight"></div>
+    <div class="vector-point" id="vectorAboveCenter"></div>
+
     <script>
         // JavaScript code for drawing on the canvas
         const canvas = document.getElementById('drawingCanvas');
@@ -36,6 +48,7 @@
         function resizeCanvas() {
             canvas.width = window.innerWidth * 0.75;
             canvas.height = window.innerHeight * 0.75;
+            positionVectorPoints();
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -59,6 +72,25 @@
         canvas.addEventListener('mouseup', function() {
             drawing = false;
         });
+
+        // Function to position the vector points
+        function positionVectorPoints() {
+            const vectorLeft = document.getElementById('vectorLeft');
+            const vectorRight = document.getElementById('vectorRight');
+            const vectorAboveCenter = document.getElementById('vectorAboveCenter');
+
+            // Position for the left corner
+            vectorLeft.style.left = canvas.offsetLeft + 'px';
+            vectorLeft.style.top = canvas.offsetTop + 'px';
+
+            // Position for the right corner
+            vectorRight.style.left = (canvas.offsetLeft + canvas.width - 10) + 'px';
+            vectorRight.style.top = canvas.offsetTop + 'px';
+
+            // Position slightly above the center
+            vectorAboveCenter.style.left = (canvas.offsetLeft + canvas.width / 2 - 5) + 'px';
+            vectorAboveCenter.style.top = (canvas.offsetTop + canvas.height / 2 - 50) + 'px';
+        }
     </script>
 </body>
 </html>
