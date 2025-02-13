@@ -125,6 +125,11 @@
             // Center the tetrahedron within the canvas
             tetrahedron.style.left = (canvasRect.left + canvasCenterX - tetrahedronWidth / 2) + 'px';
             tetrahedron.style.top = (canvasRect.top + canvasCenterY - tetrahedronHeight / 2) + 'px';
+
+            // Apply the direct location to the red dot
+            const vectorCenter = document.getElementById('vectorCenter');
+            vectorCenter.style.left = (canvasRect.left + canvasCenterX - 5) + 'px';
+            vectorCenter.style.top = (canvasRect.top + canvasCenterY - 5) + 'px';
         }
     </script>
 </body>
