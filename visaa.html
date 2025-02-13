@@ -117,13 +117,11 @@
         // Function to position the tetrahedron
         function positionTetrahedron() {
             const tetrahedron = document.querySelector('.tetrahedron');
-            const vectorCenter = document.getElementById('vectorCenter');
             const canvasRect = canvasElement.getBoundingClientRect();
-            const vectorCenterRect = vectorCenter.getBoundingClientRect();
-
-            // Position the tetrahedron at the center point of the canvas
-            tetrahedron.style.left = (canvasRect.left + canvasElement.width / 2 - tetrahedron.clientWidth / 2) + 'px';
-            tetrahedron.style.top = (canvasRect.top + canvasElement.height / 2 - tetrahedron.clientHeight / 2) + 'px';
+            // Center the tetrahedron within the canvas
+            tetrahedron.style.left = (canvasRect.width / 2 - tetrahedron.clientWidth / 2) + 'px';
+            tetrahedron.style.top = (canvasRect.height / 2 - tetrahedron.clientHeight / 2) + 'px';
+            tetrahedron.style.transform = 'translate(-50%, -50%)'; // Adjust to center properly
         }
     </script>
 </body>
