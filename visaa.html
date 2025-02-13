@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your VISA Page Title</title>
+    <title>Your Page Title</title>
     <style>
         /* Ensure the canvas occupies 3/4 of the page */
         #drawingCanvas {
@@ -17,6 +17,10 @@
             background-color: red;
             position: absolute;
             border-radius: 50%;
+        }
+        .tetrahedron {
+            display: block;
+            margin: 20px auto;
         }
     </style>
 </head>
@@ -34,6 +38,14 @@
     <div class="vector-point" id="vectorLeft"></div>
     <div class="vector-point" id="vectorRight"></div>
     <div class="vector-point" id="vectorAboveCenter"></div>
+
+    <!-- SVG drawing of a tetrahedron -->
+    <svg class="tetrahedron" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="100,10 40,190 190,190" stroke="black" fill="none"/>
+        <polygon points="100,10 150,150 40,190" stroke="black" fill="none"/>
+        <polygon points="100,10 50,150 190,190" stroke="black" fill="none"/>
+        <polygon points="40,190 150,150 190,190" stroke="black" fill="none"/>
+    </svg>
 
     <!-- Include the drawing and tetrahedron scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
