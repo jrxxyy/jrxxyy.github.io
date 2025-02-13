@@ -24,6 +24,7 @@
             position: absolute;
             z-index: 3; /* Ensure the tetrahedron is above other elements */
             opacity: 0.5; /* Set alpha declaration to make it semi-transparent */
+            transform: translate(-50%, -50%); /* Center the SVG */
         }
         #svgContainer {
             position: relative;
@@ -119,8 +120,8 @@
             svg.setAttribute("width", "200");
             svg.setAttribute("height", "200");
             svg.setAttribute("viewBox", "0 0 200 200");
-            svg.style.left = `${x - 100}px`; // Center the SVG
-            svg.style.top = `${y - 100}px`; // Center the SVG
+            svg.style.left = `${x}px`; // Center the SVG
+            svg.style.top = `${y}px`; // Center the SVG
             svg.classList.add('tetrahedron');
 
             const polygon1 = document.createElementNS(svgNS, "polygon");
