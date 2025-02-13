@@ -22,8 +22,13 @@
         }
         .tetrahedron {
             position: absolute;
-            z-index: 2; /* Ensure the tetrahedron is above the canvas */
+            z-index: 3; /* Ensure the tetrahedron is above other elements */
             opacity: 0.5; /* Set alpha declaration to make it semi-transparent */
+        }
+        #svgContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
