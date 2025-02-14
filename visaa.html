@@ -26,11 +26,6 @@
             top: 0;
             z-index: 2; /* Ensure the SVG container is above the background */
         }
-        .circle {
-            fill: white;
-            stroke: black;
-            stroke-width: 1;
-        }
     </style>
 </head>
 <body>
@@ -48,7 +43,7 @@
 
     <div id="svgContainer"></div>
 
-    <!-- Include the drawing script -->
+    <!-- Include the positioning script -->
     <script>
         // Function to position the vector points
         function positionVectorPoints() {
@@ -77,42 +72,14 @@
             vectorCenter.style.top = (containerRect.top + containerRect.height / 2 - 5) + 'px';
         }
 
-        // Function to create and place the circles
-        function placeCircles() {
-            const svgContainer = d3.select("#svgContainer")
-                .append("svg")
-                .attr("width", "100%")
-                .attr("height", "100%")
-                .style("position", "absolute");
-
-            const h1 = document.querySelector('h1');
-            const h1Rect = h1.getBoundingClientRect();
-            const startX = h1Rect.right + 10; // Start 10px to the right of the 'y' in '.JR.XXYY'
-            const startY = h1Rect.top + (h1Rect.height / 2); // Vertically center the circles
-
-            for (let i = 0; i < 10; i++) {
-                svgContainer.append("circle")
-                    .attr("cx", startX + (i * 50)) // Adjusted spacing
-                    .attr("cy", startY)
-                    .attr("r", 18) // Smaller radius
-                    .attr("class", "circle")
-                    .attr("fill", "white")
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 1);
-            }
-        }
-
-        // Initial call to position elements and place circles
+        // Initial call to position elements
         function initialize() {
-            const svgContainer = document.getElementById('svgContainer');
-            svgContainer.innerHTML = ""; // Clear existing SVG content
             positionVectorPoints();
-            placeCircles(); // Place the circles
         }
 
         // Initialize on page load
         window.onload = initialize;
-        // Re-position and place circles on window resize
+        // Re-position on window resize
         window.onresize = initialize;
     </script>
 </body>
