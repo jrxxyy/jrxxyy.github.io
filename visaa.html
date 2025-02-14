@@ -148,6 +148,7 @@
         function initialize() {
             const svgContainer = document.getElementById('svgContainer');
             const containerRect = svgContainer.getBoundingClientRect();
+            svgContainer.innerHTML = ""; // Clear existing SVG content
             positionVectorPoints();
             placeTetrahedron(containerRect.width / 2, 0); // Centered at the top
             placeCircles(); // Place the circles
