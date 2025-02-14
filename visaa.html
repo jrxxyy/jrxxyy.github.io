@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Page Title</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body {
             position: relative;
             height: 100vh;
             z-index: 1; /* Ensure the background is behind everything */
+            margin: 0;
         }
         .vector-point {
             width: 10px;
@@ -43,7 +45,7 @@
 
     <div id="svgContainer"></div>
 
-    <!-- Include the positioning script -->
+    <!-- Include the positioning script and THREE.js rendering -->
     <script>
         // Function to position the vector points
         function positionVectorPoints() {
@@ -72,15 +74,42 @@
             vectorCenter.style.top = (containerRect.top + containerRect.height / 2 - 5) + 'px';
         }
 
-        // Initial call to position elements
+        // Function to render a 3D tetrahedron using THREE.js
+        function renderTetrahedron() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+            const geometry = new THREE.TetrahedronGeometry();
+            const tetrahedron = new THREE.Mesh(geometry, material);
+
+            tetrahedron.position.set(0, 0, 0);  // Center the tetrahedron
+            scene.add(tetrahedron);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                tetrahedron.rotation.x += 0.01;
+                tetrahedron.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // Initial call to position elements and render the tetrahedron
         function initialize() {
             positionVectorPoints();
+            renderTetrahedron();
         }
 
         // Initialize on page load
         window.onload = initialize;
         // Re-position on window resize
-        window.onresize = initialize;
+        window.onresize = positionVectorPoints;
     </script>
 </body>
 </html>
