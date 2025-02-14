@@ -119,7 +119,7 @@
             const geometry = new THREE.TetrahedronGeometry();
 
             const tetrahedrons = [];
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i++) {
                 const tetrahedron = new THREE.Mesh(geometry, material);
                 tetrahedron.position.set(
                     Math.random() * 4 - 2,
@@ -190,29 +190,23 @@
         function createHeaderShapes() {
             const svg = d3.select("#headerSvg");
 
-            // Create shapes (e.g., circles)
-            svg.append("circle")
-                .attr("cx", 30)
-                .attr("cy", 25)
-                .attr("r", 20)
-                .attr("fill", "blue");
+            // Remove existing shapes
+            svg.selectAll("*").remove();
 
-            svg.append("rect")
-                .attr("x", 60)
-                .attr("y", 10)
-                .attr("width", 30)
-                .attr("height", 30)
-                .attr("fill", "red");
+            // Create text elements
+            svg.append("text")
+                .attr("x", 10)
+                .attr("y", 30)
+                .attr("fill", "blue")
+                .style("font-size", "20px")
+                .text("^I^I^I");
 
-            // Add animation for the shapes
-            svg.selectAll("circle, rect")
-                .transition()
-                .duration(1000)
-                .attr("transform", "translate(10,0)")
-                .transition()
-                .duration(1000)
-                .attr("transform", "translate(-10,0)")
-                .on("end", createHeaderShapes);
+            svg.append("text")
+                .attr("x", 70)
+                .attr("y", 30)
+                .attr("fill", "red")
+                .style("font-size", "20px")
+                .text("^I^I^I");
         }
 
         // Initial call to position elements, render tetrahedrons, and create header shapes
