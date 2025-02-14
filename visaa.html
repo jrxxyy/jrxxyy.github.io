@@ -12,6 +12,7 @@
             height: 100vh;
             z-index: 1; /* Ensure the background is behind everything */
             margin: 0;
+            background-color: white;
         }
         .vector-point {
             width: 10px;
@@ -75,35 +76,91 @@
         }
 
         // Function to render a 3D tetrahedron using THREE.js
-        function renderTetrahedron() {
+        function renderTetrahedrons() {
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.z = 5;
 
-            const renderer = new THREE.WebGLRenderer();
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setClearColor(0xffffff, 0);
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
             const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
             const geometry = new THREE.TetrahedronGeometry();
-            const tetrahedron = new THREE.Mesh(geometry, material);
 
-            tetrahedron.position.set(0, 0, 0);  // Center the tetrahedron
-            scene.add(tetrahedron);
+            const tetrahedrons = [];
+            for (let i = 0; i < 5; i++) {
+                const tetrahedron = new THREE.Mesh(geometry, material);
+                tetrahedron.position.set(
+                    Math.random() * 4 - 2,
+                    Math.random() * 4 - 2,
+                    Math.random() * 4 - 2
+                );
+                tetrahedrons.push(tetrahedron);
+                scene.add(tetrahedron);
+            }
 
             function animate() {
                 requestAnimationFrame(animate);
-                tetrahedron.rotation.x += 0.01;
-                tetrahedron.rotation.y += 0.01;
+                tetrahedrons.forEach(tetrahedron => {
+                    tetrahedron.rotation.x += 0.01;
+                    tetrahedron.rotation.y += 0.01;
+                });
                 renderer.render(scene, camera);
             }
             animate();
+
+            // Add event listener for drag and drop interaction
+            let selectedObject = null;
+            let offset = new THREE.Vector3();
+            let intersection = new THREE.Vector3();
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            function onMouseDown(event) {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+
+                const intersects = raycaster.intersectObjects(tetrahedrons);
+                if (intersects.length > 0) {
+                    selectedObject = intersects[0].object;
+                    const planeIntersect = raycaster.intersectObject(plane);
+                    if (planeIntersect.length > 0) {
+                        offset.copy(planeIntersect[0].point).sub(plane.position);
+                    }
+                }
+            }
+
+            function onMouseMove(event) {
+                if (selectedObject) {
+                    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                    raycaster.setFromCamera(mouse, camera);
+
+                    const planeIntersect = raycaster.intersectObject(plane);
+                    if (planeIntersect.length > 0) {
+                        selectedObject.position.copy(planeIntersect[0].point.sub(offset));
+                    }
+                }
+            }
+
+            function onMouseUp() {
+                selectedObject = null;
+            }
+
+            window.addEventListener('mousedown', onMouseDown, false);
+            window.addEventListener('mousemove', onMouseMove, false);
+            window.addEventListener('mouseup', onMouseUp, false);
         }
 
-        // Initial call to position elements and render the tetrahedron
+        // Initial call to position elements and render the tetrahedrons
         function initialize() {
             positionVectorPoints();
-            renderTetrahedron();
+            renderTetrahedrons();
         }
 
         // Initialize on page load
