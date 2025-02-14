@@ -93,19 +93,19 @@
 
         // Function to create and place the circles
         function placeCircles() {
-            const h1 = document.querySelector('h1');
-            const h1Rect = h1.getBoundingClientRect();
-            const startX = h1Rect.right + 10; // Start 10px to the right of the 'y' in '.JR.XXYY'
-            const startY = h1Rect.top + (h1Rect.height / 2); // Vertically center the circles
-
-            const circleContainer = d3.select("#circleContainer")
+            const svgContainer = d3.select("#svgContainer")
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
                 .style("position", "absolute");
 
+            const h1 = document.querySelector('h1');
+            const h1Rect = h1.getBoundingClientRect();
+            const startX = h1Rect.right + 10; // Start 10px to the right of the 'y' in '.JR.XXYY'
+            const startY = h1Rect.top + (h1Rect.height / 2); // Vertically center the circles
+
             for (let i = 0; i < 10; i++) {
-                circleContainer.append("circle")
+                svgContainer.append("circle")
                     .attr("cx", startX + (i * 50)) // Adjusted spacing
                     .attr("cy", startY)
                     .attr("r", 18) // Smaller radius
@@ -119,7 +119,6 @@
         // Initial call to position elements and place circles
         function initialize() {
             const svgContainer = document.getElementById('svgContainer');
-            const containerRect = svgContainer.getBoundingClientRect();
             svgContainer.innerHTML = ""; // Clear existing SVG content
             positionVectorPoints();
             placeCircles(); // Place the circles
