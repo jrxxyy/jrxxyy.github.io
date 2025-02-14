@@ -6,6 +6,11 @@
     <title>Your Page Title</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
+        body {
+            background-image: url('https://www.toys-shop.gr/197669-thickbox_default/disney-buzz-lightyear-space-ranger-training-visor-costume-toy-movie-inspired-astronaut-helmet.jpg');
+            background-position: center bottom;
+            background-repeat: no-repeat;
+        }
         .vector-point {
             width: 10px;
             height: 10px;
@@ -18,15 +23,8 @@
             position: relative;
             width: 100%;
             height: 100vh; /* Full height */
-        }
-        .helmet-image {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0.5; /* Adjust transparency */
-            z-index: 2; /* Ensure it's above the tetrahedron */
-            width: 50%; /* Reduce size */
+            background-position: center top;
+            background-repeat: no-repeat;
         }
         .circle {
             fill: white;
@@ -49,9 +47,6 @@
     <div class="vector-point" id="vectorCenter"></div> <!-- Added a new center point for reference -->
 
     <div id="svgContainer"></div>
-
-    <!-- Buzz Lightyear helmet image -->
-    <img src="https://www.toys-shop.gr/197669-thickbox_default/disney-buzz-lightyear-space-ranger-training-visor-costume-toy-movie-inspired-astronaut-helmet.jpg" class="helmet-image" alt="Buzz Lightyear Helmet">
 
     <!-- Include the drawing script -->
     <script>
@@ -82,43 +77,6 @@
             vectorCenter.style.top = (containerRect.top + containerRect.height / 2 - 5) + 'px';
         }
 
-        // Function to create and place the tetrahedron using D3.js
-        function placeTetrahedron(x, y) {
-            const svgContainer = d3.select("#svgContainer")
-                .append("svg")
-                .attr("width", "200")
-                .attr("height", "200")
-                .attr("viewBox", "0 0 200 200")
-                .style("position", "absolute")
-                .style("left", `${x - 100}px`)
-                .style("top", `${y}px`); // Top of the container
-
-            const points1 = "100,10 40,190 190,190";
-            const points2 = "100,10 150,150 40,190";
-            const points3 = "100,10 50,150 190,190";
-            const points4 = "40,190 150,150 190,190";
-
-            svgContainer.append("polygon")
-                .attr("points", points1)
-                .attr("stroke", "black")
-                .attr("fill", "none");
-
-            svgContainer.append("polygon")
-                .attr("points", points2)
-                .attr("stroke", "black")
-                .attr("fill", "none");
-
-            svgContainer.append("polygon")
-                .attr("points", points3)
-                .attr("stroke", "black")
-                .attr("fill", "none");
-
-            svgContainer.append("polygon")
-                .attr("points", points4)
-                .attr("stroke", "black")
-                .attr("fill", "none");
-        }
-
         // Function to create and place the circles
         function placeCircles() {
             const h1 = document.querySelector('h1');
@@ -144,19 +102,18 @@
             }
         }
 
-        // Initial call to position elements and place tetrahedron
+        // Initial call to position elements and place circles
         function initialize() {
             const svgContainer = document.getElementById('svgContainer');
             const containerRect = svgContainer.getBoundingClientRect();
             svgContainer.innerHTML = ""; // Clear existing SVG content
             positionVectorPoints();
-            placeTetrahedron(containerRect.width / 2, 0); // Centered at the top
             placeCircles(); // Place the circles
         }
 
         // Initialize on page load
         window.onload = initialize;
-        // Re-position and place tetrahedron on window resize
+        // Re-position and place circles on window resize
         window.onresize = initialize;
     </script>
 </body>
