@@ -29,10 +29,27 @@
             top: 0;
             z-index: 2; /* Ensure the SVG container is above the background */
         }
+        header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: calc(100px + 1em); /* Adjust this value to match the width of the .JR.XXYY text */
+        }
+        #headerSvg {
+            width: 100px;
+            height: 50px;
+        }
     </style>
 </head>
 <body>
     <h1>.JR.XXYY</h1>
+    <header>
+        <svg id="headerSvg"></svg>
+    </header>
     <p>LOG.</p>
 
     <!-- Adding a clickable link -->
@@ -157,10 +174,40 @@
             window.addEventListener('mouseup', onMouseUp, false);
         }
 
-        // Initial call to position elements and render the tetrahedrons
+        // Function to create and animate SVG shapes in the header
+        function createHeaderShapes() {
+            const svg = d3.select("#headerSvg");
+
+            // Create shapes (e.g., circles)
+            svg.append("circle")
+                .attr("cx", 30)
+                .attr("cy", 25)
+                .attr("r", 20)
+                .attr("fill", "blue");
+
+            svg.append("rect")
+                .attr("x", 60)
+                .attr("y", 10)
+                .attr("width", 30)
+                .attr("height", 30)
+                .attr("fill", "red");
+
+            // Add animation for the shapes
+            svg.selectAll("circle, rect")
+                .transition()
+                .duration(1000)
+                .attr("transform", "translate(10,0)")
+                .transition()
+                .duration(1000)
+                .attr("transform", "translate(-10,0)")
+                .on("end", createHeaderShapes);
+        }
+
+        // Initial call to position elements, render tetrahedrons, and create header shapes
         function initialize() {
             positionVectorPoints();
             renderTetrahedrons();
+            createHeaderShapes();
         }
 
         // Initialize on page load
