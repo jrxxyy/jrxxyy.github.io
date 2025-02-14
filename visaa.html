@@ -38,6 +38,11 @@
             stroke: black;
             stroke-width: 1;
         }
+        .circle-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -53,7 +58,9 @@
     <div class="vector-point" id="vectorAboveCenter"></div>
     <div class="vector-point" id="vectorCenter"></div> <!-- Added a new center point for reference -->
 
-    <div id="svgContainer"></div>
+    <div id="svgContainer">
+        <div class="circle-container" id="circleContainer"></div>
+    </div>
 
     <!-- Include the drawing script -->
     <script>
@@ -91,14 +98,14 @@
             const startX = h1Rect.right + 10; // Start 10px to the right of the 'y' in '.JR.XXYY'
             const startY = h1Rect.top + (h1Rect.height / 2); // Vertically center the circles
 
-            const svgContainer = d3.select("#svgContainer")
+            const circleContainer = d3.select("#circleContainer")
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
                 .style("position", "absolute");
 
             for (let i = 0; i < 10; i++) {
-                svgContainer.append("circle")
+                circleContainer.append("circle")
                     .attr("cx", startX + (i * 50)) // Adjusted spacing
                     .attr("cy", startY)
                     .attr("r", 18) // Smaller radius
