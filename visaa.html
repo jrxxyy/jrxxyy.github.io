@@ -28,8 +28,9 @@
             z-index: 2; /* Ensure it's above the tetrahedron */
         }
         .circle {
-            fill: none;
+            fill: white;
             stroke: black;
+            stroke-width: 1;
         }
     </style>
 </head>
@@ -132,13 +133,13 @@
 
             for (let i = 0; i < 10; i++) {
                 svgContainer.append("circle")
-                    .attr("cx", startX + (i * 72)) // 1 inch ~ 72 pixels
+                    .attr("cx", startX + (i * 50)) // Adjusted spacing
                     .attr("cy", startY)
-                    .attr("r", 36) // Radius of 36px for ~1 inch diameter
+                    .attr("r", 18) // Smaller radius
                     .attr("class", "circle")
                     .attr("fill", "white")
                     .attr("stroke", "black")
-                    .attr("stroke-width", 2);
+                    .attr("stroke-width", 1);
             }
         }
 
