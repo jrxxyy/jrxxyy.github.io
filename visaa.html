@@ -25,19 +25,11 @@
             height: 100%;
             top: 0;
             z-index: 2; /* Ensure the SVG container is above the background */
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center top;
         }
         .circle {
             fill: white;
             stroke: black;
             stroke-width: 1;
-        }
-        .circle-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
         }
     </style>
 </head>
@@ -54,9 +46,7 @@
     <div class="vector-point" id="vectorAboveCenter"></div>
     <div class="vector-point" id="vectorCenter"></div> <!-- Added a new center point for reference -->
 
-    <div id="svgContainer">
-        <div class="circle-container" id="circleContainer"></div>
-    </div>
+    <div id="svgContainer"></div>
 
     <!-- Include the drawing script -->
     <script>
@@ -89,7 +79,7 @@
 
         // Function to create and place the circles
         function placeCircles() {
-            const svgContainer = d3.select("#circleContainer")
+            const svgContainer = d3.select("#svgContainer")
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
