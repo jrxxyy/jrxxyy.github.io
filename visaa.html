@@ -27,6 +27,10 @@
             opacity: 0.5; /* Adjust transparency */
             z-index: 2; /* Ensure it's above the tetrahedron */
         }
+        .circle {
+            fill: none;
+            stroke: black;
+        }
     </style>
 </head>
 <body>
@@ -113,12 +117,38 @@
                 .attr("fill", "none");
         }
 
+        // Function to create and place the circles
+        function placeCircles() {
+            const h1 = document.querySelector('h1');
+            const h1Rect = h1.getBoundingClientRect();
+            const startX = h1Rect.right + 10; // Start 10px to the right of the 'y' in '.JR.XXYY'
+            const startY = h1Rect.top + (h1Rect.height / 2); // Vertically center the circles
+
+            const svgContainer = d3.select("#svgContainer")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .style("position", "absolute");
+
+            for (let i = 0; i < 10; i++) {
+                svgContainer.append("circle")
+                    .attr("cx", startX + (i * 72)) // 1 inch ~ 72 pixels
+                    .attr("cy", startY)
+                    .attr("r", 36) // Radius of 36px for ~1 inch diameter
+                    .attr("class", "circle")
+                    .attr("fill", "white")
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 2);
+            }
+        }
+
         // Initial call to position elements and place tetrahedron
         function initialize() {
             const svgContainer = document.getElementById('svgContainer');
             const containerRect = svgContainer.getBoundingClientRect();
             positionVectorPoints();
             placeTetrahedron(containerRect.width / 2, 0); // Centered at the top
+            placeCircles(); // Place the circles
         }
 
         // Initialize on page load
