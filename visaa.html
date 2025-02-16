@@ -210,7 +210,7 @@
                 .text("^I^I^I");
         }
 
-        // Function to render a black and white sphere using D3.js
+        // Function to render a black and white sphere using D3.js and add a spinning effect
         function renderSVGSphere() {
             const svg = d3.select("#svgContainer").append("svg")
                 .attr("width", 200)
@@ -228,7 +228,19 @@
                 .attr("fill", "none")
                 .attr("stroke", "black");
 
-            // Additional black and white patterns can be added here
+            // Animation for spinning effect
+            function animate() {
+                group.transition()
+                    .duration(2000)
+                    .attrTween("transform", function() {
+                        return d3.interpolateString(
+                            `translate(${width / 2},${height / 2}) rotate(0)`,
+                            `translate(${width / 2},${height / 2}) rotate(360)`
+                        );
+                    })
+                    .on("end", animate);  // Repeat the animation
+            }
+            animate();
         }
 
         // Initial call to position elements, render tetrahedrons, and create header shapes
