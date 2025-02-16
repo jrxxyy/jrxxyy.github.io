@@ -210,11 +210,33 @@
                 .text("^I^I^I");
         }
 
+        // Function to render a black and white sphere using D3.js
+        function renderSVGSphere() {
+            const svg = d3.select("#svgContainer").append("svg")
+                .attr("width", 200)
+                .attr("height", 200);
+
+            const width = +svg.attr("width");
+            const height = +svg.attr("height");
+            const radius = Math.min(width, height) / 2;
+
+            const group = svg.append("g")
+                .attr("transform", `translate(${width / 2},${height / 2})`);
+
+            const sphere = group.append("circle")
+                .attr("r", radius)
+                .attr("fill", "none")
+                .attr("stroke", "black");
+
+            // Additional black and white patterns can be added here
+        }
+
         // Initial call to position elements, render tetrahedrons, and create header shapes
         function initialize() {
             positionVectorPoints();
             renderTetrahedrons();
             createHeaderShapes();
+            renderSVGSphere();
         }
 
         // Initialize on page load
@@ -242,3 +264,7 @@
 
                 /**
                  *
+            </script>
+    </footer>
+</body>
+</html>
