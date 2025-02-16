@@ -50,6 +50,7 @@
             top: 0;
             right: 0;
             left: calc(150px + 2em); /* Adjust this value to move the header further to the right */
+            transform: scale(0.25); /* Reduce header footings by 75% */
         }
         #headerSvg {
             width: 100px;
@@ -60,7 +61,14 @@
             bottom: 0;
             width: 100%;
             background-color: #f8f9fa;
-            padding: 10px;
+            padding: 5px; /* Reduce padding */
+        }
+        #svgSphere {
+            width: 50px; /* Reduce size */
+            height: 50px; /* Reduce size */
+            position: absolute;
+            bottom: 0;
+            left: 0; /* Position to the very left corner of the bottom of the page */
         }
     </style>
 </head>
@@ -80,7 +88,7 @@
 
     <footer>
         <div id="svgContainer"></div>
-        <svg id="svgSphere" width="200" height="200"></svg>
+        <svg id="svgSphere"></svg>
         <!-- Include the positioning script and SVG rendering -->
         <script>
             // Function to position the vector points
