@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Page Title</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body {
             position: relative;
@@ -50,25 +51,10 @@
             top: 0;
             right: 0;
             left: calc(150px + 2em); /* Adjust this value to move the header further to the right */
-            transform: scale(0.25); /* Reduce header footings by 75% */
         }
         #headerSvg {
             width: 100px;
             height: 50px;
-        }
-        footer {
-            position: relative;
-            bottom: 0;
-            width: 100%;
-            background-color: #f8f9fa;
-            padding: 5px; /* Reduce padding */
-        }
-        #svgSphere {
-            width: 50px; /* Reduce size */
-            height: 50px; /* Reduce size */
-            position: absolute;
-            bottom: 0;
-            left: 0; /* Position to the very left corner of the bottom of the page */
         }
     </style>
 </head>
@@ -78,99 +64,181 @@
         <svg id="headerSvg"></svg>
     </header>
     <p>LOG.</p>
+
     <!-- Adding a clickable link -->
     <p>CPU-A: <a href="https://education.ti.com/en/customer-support/knowledge-base/other-graphing/product-usage/11806" target="_blank">TI-89</a></p>
+
     <!-- Vector points -->
     <div class="vector-point" id="vectorLeft"></div>
     <div class="vector-point" id="vectorRight"></div>
     <div class="vector-point" id="vectorAboveCenter"></div>
     <div class="vector-point" id="vectorCenter"></div> <!-- Added a new center point for reference -->
 
+    <div id="svgContainer"></div>
+
+    <!-- Include the positioning script and THREE.js rendering -->
+    <script>
+        // Function to position the vector points
+        function positionVectorPoints() {
+            const vectorLeft = document.getElementById('vectorLeft');
+            const vectorRight = document.getElementById('vectorRight');
+            const vectorAboveCenter = document.getElementById('vectorAboveCenter');
+            const vectorCenter = document.getElementById('vectorCenter');
+
+            const svgContainer = document.getElementById('svgContainer');
+            const containerRect = svgContainer.getBoundingClientRect();
+
+            // Position for the left corner
+            vectorLeft.style.left = containerRect.left + 'px';
+            vectorLeft.style.top = containerRect.top + 'px';
+
+            // Position for the right corner
+            vectorRight.style.left = (containerRect.left + containerRect.width - 10) + 'px';
+            vectorRight.style.top = containerRect.top + 'px';
+
+            // Position slightly above the center
+            vectorAboveCenter.style.left = (containerRect.left + containerRect.width / 2 - 5) + 'px';
+            vectorAboveCenter.style.top = (containerRect.top + containerRect.height / 2 - 50) + 'px';
+
+            // Position for the center
+            vectorCenter.style.left = (containerRect.left + containerRect.width / 2 - 5) + 'px';
+            vectorCenter.style.top = (containerRect.top + containerRect.height / 2 - 5) + 'px';
+        }
+
+        // Function to render a 3D tetrahedron using THREE.js
+        function renderTetrahedrons() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setClearColor(0xffffff, 0);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+            const geometry = new THREE.TetrahedronGeometry();
+
+            const tetrahedrons = [];
+            for (let i = 0; i < 5; i++) {
+                const tetrahedron = new THREE.Mesh(geometry, material);
+                tetrahedron.position.set(
+                    Math.random() * 4 - 2,
+                    Math.random() * 4 - 2,
+                    Math.random() * 4 - 2
+                );
+                tetrahedrons.push(tetrahedron);
+                scene.add(tetrahedron);
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                tetrahedrons.forEach(tetrahedron => {
+                    tetrahedron.rotation.x += 0.01;
+                    tetrahedron.rotation.y += 0.01;
+                });
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Add event listener for drag and drop interaction
+            let selectedObject = null;
+            let offset = new THREE.Vector3();
+            let intersection = new THREE.Vector3();
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            function onMouseDown(event) {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+
+                const intersects = raycaster.intersectObjects(tetrahedrons);
+                if (intersects.length > 0) {
+                    selectedObject = intersects[0].object;
+                    const planeIntersect = raycaster.intersectObject(plane);
+                    if (planeIntersect.length > 0) {
+                        offset.copy(planeIntersect[0].point).sub(plane.position);
+                    }
+                }
+            }
+
+            function onMouseMove(event) {
+                if (selectedObject) {
+                    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                    raycaster.setFromCamera(mouse, camera);
+
+                    const planeIntersect = raycaster.intersectObject(plane);
+                    if (planeIntersect.length > 0) {
+                        selectedObject.position.copy(planeIntersect[0].point.sub(offset));
+                    }
+                }
+            }
+
+            function onMouseUp() {
+                selectedObject = null;
+            }
+
+            window.addEventListener('mousedown', onMouseDown, false);
+            window.addEventListener('mousemove', onMouseMove, false);
+            window.addEventListener('mouseup', onMouseUp, false);
+        }
+
+        // Function to create and animate SVG text elements in the header
+        function createHeaderShapes() {
+            const svg = d3.select("#headerSvg");
+
+            // Remove existing shapes
+            svg.selectAll("*").remove();
+
+            // Create text elements
+            svg.append("text")
+                .attr("x", 10)
+                .attr("y", 30)
+                .attr("fill", "blue")
+                .style("font-size", "20px")
+                .text("^I^I^I");
+
+            svg.append("text")
+                .attr("x", 70)
+                .attr("y", 30)
+                .attr("fill", "red")
+                .style("font-size", "20px")
+                .text("^I^I^I");
+        }
+
+        // Initial call to position elements, render tetrahedrons, and create header shapes
+        function initialize() {
+            positionVectorPoints();
+            renderTetrahedrons();
+            createHeaderShapes();
+        }
+
+        // Initialize on page load
+        window.onload = initialize;
+        // Re-position on window resize
+        window.onresize = positionVectorPoints;
+    </script>
+
+    <!-- Footer Section -->
     <footer>
-        <div id="svgContainer"></div>
-        <svg id="svgSphere"></svg>
-        <!-- Include the positioning script and SVG rendering -->
         <script>
-            // Function to position the vector points
-            function positionVectorPoints() {
-                const vectorLeft = document.getElementById('vectorLeft');
-                const vectorRight = document.getElementById('vectorRight');
-                const vectorAboveCenter = document.getElementById('vectorAboveCenter');
-                const vectorCenter = document.getElementById('vectorCenter');
+            // SphericalDomicile class to manage multiple addresses in a spherical context
+            class SphericalDomicile {
+                /**
+                 * Constructor to initialize addresses and set the current address to the first one.
+                 * @param {string} address1 - First address.
+                 * @param {string} address2 - Second address.
+                 */
+                constructor(address1, address2) {
+                    this._address1 = address1;
+                    this._address2 = address2;
+                    this._currentAddress = 1; // Default to the first address
+                    this._shape = 'sphere'; // Representing the shape as a sphere
+                }
 
-                const svgContainer = document.getElementById('svgContainer');
-                const containerRect = svgContainer.getBoundingClientRect();
-
-                // Position for the left corner
-                vectorLeft.style.left = containerRect.left + 'px';
-                vectorLeft.style.top = containerRect.top + 'px';
-
-                // Position for the right corner
-                vectorRight.style.left = (containerRect.left + containerRect.width - 10) + 'px';
-                vectorRight.style.top = containerRect.top + 'px';
-
-                // Position slightly above the center
-                vectorAboveCenter.style.left = (containerRect.left + containerRect.width / 2 - 5) + 'px';
-                vectorAboveCenter.style.top = (containerRect.top + containerRect.height / 2 - 50) + 'px';
-
-                // Position for the center
-                vectorCenter.style.left = (containerRect.left + containerRect.width / 2 - 5) + 'px';
-                vectorCenter.style.top = (containerRect.top + containerRect.height / 2 - 5) + 'px';
-            }
-
-            // Function to render SVG sphere
-            function renderSVGSphere() {
-                const svg = d3.select("#svgSphere");
-                const width = +svg.attr("width");
-                const height = +svg.attr("height");
-                const radius = Math.min(width, height) / 2;
-
-                const group = svg.append("g")
-                    .attr("transform", `translate(${width / 2},${height / 2})`);
-
-                const sphere = group.append("circle")
-                    .attr("r", radius)
-                    .attr("fill", "none")
-                    .attr("stroke", "black");
-
-                // Add more functionality as needed
-            }
-
-            // Function to create and animate SVG text elements in the header
-            function createHeaderShapes() {
-                const svg = d3.select("#headerSvg");
-
-                // Remove existing shapes
-                svg.selectAll("*").remove();
-
-                // Create text elements
-                svg.append("text")
-                    .attr("x", 10)
-                    .attr("y", 30)
-                    .attr("fill", "blue")
-                    .style("font-size", "20px")
-                    .text("^I^I^I");
-
-                svg.append("text")
-                    .attr("x", 70)
-                    .attr("y", 30)
-                    .attr("fill", "red")
-                    .style("font-size", "20px")
-                    .text("^I^I^I");
-            }
-
-            // Initial call to position elements, render SVG sphere, and create header shapes
-            function initialize() {
-                positionVectorPoints();
-                renderSVGSphere();
-                createHeaderShapes();
-            }
-
-            // Initialize on page load
-            window.onload = initialize;
-            // Re-position on window resize
-            window.onresize = positionVectorPoints;
-        </script>
-    </footer>
-</body>
-</html>
+                /**
+                 *
