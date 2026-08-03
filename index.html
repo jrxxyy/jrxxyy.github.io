@@ -12,6 +12,7 @@
             height: 100vh;
             margin: 0;
             background-color: #000;
+            overflow-x: hidden;
         }
 
         .background {
@@ -31,6 +32,11 @@
             display: flex;
             align-items: center;
             flex-direction: column;
+            position: relative;          /* critical for clean absolute children */
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .grey-box {
@@ -127,8 +133,9 @@
 
         .generator-button {
             position: absolute;
-            bottom: 5px;
-            right: 10px;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
         }
 
         .yinyang {
@@ -177,17 +184,12 @@
             right: 20px;
             top: 20px;
             gap: 10px;
+            z-index: 5;
         }
 
-        #waveCanvas {
-            width: 400px;
-            height: 200px;
-            background-color: black;
-            margin-top: 10px;
-        }
-
-        canvas {
-            display: none;
+        #canvas {
+            display: block;               /* restored so the drawn line is visible */
+            margin-top: 100px;
         }
 
         .image-holder {
@@ -208,30 +210,33 @@
 </head>
 <body>
     <div class="background" id="background"></div>
+
     <div class="main-container">
+        <!-- LEFT / CENTER column (original vertical flow) -->
         <div class="container">
             <!-- Dots will be added here by JavaScript -->
         </div>
+
         <div class="grey-box" id="jr-box">
             .jr.
             <!-- Dots will be added here by JavaScript -->
         </div>
-        <!-- Additional content beside the grey box -->
+
         <div class="box">
-            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1" alt="Image" class="transparent-image">
+            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1"
+                 alt="Image" class="transparent-image">
         </div>
 
-        <canvas id="canvas" height="50" width="150" style="margin-top: 100px;"></canvas>
-        
+        <canvas id="canvas" height="50" width="150"></canvas>
+
         <div id="難楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 100px 0 0 0; cursor: pointer;">
             TEXTEX
-
             <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
                 <div class="dot"></div>
                 <div class="yinyang">☯</div>
             </div>
         </div>
-        
+
         <p style="color: white; margin: 20px 0;">
             For more details, please visit the <a href="visa.html" style="color: #0ff;">Visa Information</a> page.
         </p>
@@ -248,21 +253,25 @@
             <line x1="0" y1="25" x2="150" y2="25" stroke="red" stroke-width="3" />
         </svg>
 
-        <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
-        <div id="output" style="margin: 20px 0;"></div>
-        
+        <div id="output" style="margin: 20px 0; color: white;"></div>
+
         <div class="input-box">
             <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea><br>
             <input type="file" id="image-input" accept="image/*">
         </div>
+
+        <!-- RIGHT side (clean absolute, never overlaps center) -->
         <div class="three-boxes">
             <div class="box box1"></div>
             <div class="box box2"></div>
             <div class="box box3"></div>
             <div class="image-holder"></div>
         </div>
+
+        <!-- BOTTOM-RIGHT button (clean absolute) -->
+        <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
     </div>
-    
+
     <script>
         // Set the background image
         const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
@@ -298,7 +307,7 @@
             createDot();
         }
 
-        // Restored clickable element → opens visa.html
+        // Clickable element → opens visa.html
         const clickableWindow = document.getElementById("難楽");
         if (clickableWindow) {
             clickableWindow.addEventListener("click", () => {
@@ -329,7 +338,7 @@
 
         function draw() {
             const canvas = document.querySelector('#canvas');
-            if (!canvas.getContext) {
+            if (!canvas || !canvas.getContext) {
                 return;
             }
             const ctx = canvas.getContext('2d');
