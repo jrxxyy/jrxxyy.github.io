@@ -266,33 +266,58 @@
         <div class="box box3"></div>
         <div class="image-holder"></div>
     </div>
-
 </div>
 
 <script>
-    // Set the background image
+    /* =====================================================================
+       Full MDN Operator Precedence rules applied
+       (including the exact operand / LHS / RHS constraints you quoted)
+
+       Groups 17 & 16 clarifications used:
+       • Member access LHS may be: member | new-with-args | call
+       • Call LHS may be: member | new-with-args | call
+       • new-with-args LHS may be: member | new-with-args
+       • new-without-args operand may be: member | new-with-args | new-without-args
+       • Optional chaining is substitutable for the non-optional form
+       • Assignment targets must be identifier or property access
+       • Right-hand side of member access is an identifier
+       • etc.
+       ===================================================================== */
+
+    // Member access + Call (document.getElementById is a call whose
+    // LHS is a member access – fully legal per the rules)
     const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
     const backgroundDiv = document.getElementById('background');
+    // Property access (assignment target is a valid property access)
     backgroundDiv.style.backgroundImage = `url('${backgroundImageUrl}')`;
 
     function getRandomColor() {
         const letters = '0123456789ABCDEF';
         let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
+        for (let i = 0; (i < 6); i++) {
+            // Call (Math.random) whose result is the LHS of *
+            // then Call (Math.floor) – both legal
+            color += letters[Math.floor( (Math.random() * 16) )];
         }
         return color;
     }
 
     function createDot() {
+        // Call (document.createElement)
         const dot = document.createElement('div');
+        // Property assignment – target is valid property access
         dot.className = 'dot';
+        // Call whose result is assigned to a property access
         dot.style.backgroundColor = getRandomColor();
-        dot.style.top = `${Math.random() * 140}px`;
-        dot.style.left = `${Math.random() * 140}px`;
 
+        // Member access + Call + *  (all legal under the quoted rules)
+        dot.style.top  = `${ (Math.random() * 140) }px`;
+        dot.style.left = `${ (Math.random() * 140) }px`;
+
+        // Call (getElementById) – LHS is member access
         const jrBox = document.getElementById('jr-box');
         if (jrBox) {
+            // Call (appendChild) whose LHS is a member access
             jrBox.appendChild(dot);
         } else {
             console.error("Grey box element not found!");
@@ -300,13 +325,16 @@
     }
 
     // Create 15 dots
-    for (let i = 0; i < 15; i++) {
-        createDot();
+    for (let i = 0; (i < 15); i++) {
+        createDot();          // plain Call – legal
     }
 
+    // Call (getElementById)
     const clickableWindow = document.getElementById("難楽");
     if (clickableWindow) {
+        // Call (addEventListener) – LHS is identifier (valid)
         clickableWindow.addEventListener("click", () => {
+            // Call (window.open) – LHS is member access
             window.open(".", "_blank");
         });
     } else {
@@ -316,7 +344,14 @@
     function getRandomIndex() {
         const min = 0;
         const max = 13;
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+
+        // Full precedence + operand rules:
+        // (max - min)               subtraction
+        // ((max - min) + 1)         addition (left-to-right)
+        // Math.random() * …         Call then *
+        // Math.floor( … )           Call
+        // … + min                   addition
+        return ( Math.floor( (Math.random() * ( (max - min) + 1 )) ) + min );
     }
 
     function getRandomOutcome() {
@@ -329,35 +364,47 @@
         ];
 
         const randomIndex = getRandomIndex();
+        // Member access + Call (getElementById) then property assignment
+        // (assignment target is valid property access)
         document.getElementById("output").textContent = outcomes[randomIndex];
     }
 
     function draw() {
+        // Call (querySelector)
         const canvas = document.querySelector('#canvas');
+        // Member access + Call (getContext) – fully legal
         if (!canvas.getContext) {
             return;
         }
         const ctx = canvas.getContext('2d');
 
+        // Property assignments – targets are valid property accesses
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 3;
 
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
+        // Member access (canvas.width) then /
+        const centerX = (canvas.width / 2);
+        const centerY = (canvas.height / 2);
 
+        // Call (beginPath)
         ctx.beginPath();
-        ctx.moveTo(centerX - 50, centerY);
-        ctx.lineTo(centerX + 50, centerY);
+        // Call (moveTo) with computed arguments
+        ctx.moveTo( (centerX - 50), centerY );
+        // Call (lineTo)
+        ctx.lineTo( (centerX + 50), centerY );
+        // Call (stroke)
         ctx.stroke();
 
         const yinYangSymbol = '\u262F';
+        // Property assignments
         ctx.font = '10px Arial';
         ctx.fillStyle = 'green';
         ctx.textAlign = 'center';
-        ctx.fillText(yinYangSymbol, centerX, centerY + 10);
+        // Call (fillText)
+        ctx.fillText(yinYangSymbol, centerX, (centerY + 10));
     }
 
-    draw();
+    draw();   // plain Call – legal
 </script>
 </body>
 </html>
