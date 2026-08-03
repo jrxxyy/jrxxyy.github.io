@@ -5,18 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>.JR.</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
             background-color: #000;
-            font-family: system-ui, -apple-system, sans-serif;
         }
 
         .background {
@@ -34,20 +29,8 @@
 
         .main-container {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 20px;
-            padding: 40px 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .container {
-            width: 150px;
-            height: 150px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #fff;
+            flex-direction: column;
         }
 
         .grey-box {
@@ -57,6 +40,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            margin: 20px 0;
             color: #fff;
             font-size: 3.5em;
             position: relative;
@@ -82,6 +66,14 @@
             transform: scale(2.5);
         }
 
+        .container {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #fff;
+        }
+
         .box {
             width: 25px;
             height: 25px;
@@ -93,8 +85,14 @@
             position: relative;
         }
 
-        .box1,
-        .box2,
+        .box1 {
+            background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
+        }
+
+        .box2 {
+            background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
+        }
+
         .box3 {
             background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
         }
@@ -108,7 +106,6 @@
             margin: 0;
             padding: 0;
             transform: scale(2.0);
-            display: block;
         }
 
         .beaker {
@@ -116,6 +113,7 @@
             height: 100px;
             background: linear-gradient(to bottom, #00ff00, #ffffff);
             position: relative;
+            margin: 20px 0;
         }
 
         .measurement {
@@ -127,12 +125,19 @@
             color: #333;
         }
 
+        .generator-button {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+        }
+
         .yinyang {
             width: 33px;
             height: 33px;
             display: inline-flex;
             justify-content: center;
             align-items: center;
+            margin: 0 10px;
             font-size: 40px;
             position: relative;
         }
@@ -158,8 +163,10 @@
         }
 
         .input-box {
+            margin-top: 20px;
             text-align: center;
             color: white;
+            position: relative;
         }
 
         .three-boxes {
@@ -187,58 +194,47 @@
             width: 100px;
             height: 100px;
             border: 1px solid #ccc;
+            margin-top: 10px;
+            z-index: 1;
+            position: relative;
+            right: 0;
             background-image: url('https://www.bing.com/th/id/OGC.4286e6951be9f6eadf0f676f2ea7ec36?pid=1.7&rurl=https%3a%2f%2fmedia.giphy.com%2fmedia%2fLpp52J6KNZqhi%2fgiphy.gif&ehk=8uBILnCEppN5i%2fVy4ZACcYt9LEk1JKrbxnBxq3ikfQc%3d');
             background-size: cover;
             background-position: center;
             opacity: 0.5;
             filter: blur(2px);
         }
-
-        #楽 {
-            background-color: GhostWhite;
-            border: 1px solid gray;
-            padding: 5px;
-            text-align: center;
-        }
-
-        .generator-button {
-            cursor: pointer;
-        }
-
-        #output {
-            color: white;
-            min-height: 1.2em;
-        }
     </style>
 </head>
 <body>
     <div class="background" id="background"></div>
-
     <div class="main-container">
         <div class="container">
             <!-- Dots will be added here by JavaScript -->
         </div>
-
         <div class="grey-box" id="jr-box">
             .jr.
             <!-- Dots will be added here by JavaScript -->
         </div>
-
+        <!-- Additional content beside the grey box -->
         <div class="box">
-            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1"
-                 alt="Image"
-                 class="transparent-image">
+            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1" alt="Image" class="transparent-image">
         </div>
 
-        <canvas id="canvas" height="50" width="150"></canvas>
-
-        <div id="楽">
+        <canvas id="canvas" height="50" width="150" style="margin-top: 100px;"></canvas>
+        
+        <div id="難楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 100px 0 0 0; cursor: pointer;">
             TEXTEX
+
             <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
                 <div class="dot"></div>
                 <div class="yinyang">☯</div>
             </div>
         </div>
+        
+        <p style="color: white; margin: 20px 0;">
+            For more details, please visit the <a href="visa.html" style="color: #0ff;">Visa Information</a> page.
+        </p>
 
         <div class="beaker">
             <div class="measurement">1</div>
@@ -248,18 +244,17 @@
 
         <div class="yinyang"></div>
 
-        <svg height="50" width="150">
+        <svg height="50" width="150" style="margin: 20px 0;">
             <line x1="0" y1="25" x2="150" y2="25" stroke="red" stroke-width="3" />
         </svg>
 
         <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
-        <div id="output"></div>
-
+        <div id="output" style="margin: 20px 0;"></div>
+        
         <div class="input-box">
             <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea><br>
             <input type="file" id="image-input" accept="image/*">
         </div>
-
         <div class="three-boxes">
             <div class="box box1"></div>
             <div class="box box2"></div>
@@ -267,7 +262,7 @@
             <div class="image-holder"></div>
         </div>
     </div>
-
+    
     <script>
         // Set the background image
         const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
@@ -303,10 +298,11 @@
             createDot();
         }
 
+        // Restored clickable element → opens visa.html
         const clickableWindow = document.getElementById("難楽");
         if (clickableWindow) {
             clickableWindow.addEventListener("click", () => {
-                window.open(".", "_blank");
+                window.open("visa.html", "_blank");
             });
         } else {
             console.error("Clickable window element not found!");
@@ -333,7 +329,7 @@
 
         function draw() {
             const canvas = document.querySelector('#canvas');
-            if (!canvas || !canvas.getContext) {
+            if (!canvas.getContext) {
                 return;
             }
             const ctx = canvas.getContext('2d');
