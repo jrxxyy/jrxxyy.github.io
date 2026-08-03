@@ -12,7 +12,6 @@
             height: 100vh;
             margin: 0;
             background-color: #000;
-            overflow-x: hidden;
         }
 
         .background {
@@ -32,11 +31,6 @@
             display: flex;
             align-items: center;
             flex-direction: column;
-            position: relative;          /* critical for clean absolute children */
-            width: 100%;
-            min-height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
         }
 
         .grey-box {
@@ -133,9 +127,8 @@
 
         .generator-button {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10;
+            bottom: 5px;
+            right: 10px;
         }
 
         .yinyang {
@@ -184,12 +177,17 @@
             right: 20px;
             top: 20px;
             gap: 10px;
-            z-index: 5;
         }
 
-        #canvas {
-            display: block;               /* restored so the drawn line is visible */
-            margin-top: 100px;
+        #waveCanvas {
+            width: 400px;
+            height: 200px;
+            background-color: black;
+            margin-top: 10px;
+        }
+
+        canvas {
+            display: none;
         }
 
         .image-holder {
@@ -210,158 +208,156 @@
 </head>
 <body>
     <div class="background" id="background"></div>
-
     <div class="main-container">
-        <!-- LEFT / CENTER column (original vertical flow) -->
+        <!-- wording moved a little to the right -->
+        <p style="color: white; margin: 20px 0 20px 80px;">
+            For more details, please visit the <a href="visa.html">Visa Information</a> page.
+        </p>
+
         <div class="container">
             <!-- Dots will be added here by JavaScript -->
         </div>
-
         <div class="grey-box" id="jr-box">
             .jr.
             <!-- Dots will be added here by JavaScript -->
         </div>
-
+        <!-- Additional content beside the grey box -->
         <div class="box">
-            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1"
-                 alt="Image" class="transparent-image">
+            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1" alt="Image" class="transparent-image">
         </div>
 
-        <canvas id="canvas" height="50" width="150"></canvas>
-
-        <div id="難楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 100px 0 0 0; cursor: pointer;">
+        <canvas id="canvas" height="50" width="150" style="margin-top: 100px;"></canvas>
+        
+        <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 100px 0 0 0;">
             TEXTEX
+
             <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
                 <div class="dot"></div>
-                <div class="yinyang">☯</div>
+                <div class="yinyang"></div>
             </div>
         </div>
-
-        <p style="color: white; margin: 20px 0;">
-            For more details, please visit the <a href="visa.html" style="color: #0ff;">Visa Information</a> page.
-        </p>
-
-        <div class="beaker">
-            <div class="measurement">1</div>
-            <div class="measurement">5</div>
-            <div class="measurement">10</div>
-        </div>
-
-        <div class="yinyang"></div>
-
-        <svg height="50" width="150" style="margin: 20px 0;">
-            <line x1="0" y1="25" x2="150" y2="25" stroke="red" stroke-width="3" />
-        </svg>
-
-        <div id="output" style="margin: 20px 0; color: white;"></div>
-
-        <div class="input-box">
-            <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea><br>
-            <input type="file" id="image-input" accept="image/*">
-        </div>
-
-        <!-- RIGHT side (clean absolute, never overlaps center) -->
-        <div class="three-boxes">
-            <div class="box box1"></div>
-            <div class="box box2"></div>
-            <div class="box box3"></div>
-            <div class="image-holder"></div>
-        </div>
-
-        <!-- BOTTOM-RIGHT button (clean absolute) -->
-        <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
+        
+        
     </div>
 
-    <script>
-        // Set the background image
-        const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
-        const backgroundDiv = document.getElementById('background');
-        backgroundDiv.style.backgroundImage = `url('${backgroundImageUrl}')`;
+    <div class="beaker">
+        <div class="measurement">1</div>
+        <div class="measurement">5</div>
+        <div class="measurement">10</div>
+    </div>
 
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
+    <div class="yinyang"></div>
+
+    <svg height="50" width="150" style="margin: 20px 0;">
+        <line x1="0" y1="25" x2="150" y2="25" stroke="red" stroke-width="3" />
+    </svg>
+
+    <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
+    <div id="output" style="margin: 20px 0;"></div>
+    
+    <div class="input-box">
+        <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
+
+        <input type="file" id="image-input" accept="image/*">
+    </div>
+    <div class="three-boxes">
+        <div class="box box1"></div>
+        <div class="box box2"></div>
+        <div class="box box3"></div>
+        <div class="image-holder"></div>
+    </div>
+
+</div>
+
+<script>
+    // Set the background image
+    const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
+    const backgroundDiv = document.getElementById('background');
+    backgroundDiv.style.backgroundImage = `url('${backgroundImageUrl}')`;
+
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
         }
+        return color;
+    }
 
-        function createDot() {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            dot.style.backgroundColor = getRandomColor();
-            dot.style.top = `${Math.random() * 140}px`;
-            dot.style.left = `${Math.random() * 140}px`;
+    function createDot() {
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        dot.style.backgroundColor = getRandomColor();
+        dot.style.top = `${Math.random() * 140}px`;
+        dot.style.left = `${Math.random() * 140}px`;
 
-            const jrBox = document.getElementById('jr-box');
-            if (jrBox) {
-                jrBox.appendChild(dot);
-            } else {
-                console.error("Grey box element not found!");
-            }
-        }
-
-        // Create 15 dots
-        for (let i = 0; i < 15; i++) {
-            createDot();
-        }
-
-        // Clickable element → opens visa.html
-        const clickableWindow = document.getElementById("難楽");
-        if (clickableWindow) {
-            clickableWindow.addEventListener("click", () => {
-                window.open("visa.html", "_blank");
-            });
+        const jrBox = document.getElementById('jr-box');
+        if (jrBox) {
+            jrBox.appendChild(dot);
         } else {
-            console.error("Clickable window element not found!");
+            console.error("Grey box element not found!");
         }
+    }
 
-        function getRandomIndex() {
-            const min = 0;
-            const max = 13;
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+    // Create 15 dots
+    for (let i = 0; i < 15; i++) {
+        createDot();
+    }
+
+    const clickableWindow = document.getElementById("難楽");
+    if (clickableWindow) {
+        clickableWindow.addEventListener("click", () => {
+            window.open(".", "_blank");
+        });
+    } else {
+        console.error("Clickable window element not found!");
+    }
+
+    function getRandomIndex() {
+        const min = 0;
+        const max = 13;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getRandomOutcome() {
+        const outcomes = [
+            "ASC|| call initiated.",
+            "Index 1 selected.",
+            "Index 2 chosen.",
+            // ... (continue for other indices)
+            "Lucky number 13!"
+        ];
+
+        const randomIndex = getRandomIndex();
+        document.getElementById("output").textContent = outcomes[randomIndex];
+    }
+
+    function draw() {
+        const canvas = document.querySelector('#canvas');
+        if (!canvas.getContext) {
+            return;
         }
+        const ctx = canvas.getContext('2d');
 
-        function getRandomOutcome() {
-            const outcomes = [
-                "ASC|| call initiated.",
-                "Index 1 selected.",
-                "Index 2 chosen.",
-                // ... (continue for other indices)
-                "Lucky number 13!"
-            ];
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 3;
 
-            const randomIndex = getRandomIndex();
-            document.getElementById("output").textContent = outcomes[randomIndex] || outcomes[0];
-        }
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
 
-        function draw() {
-            const canvas = document.querySelector('#canvas');
-            if (!canvas || !canvas.getContext) {
-                return;
-            }
-            const ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(centerX - 50, centerY);
+        ctx.lineTo(centerX + 50, centerY);
+        ctx.stroke();
 
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 3;
+        const yinYangSymbol = '\u262F';
+        ctx.font = '10px Arial';
+        ctx.fillStyle = 'green';
+        ctx.textAlign = 'center';
+        ctx.fillText(yinYangSymbol, centerX, centerY + 10);
+    }
 
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-
-            ctx.beginPath();
-            ctx.moveTo(centerX - 50, centerY);
-            ctx.lineTo(centerX + 50, centerY);
-            ctx.stroke();
-
-            const yinYangSymbol = '\u262F';
-            ctx.font = '10px Arial';
-            ctx.fillStyle = 'green';
-            ctx.textAlign = 'center';
-            ctx.fillText(yinYangSymbol, centerX, centerY + 10);
-        }
-
-        draw();
-    </script>
+    draw();
+</script>
 </body>
 </html>
