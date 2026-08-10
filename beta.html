@@ -1,61 +1,200 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Calling Functions</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calling Functions • UTC Trig</title>
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             margin: 0;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: #0a0a0f;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: #e0e7ff;
         }
 
         #zz-image {
-            max-width: 90%;
-            max-height: 90vh;
+            max-width: 55%;
+            max-height: 55vh;
             transition: transform 0.35s ease, opacity 0.35s ease;
             cursor: pointer;
+            z-index: 10;
+            will-change: transform;
+            filter: drop-shadow(0 0 25px rgba(99, 102, 241, 0.35));
         }
 
         #zz-image.active {
-            transform: scale(1.35);
-            opacity: 0.75;
+            opacity: 0.82;
+        }
+
+        /* Canvas for the waves */
+        #wave-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.55;
+        }
+
+        /* UTC + Trig info panel */
+        #time-panel {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            background: rgba(15, 15, 25, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            font-size: 13px;
+            line-height: 1.5;
+            z-index: 20;
+            min-width: 220px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        #time-panel .label {
+            color: #a5b4fc;
+            font-weight: 600;
+            display: inline-block;
+            width: 70px;
+        }
+
+        #time-panel .value {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.5px;
+        }
+
+        /* Micro-alert (mouse) */
+        #micro-alert {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.78);
+            color: #fff;
+            padding: 0.55rem 0.75rem;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.35;
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            pointer-events: none;
+            min-width: 11rem;
+            z-index: 30;
+            backdrop-filter: blur(8px);
+        }
+
+        #micro-alert.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        #micro-alert b {
+            display: inline-block;
+            width: 5.4rem;
+            font-weight: 600;
+            color: #a5b4fc;
         }
     </style>
 </head>
 <body>
+    <canvas id="wave-canvas"></canvas>
+
     <img id="zz-image" src="zz.png" alt="zz.png">
 
+    <div id="time-panel">
+        <div><span class="label">UTC</span> <span class="value" id="utc-time">--:--:--</span></div>
+        <div><span class="label">Angle</span> <span class="value" id="utc-angle">0.0°</span></div>
+        <div><span class="label">sin</span> <span class="value" id="utc-sin">0.000</span></div>
+        <div><span class="label">cos</span> <span class="value" id="utc-cos">1.000</span></div>
+        <div><span class="label">tan</span> <span class="value" id="utc-tan">0.000</span></div>
+    </div>
+
+    <div id="micro-alert" aria-hidden="true">
+        <div><b>Angle:</b> <span id="ma-angle">0°</span></div>
+        <div><b>Cosine:</b> <span id="ma-cos">1.000</span></div>
+        <div><b>Distance:</b> <span id="ma-dist">0 px</span></div>
+    </div>
+
 <script>
-    // Declare the pointer on page load
-    // Math.cos(0 * Math.PI / 180) returns 1
-    const pointer = Math.cos(0 * Math.PI / 180);
+    // ========== UTC TRIG VISUALIZATION ==========
+    const canvas = document.getElementById('wave-canvas');
+    const ctx = canvas.getContext('2d');
+    const img = document.getElementById('zz-image');
 
-    // Global parent function
-    window.parentMouseHandler = function(event) {
-        const img = document.getElementById('zz-image');
-        if (!img) return;
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
 
-        // Only activate on the left side of the page
-        // and only if the pointer is truthy (which it is, since it equals 1)
-        const isLeftSide = event.clientX < (window.innerWidth / 2);
+    function fmt(v, d = 3) {
+        return Number(v).toFixed(d);
+    }
 
-        if (isLeftSide && pointer) {
-            img.classList.add('active');
-        } else {
-            img.classList.remove('active');
+    function updateUTC() {
+        const now = new Date();
+        const h = String(now.getUTCHours()).padStart(2, '0');
+        const m = String(now.getUTCMinutes()).padStart(2, '0');
+        const s = String(now.getUTCSeconds()).padStart(2, '0');
+        const ms = now.getUTCMilliseconds();
+
+        // Angle: full circle every 60 seconds (smooth with ms)
+        const totalSeconds = now.getUTCSeconds() + ms / 1000;
+        const angleDeg = (totalSeconds / 60) * 360;
+        const angleRad = angleDeg * Math.PI / 180;
+
+        const sin = Math.sin(angleRad);
+        const cos = Math.cos(angleRad);
+        const tan = Math.tan(angleRad);
+
+        // Update panel
+        document.getElementById('utc-time').textContent = `${h}:${m}:${s}`;
+        document.getElementById('utc-angle').textContent = angleDeg.toFixed(1) + '°';
+        document.getElementById('utc-sin').textContent = fmt(sin);
+        document.getElementById('utc-cos').textContent = fmt(cos);
+        document.getElementById('utc-tan').textContent = Math.abs(tan) > 100 ? '∞' : fmt(tan);
+
+        // Gentle image animation driven by UTC
+        const pulse = 1 + cos * 0.08;          // subtle scale
+        const rot = sin * 6;                   // gentle tilt
+        img.style.transform = `rotate(${rot}deg) scale(${pulse})`;
+
+        // Draw the waves
+        drawWaves(angleRad);
+
+        requestAnimationFrame(updateUTC);
+    }
+
+    function drawWaves(phase) {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // Sine wave (purple)
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(167, 139, 250, 0.7)';
+        ctx.lineWidth = 2.5;
+        for (let x = 0; x < w; x++) {
+            const y = h/2 + Math.sin(x * 0.012 + phase) * 80;
+            x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
-    };
+        ctx.stroke();
 
-    window.parentMouseLeave = function() {
-        const img = document.getElementById('zz-image');
-        if (img) img.classList.remove('active');
-    };
-
-    // Attach the global handler
-    document.addEventListener('mousemove', window.parentMouseHandler);
-    document.addEventListener('mouseleave', window.parentMouseLeave);
-</script>
-</body>
-</html>
+        // Cosine wave (cyan)
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(34, 211, 238, 0.65)';
+        ctx.lineWidth = 2.5;
+        for (let x = 0; x < w; x++) {
+            const y = h/2 + Math.cos(x * 0.012 + phase) * 80;
+            x === 0 ? ctx.moveTo(x, y)
