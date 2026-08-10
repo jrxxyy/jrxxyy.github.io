@@ -211,9 +211,10 @@ y″(t) = <span>2</span>
             </div>
         </div>
 
+        <!-- AI Feedback Loop – 4 words only -->
         <div id="ai-feedback">
-            <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop</div>
-            <input type="text" id="feedback-input" placeholder="Send data to the loop…">
+            <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop (4 words only)</div>
+            <input type="text" id="feedback-input" placeholder="Type exactly 4 words…" maxlength="60">
             <button onclick="runAIFeedback()">Feed →</button>
             <div id="feedback-result" style="margin-top:8px;font-size:11px;color:#22d3ee;"></div>
         </div>
@@ -276,15 +277,27 @@ y″(t) = <span>2</span>
         return speed < 1e-8 ? 0 : crossMag / (speed ** 3);
     };
 
-    // AI Feedback
+    // AI Feedback Loop – exactly 4 words → Wikipedia
     window.runAIFeedback = function() {
-        const input = document.getElementById('feedback-input').value.trim();
+        const inputEl = document.getElementById('feedback-input');
         const result = document.getElementById('feedback-result');
-        if (!input) {
-            result.textContent = "… waiting for input";
+        const raw = inputEl.value.trim();
+
+        const words = raw.split(/\s+/).filter(w => w.length > 0);
+
+        if (words.length !== 4) {
+            result.style.color = "#f87171";
+            result.textContent = "Please enter exactly 4 words.";
             return;
         }
-        result.innerHTML = `Received → <b>${input}</b><br>Curvature context locked to y′=2t, y″=2`;
+
+        const query = words.join(' ');
+        const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(query)}&go=Go`;
+
+        window.open(wikiUrl, '_blank');
+
+        result.style.color = "#22d3ee";
+        result.innerHTML = `Searching Wikipedia for:<br><b>${query}</b>`;
     };
 
     // Main engine
