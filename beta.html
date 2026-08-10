@@ -32,7 +32,6 @@
             opacity: 0.82;
         }
 
-        /* Canvas for the waves */
         #wave-canvas {
             position: fixed;
             top: 0;
@@ -44,7 +43,6 @@
             opacity: 0.55;
         }
 
-        /* UTC + Trig info panel */
         #time-panel {
             position: fixed;
             bottom: 1.5rem;
@@ -73,7 +71,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Micro-alert (mouse) */
         #micro-alert {
             position: fixed;
             top: 1rem;
@@ -126,19 +123,60 @@
     </div>
 
 <script>
-    // ========== GLOBAL 3D CURVATURE FUNCTION ==========
-    // 3D version of: k = (x'y'' - y'x'') / (x'² + y'²)^{3/2}
-    // Only the "y" component is moveable / adjustable
+    // ========== AUTOMATIC BACKGROUND REMOVAL ==========
+    // Makes the white background of zz.png transparent on load
+    function removeWhiteBackground(imgElement, threshold = 240) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = imgElement.src;
+
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                // Turn near-white pixels transparent
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+
+                    if (r > threshold && g > threshold && b > threshold) {
+                        data[i + 3] = 0; // fully transparent
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+
+                // Replace the original image with the transparent version
+                imgElement.src = canvas.toDataURL('image/png');
+                resolve();
+            };
+
+            img.onerror = () => {
+                console.warn('Could not process zz.png – using original');
+                resolve();
+            };
+        });
+    }
+
+    // ========== GLOBAL 3D CURVATURE ==========
     window.curvature3D = function(r1, r2, options = {}) {
         const x1 = r1.x || 0;
-        const y1 = (options.y !== undefined) ? options.y : (r1.y || 0); // ← only y is adjustable
+        const y1 = (options.y !== undefined) ? options.y : (r1.y || 0);
         const z1 = r1.z || 0;
 
         const x2 = r2.x || 0;
         const y2 = r2.y || 0;
         const z2 = r2.z || 0;
 
-        // Cross product r' × r''
         const cx = y1 * z2 - z1 * y2;
         const cy = z1 * x2 - x1 * z2;
         const cz = x1 * y2 - y1 * x2;
@@ -150,7 +188,7 @@
         return crossMag / (speed ** 3);
     };
 
-    // ========== UTC TRIG VISUALIZATION ==========
+    // ========== MAIN CODE ==========
     const canvas = document.getElementById('wave-canvas');
     const ctx = canvas.getContext('2d');
     const img = document.getElementById('zz-image');
@@ -187,7 +225,6 @@
         document.getElementById('utc-cos').textContent = fmt(cos);
         document.getElementById('utc-tan').textContent = Math.abs(tan) > 100 ? '∞' : fmt(tan);
 
-        // Gentle image animation driven by UTC
         const pulse = 1 + cos * 0.08;
         const rot = sin * 6;
         img.style.transform = `rotate(${rot}deg) scale(${pulse})`;
@@ -201,25 +238,14 @@
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        // ===== Sine wave (purple) with 3D curvature =====
+        // Sine wave
         ctx.beginPath();
         for (let x = 0; x < w; x++) {
             const t = x * 0.012 + phase;
             const y = h/2 + Math.sin(t) * 80;
 
-            // First & second derivatives
-            const r1 = {
-                x: 0.012,
-                y: Math.cos(t) * 80 * 0.012,
-                z: 0.004
-            };
-            const r2 = {
-                x: 0,
-                y: -Math.sin(t) * 80 * 0.012 * 0.012,
-                z: 0
-            };
-
-            // Only y is moveable/adjustable
+            const r1 = { x: 0.012, y: Math.cos(t) * 80 * 0.012, z: 0.004 };
+            const r2 = { x: 0, y: -Math.sin(t) * 80 * 0.012 * 0.012, z: 0 };
             const k = window.curvature3D(r1, r2, { y: r1.y });
 
             const alpha = 0.35 + Math.min(k * 45, 0.55);
@@ -230,24 +256,14 @@
         }
         ctx.stroke();
 
-        // ===== Cosine wave (cyan) with 3D curvature =====
+        // Cosine wave
         ctx.beginPath();
         for (let x = 0; x < w; x++) {
             const t = x * 0.012 + phase;
             const y = h/2 + Math.cos(t) * 80;
 
-            const r1 = {
-                x: 0.012,
-                y: -Math.sin(t) * 80 * 0.012,
-                z: 0.004
-            };
-            const r2 = {
-                x: 0,
-                y: -Math.cos(t) * 80 * 0.012 * 0.012,
-                z: 0
-            };
-
-            // Only y is moveable/adjustable
+            const r1 = { x: 0.012, y: -Math.sin(t) * 80 * 0.012, z: 0.004 };
+            const r2 = { x: 0, y: -Math.cos(t) * 80 * 0.012 * 0.012, z: 0 };
             const k = window.curvature3D(r1, r2, { y: r1.y });
 
             const alpha = 0.35 + Math.min(k * 45, 0.55);
@@ -267,10 +283,12 @@
         ctx.stroke();
     }
 
-    // Start the animation
-    updateUTC();
+    // Run background removal first, then start everything
+    removeWhiteBackground(img).then(() => {
+        updateUTC();
+    });
 
-    // ========== MOUSE HANDLER ==========
+    // Mouse handler
     const pointer = Math.cos(0 * Math.PI / 180);
 
     window.parentMouseHandler = function(event) {
