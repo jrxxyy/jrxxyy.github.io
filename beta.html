@@ -4,7 +4,6 @@
     <title>Calling Functions</title>
     <style>
         body {
-            background-color: #000;
             margin: 0;
             height: 100vh;
             display: flex;
@@ -15,13 +14,48 @@
         #zz-image {
             max-width: 90%;
             max-height: 90vh;
-            border: 3px solid #0f0;
-            border-radius: 12px;
-            box-shadow: 0 0 30px #0f0;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+            cursor: pointer;
+        }
+
+        #zz-image.active {
+            transform: scale(1.35);
+            opacity: 0.75;
         }
     </style>
 </head>
 <body>
     <img id="zz-image" src="zz.png" alt="zz.png">
+
+<script>
+    // Declare the pointer on page load
+    // Math.cos(0 * Math.PI / 180) returns 1
+    const pointer = Math.cos(0 * Math.PI / 180);
+
+    // Global parent function
+    window.parentMouseHandler = function(event) {
+        const img = document.getElementById('zz-image');
+        if (!img) return;
+
+        // Only activate on the left side of the page
+        // and only if the pointer is truthy (which it is, since it equals 1)
+        const isLeftSide = event.clientX < (window.innerWidth / 2);
+
+        if (isLeftSide && pointer) {
+            img.classList.add('active');
+        } else {
+            img.classList.remove('active');
+        }
+    };
+
+    window.parentMouseLeave = function() {
+        const img = document.getElementById('zz-image');
+        if (img) img.classList.remove('active');
+    };
+
+    // Attach the global handler
+    document.addEventListener('mousemove', window.parentMouseHandler);
+    document.addEventListener('mouseleave', window.parentMouseLeave);
+</script>
 </body>
 </html>
