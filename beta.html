@@ -38,60 +38,20 @@
             pointer-events: none;
             opacity: 0.55;
         }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calling Functions • UTC Trig + 3D Cube</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0a0a0f;
-            overflow: hidden;
-            font-family: system-ui, -apple-system, sans-serif;
-            color: #e0e7ff;
-        }
 
-        #zz-image {
-            max-width: 55%;
-            max-height: 55vh;
-            transition: transform 0.35s ease, opacity 0.35s ease;
-            cursor: pointer;
-            z-index: 10;
-            will-change: transform;
-            filter: drop-shadow(0 0 25px rgba(99, 102, 241, 0.35));
-        }
-
-        #zz-image.active { opacity: 0.82; }
-
-        #wave-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0.55;
-        }
-
-        /* ===== NEW: Upper-left 3D Cube Panel ===== */
+        /* ===== Upper-left 3D Cube (30% smaller) ===== */
         #cube-panel {
             position: fixed;
             top: 1.2rem;
             left: 1.2rem;
             z-index: 40;
-            width: 260px;
-            perspective: 900px;
+            width: 190px;
+            perspective: 800px;
         }
 
         .cube-container {
-            width: 220px;
-            height: 220px;
+            width: 154px;
+            height: 154px;
             position: relative;
             transform-style: preserve-3d;
             animation: spinCube 18s infinite linear;
@@ -104,8 +64,8 @@
 
         .face {
             position: absolute;
-            width: 220px;
-            height: 220px;
+            width: 154px;
+            height: 154px;
             background: rgba(15, 15, 35, 0.82);
             border: 1px solid rgba(99, 102, 241, 0.55);
             backdrop-filter: blur(10px);
@@ -113,25 +73,25 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
-            padding: 12px;
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.25);
+            font-size: 11px;
+            padding: 10px;
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
         }
 
-        .face.front  { transform: translateZ(110px); }
-        .face.back   { transform: rotateY(180deg) translateZ(110px); }
-        .face.right  { transform: rotateY(90deg)  translateZ(110px); }
-        .face.left   { transform: rotateY(-90deg) translateZ(110px); }
-        .face.top    { transform: rotateX(90deg)  translateZ(110px); }
-        .face.bottom { transform: rotateX(-90deg) translateZ(110px); }
+        .face.front  { transform: translateZ(77px); }
+        .face.back   { transform: rotateY(180deg) translateZ(77px); }
+        .face.right  { transform: rotateY(90deg)  translateZ(77px); }
+        .face.left   { transform: rotateY(-90deg) translateZ(77px); }
+        .face.top    { transform: rotateX(90deg)  translateZ(77px); }
+        .face.bottom { transform: rotateX(-90deg) translateZ(77px); }
 
         .binary-line {
             font-family: 'Courier New', monospace;
-            font-size: 12px;
+            font-size: 11px;
             color: #a5b4fc;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             text-align: center;
-            line-height: 1.6;
+            line-height: 1.55;
             white-space: pre;
         }
 
@@ -140,7 +100,7 @@
             font-weight: 600;
         }
 
-        /* AI Feedback Loop area */
+        /* AI Feedback Loop */
         #ai-feedback {
             margin-top: 14px;
             background: rgba(15, 15, 35, 0.9);
@@ -174,7 +134,7 @@
 
         #ai-feedback button:hover { background: #6366f1; }
 
-        /* Existing panels */
+        /* Time panel */
         #time-panel {
             position: fixed;
             bottom: 1.5rem;
@@ -194,6 +154,7 @@
         #time-panel .label { color: #a5b4fc; font-weight: 600; display: inline-block; width: 70px; }
         #time-panel .value { font-variant-numeric: tabular-nums; letter-spacing: 0.5px; }
 
+        /* Micro-alert */
         #micro-alert {
             position: fixed;
             top: 1rem;
@@ -221,7 +182,7 @@
     <canvas id="wave-canvas"></canvas>
     <img id="zz-image" src="zz.png" alt="zz.png">
 
-    <!-- ===== NEW LEFT PANE: 3D CUBE ===== -->
+    <!-- 3D Cube (30% smaller) -->
     <div id="cube-panel">
         <div class="cube-container">
             <div class="face front">
@@ -250,7 +211,6 @@ y″(t) = <span>2</span>
             </div>
         </div>
 
-        <!-- AI Feedback Loop -->
         <div id="ai-feedback">
             <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop</div>
             <input type="text" id="feedback-input" placeholder="Send data to the loop…">
@@ -274,7 +234,7 @@ y″(t) = <span>2</span>
     </div>
 
 <script>
-    // Background removal (kept)
+    // Background removal
     function removeWhiteBackground(imgElement, threshold = 240) {
         return new Promise((resolve) => {
             const img = new Image();
@@ -300,7 +260,7 @@ y″(t) = <span>2</span>
         });
     }
 
-    // 3D Curvature (kept)
+    // 3D Curvature
     window.curvature3D = function(r1, r2, options = {}) {
         const x1 = r1.x || 0;
         const y1 = (options.y !== undefined) ? options.y : (r1.y || 0);
@@ -316,7 +276,7 @@ y″(t) = <span>2</span>
         return speed < 1e-8 ? 0 : crossMag / (speed ** 3);
     };
 
-    // AI Feedback Loop (starter)
+    // AI Feedback
     window.runAIFeedback = function() {
         const input = document.getElementById('feedback-input').value.trim();
         const result = document.getElementById('feedback-result');
@@ -324,314 +284,10 @@ y″(t) = <span>2</span>
             result.textContent = "… waiting for input";
             return;
         }
-        // Simple echo + curvature hint for now (we can expand this into a real loop later)
         result.innerHTML = `Received → <b>${input}</b><br>Curvature context locked to y′=2t, y″=2`;
     };
 
-    // Rest of the original engine
-    const canvas = document.getElementById('wave-canvas');
-    const ctx = canvas.getContext('2d');
-    const img = document.getElementById('zz-image');
-
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    function fmt(v, d=3){ return Number(v).toFixed(d); }
-
-    function updateUTC() {
-        const now = new Date();
-        const h = String(now.getUTCHours()).padStart(2,'0');
-        const m = String(now.getUTCMinutes()).padStart(2,'0');
-        const s = String(now.getUTCSeconds()).padStart(2,'0');
-        const ms = now.getUTCMilliseconds();
-        const totalSeconds = now.getUTCSeconds() + ms/1000;
-        const angleDeg = (totalSeconds/60)*360;
-        const angleRad = angleDeg * Math.PI/180;
-        const sin = Math.sin(angleRad);
-        const cos = Math.cos(angleRad);
-        const tan = Math.tan(angleRad);
-
-        document.getElementById('utc-time').textContent = `${h}:${m}:${s}`;
-        document.getElementById('utc-angle').textContent = angleDeg.toFixed(1)+'°';
-        document.getElementById('utc-sin').textContent = fmt(sin);
-        document.getElementById('utc-cos').textContent = fmt(cos);
-        document.getElementById('utc-tan').textContent = Math.abs(tan)>100 ? '∞' : fmt(tan);
-
-        img.style.transform = `rotate(${sin*6}deg) scale(${1+cos*0.08})`;
-        drawWaves(angleRad);
-        requestAnimationFrame(updateUTC);
-    }
-
-    function drawWaves(phase) {
-        const w = canvas.width, h = canvas.height;
-        ctx.clearRect(0,0,w,h);
-
-        // Sine
-        ctx.beginPath();
-        for (let x=0; x<w; x++) {
-            const t = x*0.012 + phase;
-            const y = h/2 + Math.sin(t)*80;
-            const r1 = {x:0.012, y:Math.cos(t)*80*0.012, z:0.004};
-            const r2 = {x:0, y:-Math.sin(t)*80*0.012*0.012, z:0};
-            const k = window.curvature3D(r1, r2, {y:r1.y});
-            ctx.strokeStyle = `rgba(167,139,250,${0.35+Math.min(k*45,0.55)})`;
-            ctx.lineWidth = 1.8 + Math.min(k*14,2.8);
-            x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-        }
-        ctx.stroke();
-
-        // Cosine
-        ctx.beginPath();
-        for (let x=0; x<w; x++) {
-            const t = x*0.012 + phase;
-            const y = h/2 + Math.cos(t)*80;
-            const r1 = {x:0.012, y:-Math.sin(t)*80*0.012, z:0.004};
-            const r2 = {x:0, y:-Math.cos(t)*80*0.012*0.012, z:0};
-            const k = window.curvature3D(r1, r2, {y:r1.y});
-            ctx.strokeStyle = `rgba(34,211,238,${0.35+Math.min(k*45,0.55)})`;
-            ctx.lineWidth = 1.8 + Math.min(k*14,2.8);
-            x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-        }
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = 1;
-        ctx.moveTo(0,h/2);
-        ctx.lineTo(w,h/2);
-        ctx.stroke();
-    }
-
-    // Start
-    removeWhiteBackground(img).then(updateUTC);
-
-    // Mouse
-    const pointer = 1;
-    window.parentMouseHandler = function(e) {
-        const alertEl = document.getElementById('micro-alert');
-        const isLeft = e.clientX < window.innerWidth/2;
-        const cx = window.innerWidth/2, cy = window.innerHeight/2;
-        const dx = e.clientX-cx, dy = e.clientY-cy;
-        const dist = Math.hypot(dx,dy);
-        const ang = Math.atan2(dy,dx)*180/Math.PI;
-        const cosv = Math.cos(Math.atan2(dy,dx));
-
-        document.getElementById('ma-angle').textContent = Math.round(ang)+'°';
-        document.getElementById('ma-cos').textContent = fmt(cosv);
-        document.getElementById('ma-dist').textContent = Math.round(dist)+' px';
-
-        if (isLeft) {
-            img.classList.add('active');
-            alertEl.classList.add('visible');
-        } else {
-            img.classList.remove('active');
-            alertEl.classList.remove('visible');
-        }
-    };
-    window.parentMouseLeave = () => {
-        img.classList.remove('active');
-        document.getElementById('micro-alert').classList.remove('visible');
-    };
-    document.addEventListener('mousemove', window.parentMouseHandler);
-    document.addEventListener('mouseleave', window.parentMouseLeave);
-</script>
-</body>
-</html>
-
-
-        /* AI Feedback Loop area */
-        #ai-feedback {
-            margin-top: 14px;
-            background: rgba(15, 15, 35, 0.9);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            border-radius: 10px;
-            padding: 10px;
-            font-size: 12px;
-        }
-
-        #ai-feedback input {
-            width: 100%;
-            background: #0f0f1a;
-            border: 1px solid #4338ca;
-            color: #e0e7ff;
-            padding: 6px 8px;
-            border-radius: 6px;
-            margin-bottom: 6px;
-            font-size: 12px;
-        }
-
-        #ai-feedback button {
-            width: 100%;
-            background: #4f46e5;
-            border: none;
-            color: white;
-            padding: 6px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        #ai-feedback button:hover { background: #6366f1; }
-
-        /* Existing panels */
-        #time-panel {
-            position: fixed;
-            bottom: 1.5rem;
-            left: 1.5rem;
-            background: rgba(15, 15, 25, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            font-size: 13px;
-            line-height: 1.5;
-            z-index: 20;
-            min-width: 220px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-
-        #time-panel .label { color: #a5b4fc; font-weight: 600; display: inline-block; width: 70px; }
-        #time-panel .value { font-variant-numeric: tabular-nums; letter-spacing: 0.5px; }
-
-        #micro-alert {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(0, 0, 0, 0.78);
-            color: #fff;
-            padding: 0.55rem 0.75rem;
-            border-radius: 8px;
-            font-size: 12px;
-            line-height: 1.35;
-            transform: translateY(-10px);
-            opacity: 0;
-            transition: transform 0.25s ease, opacity 0.25s ease;
-            pointer-events: none;
-            min-width: 11rem;
-            z-index: 30;
-            backdrop-filter: blur(8px);
-        }
-
-        #micro-alert.visible { transform: translateY(0); opacity: 1; }
-        #micro-alert b { display: inline-block; width: 5.4rem; font-weight: 600; color: #a5b4fc; }
-    </style>
-</head>
-<body>
-    <canvas id="wave-canvas"></canvas>
-    <img id="zz-image" src="zz.png" alt="zz.png">
-
-    <!-- ===== NEW LEFT PANE: 3D CUBE ===== -->
-    <div id="cube-panel">
-        <div class="cube-container">
-            <div class="face front">
-                <div class="binary-line">
-x′(t) = <span>1</span>
-y′(t) = <span>2t</span>
-                </div>
-            </div>
-            <div class="face back">
-                <div class="binary-line">
-x″(t) = <span>0</span>
-y″(t) = <span>2</span>
-                </div>
-            </div>
-            <div class="face right">
-                <div class="binary-line">κ = |r′ × r″| / |r′|³</div>
-            </div>
-            <div class="face left">
-                <div class="binary-line">straight binary line</div>
-            </div>
-            <div class="face top">
-                <div class="binary-line">dimensional cube</div>
-            </div>
-            <div class="face bottom">
-                <div class="binary-line">t → parametric</div>
-            </div>
-        </div>
-
-        <!-- AI Feedback Loop -->
-        <div id="ai-feedback">
-            <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop</div>
-            <input type="text" id="feedback-input" placeholder="Send data to the loop…">
-            <button onclick="runAIFeedback()">Feed →</button>
-            <div id="feedback-result" style="margin-top:8px;font-size:11px;color:#22d3ee;"></div>
-        </div>
-    </div>
-
-    <div id="time-panel">
-        <div><span class="label">UTC</span> <span class="value" id="utc-time">--:--:--</span></div>
-        <div><span class="label">Angle</span> <span class="value" id="utc-angle">0.0°</span></div>
-        <div><span class="label">sin</span> <span class="value" id="utc-sin">0.000</span></div>
-        <div><span class="label">cos</span> <span class="value" id="utc-cos">1.000</span></div>
-        <div><span class="label">tan</span> <span class="value" id="utc-tan">0.000</span></div>
-    </div>
-
-    <div id="micro-alert" aria-hidden="true">
-        <div><b>Angle:</b> <span id="ma-angle">0°</span></div>
-        <div><b>Cosine:</b> <span id="ma-cos">1.000</span></div>
-        <div><b>Distance:</b> <span id="ma-dist">0 px</span></div>
-    </div>
-
-<script>
-    // Background removal (kept)
-    function removeWhiteBackground(imgElement, threshold = 240) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = imgElement.src;
-            img.onload = () => {
-                const c = document.createElement('canvas');
-                const ctx = c.getContext('2d');
-                c.width = img.naturalWidth;
-                c.height = img.naturalHeight;
-                ctx.drawImage(img, 0, 0);
-                const data = ctx.getImageData(0, 0, c.width, c.height).data;
-                for (let i = 0; i < data.length; i += 4) {
-                    if (data[i] > threshold && data[i+1] > threshold && data[i+2] > threshold) {
-                        data[i+3] = 0;
-                    }
-                }
-                ctx.putImageData(new ImageData(data, c.width, c.height), 0, 0);
-                imgElement.src = c.toDataURL('image/png');
-                resolve();
-            };
-            img.onerror = resolve;
-        });
-    }
-
-    // 3D Curvature (kept)
-    window.curvature3D = function(r1, r2, options = {}) {
-        const x1 = r1.x || 0;
-        const y1 = (options.y !== undefined) ? options.y : (r1.y || 0);
-        const z1 = r1.z || 0;
-        const x2 = r2.x || 0;
-        const y2 = r2.y || 0;
-        const z2 = r2.z || 0;
-        const cx = y1*z2 - z1*y2;
-        const cy = z1*x2 - x1*z2;
-        const cz = x1*y2 - y1*x2;
-        const crossMag = Math.hypot(cx, cy, cz);
-        const speed = Math.hypot(x1, y1, z1);
-        return speed < 1e-8 ? 0 : crossMag / (speed ** 3);
-    };
-
-    // AI Feedback Loop (starter)
-    window.runAIFeedback = function() {
-        const input = document.getElementById('feedback-input').value.trim();
-        const result = document.getElementById('feedback-result');
-        if (!input) {
-            result.textContent = "… waiting for input";
-            return;
-        }
-        // Simple echo + curvature hint for now (we can expand this into a real loop later)
-        result.innerHTML = `Received → <b>${input}</b><br>Curvature context locked to y′=2t, y″=2`;
-    };
-
-    // Rest of the original engine
+    // Main engine
     const canvas = document.getElementById('wave-canvas');
     const ctx = canvas.getContext('2d');
     const img = document.getElementById('zz-image');
