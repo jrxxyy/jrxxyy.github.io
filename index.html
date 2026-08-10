@@ -12,6 +12,8 @@
             height: 100vh;
             margin: 0;
             background-color: #000;
+            flex-direction: column;
+            overflow-x: hidden;
         }
 
         .background {
@@ -118,41 +120,49 @@
         }
 
         .generator-button {
-            position: absolute;
-            bottom: 5px;
-            right: 10px;
+            margin: 15px 0;
+            padding: 8px 16px;
+            cursor: pointer;
         }
 
+        /* ========== PERFECT YIN-YANG ========== */
         .yinyang {
-            width: 33px;
-            height: 33px;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 10px;
-            font-size: 40px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(to bottom, #ffffff 50%, #000000 50%);
+            border-radius: 50%;
             position: relative;
+            display: inline-block;
+            margin: 10px;
+            box-shadow: 0 0 12px rgba(255,255,255,0.4);
         }
 
-        .yinyang:before {
+        .yinyang::before {
             content: '';
             position: absolute;
-            width: 24px;
-            height: 24px;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background: #ffffff;
             border-radius: 50%;
-            background: #000;
-            top: 25%;
+            box-shadow: 0 30px 0 #000000;
         }
 
-        .yinyang:after {
+        .yinyang::after {
             content: '';
             position: absolute;
-            width: 33px;
-            height: 33px;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: #000000;
             border-radius: 50%;
-            background: #fff;
-            bottom: 25%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 -15px 0 #ffffff; /* white dot on black side */
         }
+        /* ===================================== */
 
         .input-box {
             margin-top: 20px;
@@ -170,6 +180,7 @@
             font-family: "Orbitron", sans-serif;
             box-shadow: 0 0 15px;
             backdrop-filter: blur(4px);
+            min-height: 20px;
         }
 
         .three-boxes {
@@ -182,15 +193,11 @@
             gap: 10px;
         }
 
-        #waveCanvas {
-            width: 400px;
-            height: 200px;
-            background-color: black;
-            margin-top: 10px;
-        }
-
         canvas {
-            display: none;
+            display: block;          /* ← now visible */
+            background: #111;
+            margin: 20px auto;
+            border: 1px solid #444;
         }
 
         .image-holder {
@@ -214,12 +221,10 @@
     
     <div class="main-container">
         <p style="color: white; margin: 20px 0 20px 80px;">
-            For more details, please visit the <a href="visa.html">Visa Information</a> page.
+            For more details, please visit the <a href="visa.html" style="color:#0ff;">Visa Information</a> page.
         </p>
 
-        <div class="container">
-            <!-- Dots can be added here if desired -->
-        </div>
+        <div class="container"></div>
 
         <div class="grey-box" id="jr-box">
             .jr.
@@ -230,12 +235,13 @@
                  alt="Image" class="transparent-image">
         </div>
 
-        <canvas id="canvas" height="50" width="150" style="margin-top: 100px;"></canvas>
+        <!-- Visible canvas with Unicode yin-yang -->
+        <canvas id="canvas" width="150" height="50"></canvas>
         
-        <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 100px 0 0 0;">
+        <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 15px; margin: 30px 0; border-radius: 8px;">
             TEXTEX
-            <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
-                <div class="dot"></div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-top: 12px; gap: 15px;">
+                <div class="dot" style="position:static; width:8px; height:8px; background:#333;"></div>
                 <div class="yinyang"></div>
             </div>
         </div>
@@ -247,6 +253,7 @@
         <div class="measurement">10</div>
     </div>
 
+    <!-- Standalone perfect yin-yang -->
     <div class="yinyang"></div>
 
     <svg height="50" width="150" style="margin: 20px 0;">
@@ -254,13 +261,14 @@
     </svg>
 
     <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
-    <div id="output" style="margin: 20px 0; color: white;"></div>
+    <div id="output" style="margin: 10px 0; color: #0f0; font-size: 1.1em;"></div>
     
     <div class="input-box">
         <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
-        <br>
+        <br><br>
         <button id="generate-btn">GENERATE OUTCOME</button>
         <div id="ai-response" class="ai-box"></div>
+        <br>
         <input type="file" id="image-input" accept="image/*">
     </div>
 
@@ -272,7 +280,7 @@
     </div>
 
 <script>
-    // Background image
+    // Background
     const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
     const backgroundDiv = document.getElementById('background');
     if (backgroundDiv) {
@@ -296,17 +304,14 @@
         dot.style.left = `${Math.random() * 140}px`;
 
         const jrBox = document.getElementById('jr-box');
-        if (jrBox) {
-            jrBox.appendChild(dot);
-        }
+        if (jrBox) jrBox.appendChild(dot);
     }
 
-    // Create 15 dots
     for (let i = 0; i < 15; i++) {
         createDot();
     }
 
-    // Clickable window (id fixed to match HTML)
+    // Clickable
     const clickableWindow = document.getElementById("楽");
     if (clickableWindow) {
         clickableWindow.addEventListener("click", () => {
@@ -315,9 +320,7 @@
     }
 
     function getRandomIndex() {
-        const min = 0;
-        const max = 13;
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+        return Math.floor(Math.random() * 14);
     }
 
     function getRandomOutcome() {
@@ -337,22 +340,22 @@
             "Index 12 complete.",
             "Lucky number 13!"
         ];
-
-        const randomIndex = getRandomIndex();
         const outputEl = document.getElementById("output");
         if (outputEl) {
-            outputEl.textContent = outcomes[randomIndex];
+            outputEl.textContent = outcomes[getRandomIndex()];
         }
     }
 
     function draw() {
-        const canvas = document.querySelector('#canvas');
+        const canvas = document.getElementById('canvas');
         if (!canvas || !canvas.getContext) return;
 
         const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Red line
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 3;
-
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
 
@@ -361,24 +364,23 @@
         ctx.lineTo(centerX + 50, centerY);
         ctx.stroke();
 
-        const yinYangSymbol = '\u262F';
-        ctx.font = '10px Arial';
-        ctx.fillStyle = 'green';
+        // Perfect Unicode yin-yang
+        ctx.font = '28px Arial';
+        ctx.fillStyle = '#0f0';
         ctx.textAlign = 'center';
-        ctx.fillText(yinYangSymbol, centerX, centerY + 10);
+        ctx.textBaseline = 'middle';
+        ctx.fillText('☯', centerX, centerY);
     }
 
     draw();
 
-    // GENERATE OUTCOME button → redirects (original ALIEN.X behavior)
+    // GENERATE OUTCOME → redirect
     document.getElementById("generate-btn").addEventListener("click", function() {
-        // Optional: show a message first
         const aiBox = document.getElementById("ai-response");
-        if (aiBox) {
-            aiBox.innerText = "Redirecting...";
-        }
-        // Redirect
-        window.location.href = "https://jrxxyy.github.io/beta.html";
+        if (aiBox) aiBox.innerText = "Redirecting to ALIEN.X ...";
+        setTimeout(() => {
+            window.location.href = "https://jrxxyy.github.io/beta.html";
+        }, 600);
     });
 </script>
 </body>
