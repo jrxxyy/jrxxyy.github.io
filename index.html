@@ -85,15 +85,7 @@
             position: relative;
         }
 
-        .box1 {
-            background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
-        }
-
-        .box2 {
-            background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
-        }
-
-        .box3 {
+        .box1, .box2, .box3 {
             background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
         }
 
@@ -219,36 +211,34 @@
 </head>
 <body>
     <div class="background" id="background"></div>
+    
     <div class="main-container">
-        <!-- wording moved a little to the right -->
         <p style="color: white; margin: 20px 0 20px 80px;">
             For more details, please visit the <a href="visa.html">Visa Information</a> page.
         </p>
 
         <div class="container">
-            <!-- Dots will be added here by JavaScript -->
+            <!-- Dots can be added here if desired -->
         </div>
+
         <div class="grey-box" id="jr-box">
             .jr.
-            <!-- Dots will be added here by JavaScript -->
         </div>
-        <!-- Additional content beside the grey box -->
+
         <div class="box">
-            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1" alt="Image" class="transparent-image">
+            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1" 
+                 alt="Image" class="transparent-image">
         </div>
 
         <canvas id="canvas" height="50" width="150" style="margin-top: 100px;"></canvas>
         
         <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 100px 0 0 0;">
             TEXTEX
-
             <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
                 <div class="dot"></div>
                 <div class="yinyang"></div>
             </div>
         </div>
-        
-        
     </div>
 
     <div class="beaker">
@@ -264,110 +254,70 @@
     </svg>
 
     <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
-    <div id="output" style="margin: 20px 0;"></div>
+    <div id="output" style="margin: 20px 0; color: white;"></div>
     
     <div class="input-box">
         <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
-    <div class="input-box">
-        <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
-    </div>
-    <button id="generate-btn">GENERATE OUTCOME</button>
-    <div id="ai-response" class="ai-box"></div>
-
+        <br>
+        <button id="generate-btn">GENERATE OUTCOME</button>
+        <div id="ai-response" class="ai-box"></div>
         <input type="file" id="image-input" accept="image/*">
     </div>
+
     <div class="three-boxes">
         <div class="box box1"></div>
         <div class="box box2"></div>
         <div class="box box3"></div>
         <div class="image-holder"></div>
     </div>
-</div>
 
 <script>
-    /* =====================================================================
-       Full MDN Operator Precedence rules applied
-       (including the exact operand / LHS / RHS constraints you quoted)
-
-       Groups 17 & 16 clarifications used:
-       • Member access LHS may be: member | new-with-args | call
-       • Call LHS may be: member | new-with-args | call
-       • new-with-args LHS may be: member | new-with-args
-       • new-without-args operand may be: member | new-with-args | new-without-args
-       • Optional chaining is substitutable for the non-optional form
-       • Assignment targets must be identifier or property access
-       • Right-hand side of member access is an identifier
-       • etc.
-       ===================================================================== */
-
-    // Member access + Call (document.getElementById is a call whose
-    // LHS is a member access – fully legal per the rules)
+    // Background image
     const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
     const backgroundDiv = document.getElementById('background');
-    // Property access (assignment target is a valid property access)
-    backgroundDiv.style.backgroundImage = `url('${backgroundImageUrl}')`;
+    if (backgroundDiv) {
+        backgroundDiv.style.backgroundImage = `url('${backgroundImageUrl}')`;
+    }
 
     function getRandomColor() {
         const letters = '0123456789ABCDEF';
         let color = '#';
-        for (let i = 0; (i < 6); i++) {
-            // Call (Math.random) whose result is the LHS of *
-            // then Call (Math.floor) – both legal
-            color += letters[Math.floor( (Math.random() * 16) )];
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
         }
         return color;
     }
 
     function createDot() {
-        // Call (document.createElement)
         const dot = document.createElement('div');
-        // Property assignment – target is valid property access
         dot.className = 'dot';
-        // Call whose result is assigned to a property access
         dot.style.backgroundColor = getRandomColor();
+        dot.style.top  = `${Math.random() * 140}px`;
+        dot.style.left = `${Math.random() * 140}px`;
 
-        // Member access + Call + *  (all legal under the quoted rules)
-        dot.style.top  = `${ (Math.random() * 140) }px`;
-        dot.style.left = `${ (Math.random() * 140) }px`;
-
-        // Call (getElementById) – LHS is member access
         const jrBox = document.getElementById('jr-box');
         if (jrBox) {
-            // Call (appendChild) whose LHS is a member access
             jrBox.appendChild(dot);
-        } else {
-            console.error("Grey box element not found!");
         }
     }
 
     // Create 15 dots
-    for (let i = 0; (i < 15); i++) {
-        createDot();          // plain Call – legal
+    for (let i = 0; i < 15; i++) {
+        createDot();
     }
 
-    // Call (getElementById)
-    const clickableWindow = document.getElementById("難楽");
+    // Clickable window (id fixed to match HTML)
+    const clickableWindow = document.getElementById("楽");
     if (clickableWindow) {
-        // Call (addEventListener) – LHS is identifier (valid)
         clickableWindow.addEventListener("click", () => {
-            // Call (window.open) – LHS is member access
             window.open(".", "_blank");
         });
-    } else {
-        console.error("Clickable window element not found!");
     }
 
     function getRandomIndex() {
         const min = 0;
         const max = 13;
-
-        // Full precedence + operand rules:
-        // (max - min)               subtraction
-        // ((max - min) + 1)         addition (left-to-right)
-        // Math.random() * …         Call then *
-        // Math.floor( … )           Call
-        // … + min                   addition
-        return ( Math.floor( (Math.random() * ( (max - min) + 1 )) ) + min );
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     function getRandomOutcome() {
@@ -375,65 +325,61 @@
             "ASC|| call initiated.",
             "Index 1 selected.",
             "Index 2 chosen.",
-            // ... (continue for other indices)
+            "Index 3 active.",
+            "Index 4 locked.",
+            "Index 5 open.",
+            "Index 6 pulsing.",
+            "Index 7 confirmed.",
+            "Index 8 online.",
+            "Index 9 standby.",
+            "Index 10 ready.",
+            "Index 11 engaged.",
+            "Index 12 complete.",
             "Lucky number 13!"
         ];
 
         const randomIndex = getRandomIndex();
-        // Member access + Call (getElementById) then property assignment
-        // (assignment target is valid property access)
-        document.getElementById("output").textContent = outcomes[randomIndex];
+        const outputEl = document.getElementById("output");
+        if (outputEl) {
+            outputEl.textContent = outcomes[randomIndex];
+        }
     }
 
     function draw() {
-        // Call (querySelector)
         const canvas = document.querySelector('#canvas');
-        // Member access + Call (getContext) – fully legal
-        if (!canvas.getContext) {
-            return;
-        }
-        const ctx = canvas.getContext('2d');
+        if (!canvas || !canvas.getContext) return;
 
-        // Property assignments – targets are valid property accesses
+        const ctx = canvas.getContext('2d');
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 3;
 
-        // Member access (canvas.width) then /
-        const centerX = (canvas.width / 2);
-        const centerY = (canvas.height / 2);
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
 
-        // Call (beginPath)
         ctx.beginPath();
-        // Call (moveTo) with computed arguments
-        ctx.moveTo( (centerX - 50), centerY );
-        // Call (lineTo)
-        ctx.lineTo( (centerX + 50), centerY );
-        // Call (stroke)
+        ctx.moveTo(centerX - 50, centerY);
+        ctx.lineTo(centerX + 50, centerY);
         ctx.stroke();
 
         const yinYangSymbol = '\u262F';
-        // Property assignments
         ctx.font = '10px Arial';
         ctx.fillStyle = 'green';
         ctx.textAlign = 'center';
-        // Call (fillText)
-        ctx.fillText(yinYangSymbol, centerX, (centerY + 10));
+        ctx.fillText(yinYangSymbol, centerX, centerY + 10);
     }
 
-    draw();   // plain Call – legal
-</script>
-<script>
-document.getElementById("generate-btn").addEventListener("click", function() {
-    const aiBox = document.getElementById("ai-response");
+    draw();
 
-aiBox.innerText = "What type of calculator are you operating with?";
-});
-<script>
-function getRandomOutcome() {
-    // ALIEN.X identifier behavior
-    window.location.href = "https://jrxxyy.github.io/beta.html";
-}
+    // GENERATE OUTCOME button → redirects (original ALIEN.X behavior)
+    document.getElementById("generate-btn").addEventListener("click", function() {
+        // Optional: show a message first
+        const aiBox = document.getElementById("ai-response");
+        if (aiBox) {
+            aiBox.innerText = "Redirecting...";
+        }
+        // Redirect
+        window.location.href = "https://jrxxyy.github.io/beta.html";
+    });
 </script>
-
 </body>
 </html>
