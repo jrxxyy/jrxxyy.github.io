@@ -126,6 +126,30 @@
     </div>
 
 <script>
+    // ========== GLOBAL 3D CURVATURE FUNCTION ==========
+    // 3D version of: k = (x'y'' - y'x'') / (x'² + y'²)^{3/2}
+    // Only the "y" component is moveable / adjustable
+    window.curvature3D = function(r1, r2, options = {}) {
+        const x1 = r1.x || 0;
+        const y1 = (options.y !== undefined) ? options.y : (r1.y || 0); // ← only y is adjustable
+        const z1 = r1.z || 0;
+
+        const x2 = r2.x || 0;
+        const y2 = r2.y || 0;
+        const z2 = r2.z || 0;
+
+        // Cross product r' × r''
+        const cx = y1 * z2 - z1 * y2;
+        const cy = z1 * x2 - x1 * z2;
+        const cz = x1 * y2 - y1 * x2;
+
+        const crossMag = Math.hypot(cx, cy, cz);
+        const speed = Math.hypot(x1, y1, z1);
+
+        if (speed < 1e-8) return 0;
+        return crossMag / (speed ** 3);
+    };
+
     // ========== UTC TRIG VISUALIZATION ==========
     const canvas = document.getElementById('wave-canvas');
     const ctx = canvas.getContext('2d');
@@ -149,7 +173,6 @@
         const s = String(now.getUTCSeconds()).padStart(2, '0');
         const ms = now.getUTCMilliseconds();
 
-        // Angle: full circle every 60 seconds (smooth with ms)
         const totalSeconds = now.getUTCSeconds() + ms / 1000;
         const angleDeg = (totalSeconds / 60) * 360;
         const angleRad = angleDeg * Math.PI / 180;
@@ -158,7 +181,6 @@
         const cos = Math.cos(angleRad);
         const tan = Math.tan(angleRad);
 
-        // Update panel
         document.getElementById('utc-time').textContent = `${h}:${m}:${s}`;
         document.getElementById('utc-angle').textContent = angleDeg.toFixed(1) + '°';
         document.getElementById('utc-sin').textContent = fmt(sin);
@@ -166,13 +188,11 @@
         document.getElementById('utc-tan').textContent = Math.abs(tan) > 100 ? '∞' : fmt(tan);
 
         // Gentle image animation driven by UTC
-        const pulse = 1 + cos * 0.08;          // subtle scale
-        const rot = sin * 6;                   // gentle tilt
+        const pulse = 1 + cos * 0.08;
+        const rot = sin * 6;
         img.style.transform = `rotate(${rot}deg) scale(${pulse})`;
 
-        // Draw the waves
         drawWaves(angleRad);
-
         requestAnimationFrame(updateUTC);
     }
 
@@ -181,20 +201,113 @@
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        // Sine wave (purple)
+        // ===== Sine wave (purple) with 3D curvature =====
         ctx.beginPath();
-        ctx.strokeStyle = 'rgba(167, 139, 250, 0.7)';
-        ctx.lineWidth = 2.5;
         for (let x = 0; x < w; x++) {
-            const y = h/2 + Math.sin(x * 0.012 + phase) * 80;
+            const t = x * 0.012 + phase;
+            const y = h/2 + Math.sin(t) * 80;
+
+            // First & second derivatives
+            const r1 = {
+                x: 0.012,
+                y: Math.cos(t) * 80 * 0.012,
+                z: 0.004
+            };
+            const r2 = {
+                x: 0,
+                y: -Math.sin(t) * 80 * 0.012 * 0.012,
+                z: 0
+            };
+
+            // Only y is moveable/adjustable
+            const k = window.curvature3D(r1, r2, { y: r1.y });
+
+            const alpha = 0.35 + Math.min(k * 45, 0.55);
+            ctx.strokeStyle = `rgba(167, 139, 250, ${alpha})`;
+            ctx.lineWidth = 1.8 + Math.min(k * 14, 2.8);
+
             x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
         ctx.stroke();
 
-        // Cosine wave (cyan)
+        // ===== Cosine wave (cyan) with 3D curvature =====
         ctx.beginPath();
-        ctx.strokeStyle = 'rgba(34, 211, 238, 0.65)';
-        ctx.lineWidth = 2.5;
         for (let x = 0; x < w; x++) {
-            const y = h/2 + Math.cos(x * 0.012 + phase) * 80;
-            x === 0 ? ctx.moveTo(x, y)
+            const t = x * 0.012 + phase;
+            const y = h/2 + Math.cos(t) * 80;
+
+            const r1 = {
+                x: 0.012,
+                y: -Math.sin(t) * 80 * 0.012,
+                z: 0.004
+            };
+            const r2 = {
+                x: 0,
+                y: -Math.cos(t) * 80 * 0.012 * 0.012,
+                z: 0
+            };
+
+            // Only y is moveable/adjustable
+            const k = window.curvature3D(r1, r2, { y: r1.y });
+
+            const alpha = 0.35 + Math.min(k * 45, 0.55);
+            ctx.strokeStyle = `rgba(34, 211, 238, ${alpha})`;
+            ctx.lineWidth = 1.8 + Math.min(k * 14, 2.8);
+
+            x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Center line
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+        ctx.moveTo(0, h/2);
+        ctx.lineTo(w, h/2);
+        ctx.stroke();
+    }
+
+    // Start the animation
+    updateUTC();
+
+    // ========== MOUSE HANDLER ==========
+    const pointer = Math.cos(0 * Math.PI / 180);
+
+    window.parentMouseHandler = function(event) {
+        const alertEl = document.getElementById('micro-alert');
+        const isLeftSide = event.clientX < (window.innerWidth / 2);
+
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        const dx = event.clientX - cx;
+        const dy = event.clientY - cy;
+        const dist = Math.hypot(dx, dy);
+        const angleRad = Math.atan2(dy, dx);
+        const angleDeg = angleRad * 180 / Math.PI;
+        const cosVal = Math.cos(angleRad);
+
+        if (alertEl) {
+            document.getElementById('ma-angle').textContent = Math.round(angleDeg) + '°';
+            document.getElementById('ma-cos').textContent = fmt(cosVal, 3);
+            document.getElementById('ma-dist').textContent = Math.round(dist) + ' px';
+        }
+
+        if (isLeftSide && pointer) {
+            img.classList.add('active');
+            if (alertEl) alertEl.classList.add('visible');
+        } else {
+            img.classList.remove('active');
+            if (alertEl) alertEl.classList.remove('visible');
+        }
+    };
+
+    window.parentMouseLeave = function() {
+        img.classList.remove('active');
+        document.getElementById('micro-alert').classList.remove('visible');
+    };
+
+    document.addEventListener('mousemove', window.parentMouseHandler);
+    document.addEventListener('mouseleave', window.parentMouseLeave);
+</script>
+</body>
+</html>
