@@ -168,6 +168,17 @@
             color: white;
             position: relative;
         }
+        
+        .ai-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 255, 200, 0.1);
+            border: 2px solid #00ffe0;
+            color: #00ffe0;
+            font-family: "Orbitron", sans-serif;
+            box-shadow: 0 0 15px #00ffe0;
+            backdrop-filter: blur(4px);
+        }
 
         .three-boxes {
             display: flex;
@@ -257,6 +268,13 @@
     
     <div class="input-box">
         <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
+    <div class="input-box">
+        <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
+    </div>
+
+<button id="generate-btn">GENERATE OUTCOME</button>
+
+<div id="ai-response" class="ai-box"></div>
 
         <input type="file" id="image-input" accept="image/*">
     </div>
@@ -406,5 +424,13 @@
 
     draw();   // plain Call – legal
 </script>
+<script>
+document.getElementById("generate-btn").addEventListener("click", function() {
+    const aiBox = document.getElementById("ai-response");
+
+aiBox.innerText = "What type of calculator are you operating with?";
+});
+</script>
+
 </body>
 </html>
