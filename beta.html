@@ -65,7 +65,7 @@
             opacity: 0.55;
         }
 
-        /* 3D Cube (30% smaller) */
+        /* 3D Cube */
         #cube-panel {
             position: fixed;
             top: 1.2rem;
@@ -92,15 +92,13 @@
             position: absolute;
             width: 154px;
             height: 154px;
-            background: rgba(15, 15, 35, 0.82);
+            background: rgba(15, 15, 35, 0.85);
             border: 1px solid rgba(99, 102, 241, 0.55);
             backdrop-filter: blur(10px);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
-            padding: 10px;
+            padding: 12px;
             box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
         }
 
@@ -111,19 +109,10 @@
         .face.top    { transform: rotateX(90deg)  translateZ(77px); }
         .face.bottom { transform: rotateX(-90deg) translateZ(77px); }
 
-        .binary-line {
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-            color: #a5b4fc;
-            letter-spacing: 0.5px;
-            text-align: center;
-            line-height: 1.5;
-            text-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
-        }
-
-        .binary-line strong {
-            color: #22d3ee;
-            font-weight: 600;
+        .face img {
+            max-width: 90%;
+            height: auto;
+            filter: invert(1) brightness(1.45) sepia(0.3) hue-rotate(160deg);
         }
 
         #ai-feedback {
@@ -214,46 +203,32 @@
         <div class="cube-container">
             <!-- Front -->
             <div class="face front">
-                <div class="binary-line">
-<strong>r(t)</strong> = ⟨cos t, sin t, t⟩
-                </div>
+                <img src="https://latex.codecogs.com/svg.image?\mathbf{r}(t)=\langle\cos&space;t,\sin&space;t,t\rangle" alt="r(t)">
             </div>
 
             <!-- Back -->
             <div class="face back">
-                <div class="binary-line">
-<strong>r'(t)</strong> = ⟨−sin t, cos t, 1⟩
-                </div>
+                <img src="https://latex.codecogs.com/svg.image?\mathbf{r}'(t)=\langle-\sin&space;t,\cos&space;t,1\rangle" alt="r'(t)">
             </div>
 
             <!-- Right -->
             <div class="face right">
-                <div class="binary-line">
-<strong>r''(t)</strong> = ⟨−cos t, −sin t, 0⟩
-                </div>
+                <img src="https://latex.codecogs.com/svg.image?\mathbf{r}''(t)=\langle-\cos&space;t,-\sin&space;t,0\rangle" alt="r''(t)">
             </div>
 
             <!-- Left -->
             <div class="face left">
-                <div class="binary-line">
-κ = ½
-(constant)
-                </div>
+                <img src="https://latex.codecogs.com/svg.image?\kappa=\dfrac{1}{2}" alt="kappa">
             </div>
 
             <!-- Top -->
             <div class="face top">
-                <div class="binary-line">
-t ∈ [1 , 5]
-                </div>
+                <img src="https://latex.codecogs.com/svg.image?t\in[1,5]" alt="t range">
             </div>
 
             <!-- Bottom -->
             <div class="face bottom">
-                <div class="binary-line">
-Helix
-(framed)
-                </div>
+                <img src="https://latex.codecogs.com/svg.image?\text{Helix (framed)}" alt="Helix">
             </div>
         </div>
 
@@ -280,7 +255,6 @@ Helix
     </div>
 
 <script>
-    // ===== 3D Helix: ⟨cos(t), sin(t), t⟩  t=1..5 =====
     function drawHelix() {
         const canvas = document.getElementById('helix-canvas');
         const ctx = canvas.getContext('2d');
@@ -294,7 +268,6 @@ Helix
         const cx = w / 2;
         const cy = h / 2 + 10;
 
-        // Framed axes
         ctx.strokeStyle = 'rgba(165,180,252,0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -302,7 +275,6 @@ Helix
         ctx.moveTo(cx, cy + 40); ctx.lineTo(cx, cy - 50);
         ctx.stroke();
 
-        // Helix
         ctx.beginPath();
         ctx.strokeStyle = '#22d3ee';
         ctx.lineWidth = 2.2;
@@ -311,10 +283,8 @@ Helix
             const x = Math.cos(t);
             const y = Math.sin(t);
             const z = t;
-
             const px = cx + (x * scale) + (z * 8);
             const py = cy - (y * scale) - (z * 6);
-
             if (t === 1) ctx.moveTo(px, py);
             else ctx.lineTo(px, py);
         }
@@ -326,7 +296,6 @@ Helix
         ctx.fillText('t = 1 → 5', 8, 26);
     }
 
-    // Background removal
     function removeWhiteBackground(img) {
         return new Promise(resolve => {
             const temp = new Image();
@@ -350,7 +319,6 @@ Helix
         });
     }
 
-    // Curvature
     window.curvature3D = function(r1, r2, options = {}) {
         const x1 = r1.x || 0;
         const y1 = options.y !== undefined ? options.y : (r1.y || 0);
@@ -366,7 +334,6 @@ Helix
         return speed < 1e-8 ? 0 : crossMag / (speed ** 3);
     };
 
-    // AI Feedback (4 words → Wikipedia)
     window.runAIFeedback = function() {
         const input = document.getElementById('feedback-input');
         const result = document.getElementById('feedback-result');
@@ -384,7 +351,6 @@ Helix
         result.innerHTML = `Searching Wikipedia for:<br><b>${query}</b>`;
     };
 
-    // Main
     const canvas = document.getElementById('wave-canvas');
     const ctx = canvas.getContext('2d');
     const img = document.getElementById('zz-image');
@@ -445,13 +411,11 @@ Helix
         ctx.stroke();
     }
 
-    // Start
     removeWhiteBackground(img).then(() => {
         drawHelix();
         updateUTC();
     });
 
-    // Mouse
     document.addEventListener('mousemove', e => {
         const isLeft = e.clientX < window.innerWidth/2;
         const cx = window.innerWidth/2, cy = window.innerHeight/2;
