@@ -65,7 +65,7 @@
             opacity: 0.55;
         }
 
-        /* 3D Cube */
+        /* 3D Cube Panel */
         #cube-panel {
             position: fixed;
             top: 1.2rem;
@@ -73,6 +73,14 @@
             z-index: 40;
             width: 190px;
             perspective: 800px;
+        }
+
+        /* Wrapper for cube + overlay */
+        .cube-wrapper {
+            position: relative;
+            width: 154px;
+            height: 154px;
+            margin: 0 auto;
         }
 
         .cube-container {
@@ -113,6 +121,22 @@
             max-width: 90%;
             height: auto;
             filter: invert(1) brightness(1.45) sepia(0.3) hue-rotate(160deg);
+        }
+
+        /* Light professional overlay of abcc.png */
+        .cube-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.18;
+            mix-blend-mode: screen;
+            pointer-events: none;
+            border-radius: 8px;
+            z-index: 10;
+            filter: contrast(1.1) brightness(1.15);
         }
 
         #ai-feedback {
@@ -200,36 +224,31 @@
     </div>
 
     <div id="cube-panel">
-        <div class="cube-container">
-            <!-- Front -->
-            <div class="face front">
-                <img src="https://latex.codecogs.com/svg.image?\mathbf{r}(t)=\langle\cos&space;t,\sin&space;t,t\rangle" alt="r(t)">
+        <!-- Wrapper containing the cube + light abcc.png overlay -->
+        <div class="cube-wrapper">
+            <div class="cube-container">
+                <div class="face front">
+                    <img src="https://latex.codecogs.com/svg.image?\mathbf{r}(t)=\langle\cos&space;t,\sin&space;t,t\rangle" alt="r(t)">
+                </div>
+                <div class="face back">
+                    <img src="https://latex.codecogs.com/svg.image?\mathbf{r}'(t)=\langle-\sin&space;t,\cos&space;t,1\rangle" alt="r'(t)">
+                </div>
+                <div class="face right">
+                    <img src="https://latex.codecogs.com/svg.image?\mathbf{r}''(t)=\langle-\cos&space;t,-\sin&space;t,0\rangle" alt="r''(t)">
+                </div>
+                <div class="face left">
+                    <img src="https://latex.codecogs.com/svg.image?\kappa=\dfrac{1}{2}" alt="kappa">
+                </div>
+                <div class="face top">
+                    <img src="https://latex.codecogs.com/svg.image?t\in[1,5]" alt="t range">
+                </div>
+                <div class="face bottom">
+                    <img src="https://latex.codecogs.com/svg.image?\text{Helix (framed)}" alt="Helix">
+                </div>
             </div>
 
-            <!-- Back -->
-            <div class="face back">
-                <img src="https://latex.codecogs.com/svg.image?\mathbf{r}'(t)=\langle-\sin&space;t,\cos&space;t,1\rangle" alt="r'(t)">
-            </div>
-
-            <!-- Right -->
-            <div class="face right">
-                <img src="https://latex.codecogs.com/svg.image?\mathbf{r}''(t)=\langle-\cos&space;t,-\sin&space;t,0\rangle" alt="r''(t)">
-            </div>
-
-            <!-- Left -->
-            <div class="face left">
-                <img src="https://latex.codecogs.com/svg.image?\kappa=\dfrac{1}{2}" alt="kappa">
-            </div>
-
-            <!-- Top -->
-            <div class="face top">
-                <img src="https://latex.codecogs.com/svg.image?t\in[1,5]" alt="t range">
-            </div>
-
-            <!-- Bottom -->
-            <div class="face bottom">
-                <img src="https://latex.codecogs.com/svg.image?\text{Helix (framed)}" alt="Helix">
-            </div>
+            <!-- Light professional overlay -->
+            <img src="abcc.png" class="cube-overlay" alt="abcc overlay">
         </div>
 
         <div id="ai-feedback">
