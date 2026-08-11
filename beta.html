@@ -30,6 +30,27 @@
 
         #zz-image.active { opacity: 0.82; }
 
+        /* ===== Small Helix under the image (25px right of center) ===== */
+        #helix-container {
+            position: absolute;
+            bottom: 18%;
+            left: 50%;
+            transform: translateX(25px); /* 25px to the right of center */
+            z-index: 15;
+            width: 180px;
+            height: 140px;
+            background: rgba(10, 10, 20, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #helix-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
         #wave-canvas {
             position: fixed;
             top: 0; left: 0;
@@ -39,7 +60,7 @@
             opacity: 0.55;
         }
 
-        /* ===== Upper-left 3D Cube (30% smaller) ===== */
+        /* 3D Cube (30% smaller) */
         #cube-panel {
             position: fixed;
             top: 1.2rem;
@@ -95,12 +116,8 @@
             white-space: pre;
         }
 
-        .binary-line span {
-            color: #22d3ee;
-            font-weight: 600;
-        }
+        .binary-line span { color: #22d3ee; font-weight: 600; }
 
-        /* AI Feedback Loop */
         #ai-feedback {
             margin-top: 14px;
             background: rgba(15, 15, 35, 0.9);
@@ -134,7 +151,6 @@
 
         #ai-feedback button:hover { background: #6366f1; }
 
-        /* Time panel */
         #time-panel {
             position: fixed;
             bottom: 1.5rem;
@@ -152,9 +168,8 @@
         }
 
         #time-panel .label { color: #a5b4fc; font-weight: 600; display: inline-block; width: 70px; }
-        #time-panel .value { font-variant-numeric: tabular-nums; letter-spacing: 0.5px; }
+        #time-panel .value { font-variant-numeric: tabular-nums; }
 
-        /* Micro-alert */
         #micro-alert {
             position: fixed;
             top: 1rem;
@@ -182,7 +197,11 @@
     <canvas id="wave-canvas"></canvas>
     <img id="zz-image" src="zz.png" alt="zz.png">
 
-    <!-- 3D Cube (30% smaller) -->
+    <!-- Small 3D Helix under the image -->
+    <div id="helix-container">
+        <canvas id="helix-canvas" width="180" height="140"></canvas>
+    </div>
+
     <div id="cube-panel">
         <div class="cube-container">
             <div class="face front">
@@ -211,7 +230,6 @@ y″(t) = <span>2</span>
             </div>
         </div>
 
-        <!-- AI Feedback Loop – 4 words only -->
         <div id="ai-feedback">
             <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop (4 words only)</div>
             <input type="text" id="feedback-input" placeholder="Type exactly 4 words…" maxlength="60">
@@ -235,36 +253,83 @@ y″(t) = <span>2</span>
     </div>
 
 <script>
-    // Background removal
-    function removeWhiteBackground(imgElement, threshold = 240) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = imgElement.src;
-            img.onload = () => {
+    // ===== 3D Helix: ⟨cos(t), sin(t), t⟩  t=1..5 =====
+    function drawHelix() {
+        const canvas = document.getElementById('helix-canvas');
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+
+        ctx.fillStyle = 'rgba(10,10,20,0.9)';
+        ctx.fillRect(0, 0, w, h);
+
+        // Simple 3D projection
+        const scale = 28;
+        const cx = w / 2;
+        const cy = h / 2 + 10;
+
+        // Draw framed axes
+        ctx.strokeStyle = 'rgba(165,180,252,0.5)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cx - 60, cy); ctx.lineTo(cx + 60, cy); // x
+        ctx.moveTo(cx, cy + 40); ctx.lineTo(cx, cy - 50); // y
+        ctx.stroke();
+
+        // Helix
+        ctx.beginPath();
+        ctx.strokeStyle = '#22d3ee';
+        ctx.lineWidth = 2.2;
+
+        for (let t = 1; t <= 5; t += 0.05) {
+            const x = Math.cos(t);
+            const y = Math.sin(t);
+            const z = t;
+
+            // Simple perspective projection
+            const px = cx + (x * scale) + (z * 8);
+            const py = cy - (y * scale) - (z * 6);
+
+            if (t === 1) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Label
+        ctx.fillStyle = '#a5b4fc';
+        ctx.font = '10px monospace';
+        ctx.fillText('⟨cos t, sin t, t⟩', 8, 14);
+        ctx.fillText('t = 1 → 5', 8, 26);
+    }
+
+    // Background removal (simple)
+    function removeWhiteBackground(img) {
+        return new Promise(resolve => {
+            const temp = new Image();
+            temp.crossOrigin = "anonymous";
+            temp.src = img.src;
+            temp.onload = () => {
                 const c = document.createElement('canvas');
                 const ctx = c.getContext('2d');
-                c.width = img.naturalWidth;
-                c.height = img.naturalHeight;
-                ctx.drawImage(img, 0, 0);
+                c.width = temp.naturalWidth;
+                c.height = temp.naturalHeight;
+                ctx.drawImage(temp, 0, 0);
                 const data = ctx.getImageData(0, 0, c.width, c.height).data;
                 for (let i = 0; i < data.length; i += 4) {
-                    if (data[i] > threshold && data[i+1] > threshold && data[i+2] > threshold) {
-                        data[i+3] = 0;
-                    }
+                    if (data[i] > 240 && data[i+1] > 240 && data[i+2] > 240) data[i+3] = 0;
                 }
                 ctx.putImageData(new ImageData(data, c.width, c.height), 0, 0);
-                imgElement.src = c.toDataURL('image/png');
+                img.src = c.toDataURL('image/png');
                 resolve();
             };
-            img.onerror = resolve;
+            temp.onerror = resolve;
         });
     }
 
-    // 3D Curvature
+    // Curvature
     window.curvature3D = function(r1, r2, options = {}) {
         const x1 = r1.x || 0;
-        const y1 = (options.y !== undefined) ? options.y : (r1.y || 0);
+        const y1 = options.y !== undefined ? options.y : (r1.y || 0);
         const z1 = r1.z || 0;
         const x2 = r2.x || 0;
         const y2 = r2.y || 0;
@@ -277,13 +342,11 @@ y″(t) = <span>2</span>
         return speed < 1e-8 ? 0 : crossMag / (speed ** 3);
     };
 
-    // AI Feedback Loop – exactly 4 words → Wikipedia
+    // AI Feedback (4 words → Wikipedia)
     window.runAIFeedback = function() {
-        const inputEl = document.getElementById('feedback-input');
+        const input = document.getElementById('feedback-input');
         const result = document.getElementById('feedback-result');
-        const raw = inputEl.value.trim();
-
-        const words = raw.split(/\s+/).filter(w => w.length > 0);
+        const words = input.value.trim().split(/\s+/).filter(w => w.length > 0);
 
         if (words.length !== 4) {
             result.style.color = "#f87171";
@@ -292,15 +355,12 @@ y″(t) = <span>2</span>
         }
 
         const query = words.join(' ');
-        const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(query)}&go=Go`;
-
-        window.open(wikiUrl, '_blank');
-
+        window.open(`https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(query)}&go=Go`, '_blank');
         result.style.color = "#22d3ee";
         result.innerHTML = `Searching Wikipedia for:<br><b>${query}</b>`;
     };
 
-    // Main engine
+    // Main
     const canvas = document.getElementById('wave-canvas');
     const ctx = canvas.getContext('2d');
     const img = document.getElementById('zz-image');
@@ -316,18 +376,15 @@ y″(t) = <span>2</span>
 
     function updateUTC() {
         const now = new Date();
-        const h = String(now.getUTCHours()).padStart(2,'0');
-        const m = String(now.getUTCMinutes()).padStart(2,'0');
-        const s = String(now.getUTCSeconds()).padStart(2,'0');
-        const ms = now.getUTCMilliseconds();
-        const totalSeconds = now.getUTCSeconds() + ms/1000;
+        const totalSeconds = now.getUTCSeconds() + now.getUTCMilliseconds()/1000;
         const angleDeg = (totalSeconds/60)*360;
         const angleRad = angleDeg * Math.PI/180;
         const sin = Math.sin(angleRad);
         const cos = Math.cos(angleRad);
         const tan = Math.tan(angleRad);
 
-        document.getElementById('utc-time').textContent = `${h}:${m}:${s}`;
+        document.getElementById('utc-time').textContent = 
+            `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}:${String(now.getUTCSeconds()).padStart(2,'0')}`;
         document.getElementById('utc-angle').textContent = angleDeg.toFixed(1)+'°';
         document.getElementById('utc-sin').textContent = fmt(sin);
         document.getElementById('utc-cos').textContent = fmt(cos);
@@ -342,74 +399,55 @@ y″(t) = <span>2</span>
         const w = canvas.width, h = canvas.height;
         ctx.clearRect(0,0,w,h);
 
-        // Sine
-        ctx.beginPath();
-        for (let x=0; x<w; x++) {
-            const t = x*0.012 + phase;
-            const y = h/2 + Math.sin(t)*80;
-            const r1 = {x:0.012, y:Math.cos(t)*80*0.012, z:0.004};
-            const r2 = {x:0, y:-Math.sin(t)*80*0.012*0.012, z:0};
-            const k = window.curvature3D(r1, r2, {y:r1.y});
-            ctx.strokeStyle = `rgba(167,139,250,${0.35+Math.min(k*45,0.55)})`;
-            ctx.lineWidth = 1.8 + Math.min(k*14,2.8);
-            x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-        }
-        ctx.stroke();
-
-        // Cosine
-        ctx.beginPath();
-        for (let x=0; x<w; x++) {
-            const t = x*0.012 + phase;
-            const y = h/2 + Math.cos(t)*80;
-            const r1 = {x:0.012, y:-Math.sin(t)*80*0.012, z:0.004};
-            const r2 = {x:0, y:-Math.cos(t)*80*0.012*0.012, z:0};
-            const k = window.curvature3D(r1, r2, {y:r1.y});
-            ctx.strokeStyle = `rgba(34,211,238,${0.35+Math.min(k*45,0.55)})`;
-            ctx.lineWidth = 1.8 + Math.min(k*14,2.8);
-            x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-        }
-        ctx.stroke();
+        // Sine + Cosine with curvature (same as before)
+        [[Math.sin, '167,139,250'], [Math.cos, '34,211,238']].forEach(([fn, color]) => {
+            ctx.beginPath();
+            for (let x = 0; x < w; x++) {
+                const t = x * 0.012 + phase;
+                const y = h/2 + fn(t) * 80;
+                const r1 = {x:0.012, y: (fn===Math.sin ? Math.cos(t) : -Math.sin(t))*80*0.012, z:0.004};
+                const r2 = {x:0, y: -fn(t)*80*0.012*0.012, z:0};
+                const k = window.curvature3D(r1, r2, {y: r1.y});
+                ctx.strokeStyle = `rgba(${color},${0.35+Math.min(k*45,0.55)})`;
+                ctx.lineWidth = 1.8 + Math.min(k*14, 2.8);
+                x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+            }
+            ctx.stroke();
+        });
 
         ctx.beginPath();
         ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = 1;
-        ctx.moveTo(0,h/2);
-        ctx.lineTo(w,h/2);
+        ctx.moveTo(0, h/2);
+        ctx.lineTo(w, h/2);
         ctx.stroke();
     }
 
     // Start
-    removeWhiteBackground(img).then(updateUTC);
+    removeWhiteBackground(img).then(() => {
+        drawHelix();          // draw the 3D helix once
+        updateUTC();
+    });
 
     // Mouse
-    const pointer = 1;
-    window.parentMouseHandler = function(e) {
-        const alertEl = document.getElementById('micro-alert');
+    document.addEventListener('mousemove', e => {
         const isLeft = e.clientX < window.innerWidth/2;
         const cx = window.innerWidth/2, cy = window.innerHeight/2;
-        const dx = e.clientX-cx, dy = e.clientY-cy;
-        const dist = Math.hypot(dx,dy);
-        const ang = Math.atan2(dy,dx)*180/Math.PI;
-        const cosv = Math.cos(Math.atan2(dy,dx));
+        const dx = e.clientX - cx, dy = e.clientY - cy;
+        const dist = Math.hypot(dx, dy);
+        const ang = Math.atan2(dy, dx) * 180 / Math.PI;
 
-        document.getElementById('ma-angle').textContent = Math.round(ang)+'°';
-        document.getElementById('ma-cos').textContent = fmt(cosv);
-        document.getElementById('ma-dist').textContent = Math.round(dist)+' px';
+        document.getElementById('ma-angle').textContent = Math.round(ang) + '°';
+        document.getElementById('ma-cos').textContent = fmt(Math.cos(Math.atan2(dy,dx)));
+        document.getElementById('ma-dist').textContent = Math.round(dist) + ' px';
 
-        if (isLeft) {
-            img.classList.add('active');
-            alertEl.classList.add('visible');
-        } else {
-            img.classList.remove('active');
-            alertEl.classList.remove('visible');
-        }
-    };
-    window.parentMouseLeave = () => {
+        img.classList.toggle('active', isLeft);
+        document.getElementById('micro-alert').classList.toggle('visible', isLeft);
+    });
+
+    document.addEventListener('mouseleave', () => {
         img.classList.remove('active');
         document.getElementById('micro-alert').classList.remove('visible');
-    };
-    document.addEventListener('mousemove', window.parentMouseHandler);
-    document.addEventListener('mouseleave', window.parentMouseLeave);
+    });
 </script>
 </body>
 </html>
