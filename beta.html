@@ -25,20 +25,24 @@
             cursor: pointer;
             z-index: 10;
             will-change: transform;
-            filter: drop-shadow(0 0 25px rgba(99, 102, 241, 0.35));
-            image-rendering: crisp-edges;
-            image-rendering: -webkit-optimize-contrast;
+
+            /* Clear + slightly transparent */
+            opacity: 0.88;
             filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.25));
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
 
-        #zz-image.active { opacity: 0.69; }
+        #zz-image.active {
+            opacity: 0.72;
+        }
 
         /* ===== Small Helix under the image (25px right of center) ===== */
         #helix-container {
             position: absolute;
             bottom: 18%;
             left: 50%;
-            transform: translateX(25px); /* 25px to the right of center */
+            transform: translateX(25px);
             z-index: 15;
             width: 180px;
             height: 140px;
@@ -266,17 +270,16 @@ y″(t) = <span>2</span>
         ctx.fillStyle = 'rgba(10,10,20,0.9)';
         ctx.fillRect(0, 0, w, h);
 
-        // Simple 3D projection
         const scale = 28;
         const cx = w / 2;
         const cy = h / 2 + 10;
 
-        // Draw framed axes
+        // Framed axes
         ctx.strokeStyle = 'rgba(165,180,252,0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(cx - 60, cy); ctx.lineTo(cx + 60, cy); // x
-        ctx.moveTo(cx, cy + 40); ctx.lineTo(cx, cy - 50); // y
+        ctx.moveTo(cx - 60, cy); ctx.lineTo(cx + 60, cy);
+        ctx.moveTo(cx, cy + 40); ctx.lineTo(cx, cy - 50);
         ctx.stroke();
 
         // Helix
@@ -289,7 +292,6 @@ y″(t) = <span>2</span>
             const y = Math.sin(t);
             const z = t;
 
-            // Simple perspective projection
             const px = cx + (x * scale) + (z * 8);
             const py = cy - (y * scale) - (z * 6);
 
@@ -298,14 +300,13 @@ y″(t) = <span>2</span>
         }
         ctx.stroke();
 
-        // Label
         ctx.fillStyle = '#a5b4fc';
         ctx.font = '10px monospace';
         ctx.fillText('⟨cos t, sin t, t⟩', 8, 14);
         ctx.fillText('t = 1 → 5', 8, 26);
     }
 
-    // Background removal (simple)
+    // Background removal
     function removeWhiteBackground(img) {
         return new Promise(resolve => {
             const temp = new Image();
@@ -402,7 +403,6 @@ y″(t) = <span>2</span>
         const w = canvas.width, h = canvas.height;
         ctx.clearRect(0,0,w,h);
 
-        // Sine + Cosine with curvature (same as before)
         [[Math.sin, '167,139,250'], [Math.cos, '34,211,238']].forEach(([fn, color]) => {
             ctx.beginPath();
             for (let x = 0; x < w; x++) {
@@ -427,7 +427,7 @@ y″(t) = <span>2</span>
 
     // Start
     removeWhiteBackground(img).then(() => {
-        drawHelix();          // draw the 3D helix once
+        drawHelix();
         updateUTC();
     });
 
