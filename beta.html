@@ -25,8 +25,6 @@
             cursor: pointer;
             z-index: 10;
             will-change: transform;
-
-            /* Clear + slightly transparent */
             opacity: 0.88;
             filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.25));
             image-rendering: -webkit-optimize-contrast;
@@ -37,7 +35,7 @@
             opacity: 0.72;
         }
 
-        /* ===== Small Helix under the image (25px right of center) ===== */
+        /* Small Helix under the image */
         #helix-container {
             position: absolute;
             bottom: 18%;
@@ -117,13 +115,16 @@
             font-family: 'Courier New', monospace;
             font-size: 11px;
             color: #a5b4fc;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
             text-align: center;
-            line-height: 1.55;
-            white-space: pre;
+            line-height: 1.5;
+            text-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
         }
 
-        .binary-line span { color: #22d3ee; font-weight: 600; }
+        .binary-line strong {
+            color: #22d3ee;
+            font-weight: 600;
+        }
 
         #ai-feedback {
             margin-top: 14px;
@@ -211,29 +212,48 @@
 
     <div id="cube-panel">
         <div class="cube-container">
+            <!-- Front -->
             <div class="face front">
                 <div class="binary-line">
-x′(t) = <span>1</span>
-y′(t) = <span>2t</span>
+<strong>r(t)</strong> = ⟨cos t, sin t, t⟩
                 </div>
             </div>
+
+            <!-- Back -->
             <div class="face back">
                 <div class="binary-line">
-x″(t) = <span>0</span>
-y″(t) = <span>2</span>
+<strong>r'(t)</strong> = ⟨−sin t, cos t, 1⟩
                 </div>
             </div>
+
+            <!-- Right -->
             <div class="face right">
-                <div class="binary-line">κ = |r′ × r″| / |r′|³</div>
+                <div class="binary-line">
+<strong>r''(t)</strong> = ⟨−cos t, −sin t, 0⟩
+                </div>
             </div>
+
+            <!-- Left -->
             <div class="face left">
-                <div class="binary-line">straight binary line</div>
+                <div class="binary-line">
+κ = ½
+(constant)
+                </div>
             </div>
+
+            <!-- Top -->
             <div class="face top">
-                <div class="binary-line">dimensional cube</div>
+                <div class="binary-line">
+t ∈ [1 , 5]
+                </div>
             </div>
+
+            <!-- Bottom -->
             <div class="face bottom">
-                <div class="binary-line">t → parametric</div>
+                <div class="binary-line">
+Helix
+(framed)
+                </div>
             </div>
         </div>
 
