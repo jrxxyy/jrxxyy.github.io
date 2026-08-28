@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UTC Trig + L∞ Chat</title>
+<title>UTC Trig + L∞ Chat — Alpha Wiki</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0a0f;overflow:hidden;font-family:system-ui,sans-serif;color:#e0e7ff}
@@ -27,20 +27,24 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
 #corner-cube .calc-face{position:relative}
 #corner-cube .calc-face canvas{position:absolute;inset:0;pointer-events:none}
 #corner-cube .cube-overlay{position:absolute;inset:0;opacity:.18;mix-blend-mode:screen;pointer-events:none}
-#dock{width:300px;display:flex;flex-direction:column;gap:8px;z-index:16}
+#dock{width:340px;display:flex;flex-direction:column;gap:8px;z-index:16}
 #cone-box{height:88px;border:1px solid rgba(99,102,241,.4);border-radius:10px;background:rgba(10,10,20,.75);overflow:hidden}
-#chat{height:260px;display:flex;flex-direction:column;background:rgba(15,15,35,.92);border:1px solid rgba(99,102,241,.4);border-radius:10px;font-size:11px}
-#chat-log{flex:1;overflow:auto;padding:8px;line-height:1.4}
+#chat{height:320px;display:flex;flex-direction:column;background:rgba(15,15,35,.92);border:1px solid rgba(99,102,241,.4);border-radius:10px;font-size:11px}
+#chat-log{flex:1;overflow:auto;padding:8px;line-height:1.45}
 #chat-log .u{color:#a5b4fc}
 #chat-log .s{color:#22d3ee}
 #chat-log .apx{color:#94a3b8;font-style:italic}
 #chat-log .ret{color:#86efac;white-space:pre-wrap}
+#chat-log .alpha{color:#fde68a;white-space:pre-wrap;border-left:2px solid #f59e0b;padding-left:8px;margin:6px 0}
+#chat-log .alpha a{color:#93c5fd}
+#chat-log .wait{color:#c4b5fd}
 .keys{display:flex;gap:4px;padding:0 8px 6px}
 .keys b{flex:1;text-align:center;background:#1e1b4b;border-radius:4px;padding:3px 0;cursor:pointer;color:#c7d2fe}
 #ai-feedback{padding:8px;border-top:1px solid rgba(99,102,241,.25)}
+#ai-feedback .hint{color:#a5b4fc;margin-bottom:2px}
 #ai-feedback input,#ai-feedback button{width:100%;padding:6px;border-radius:6px;font-size:12px;margin-top:4px}
 #ai-feedback input{background:#0f0f1a;border:1px solid #4338ca;color:#e0e7ff}
-#ai-feedback button{background:#4f46e5;border:0;color:#fff}
+#ai-feedback button{background:#4f46e5;border:0;color:#fff;cursor:pointer}
 #time-panel{position:fixed;bottom:1.2rem;left:1.2rem;background:rgba(15,15,25,.85);border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:.8rem 1rem;font-size:12px;z-index:20}
 #time-panel .label{color:#a5b4fc;margin-right:.35rem}
 #micro-alert{position:fixed;top:1rem;right:1rem;background:rgba(0,0,0,.78);padding:.5rem .7rem;border-radius:8px;font-size:12px;opacity:0;transform:translateY(-8px);transition:.25s;z-index:30;pointer-events:none}
@@ -64,15 +68,15 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
 </div>
 <div class="stage">
   <div id="dock">
-    <canvas id="cone-box" width="300" height="88"></canvas>
+    <canvas id="cone-box" width="340" height="88"></canvas>
     <div id="chat">
       <div id="chat-log"></div>
       <div class="keys">
         <b data-k="q">Q</b><b data-k="a">A</b><b data-k="z">Z</b><b data-k="s">S</b><b data-k="d">D</b>
       </div>
       <div id="ai-feedback">
-        <div style="color:#a5b4fc">prompt → κ == qz == qy</div>
-        <input id="feedback-input" placeholder="message (4 words still opens wiki)" maxlength="120">
+        <div class="hint">prompt → κ == qz == qy · 4 words = alpha wiki in-box first</div>
+        <input id="feedback-input" placeholder="type four words → top cite before Wikipedia" maxlength="120">
         <button type="button" id="feedback-btn">Feed →</button>
       </div>
     </div>
@@ -94,7 +98,6 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
 <script>
 const EPS = 1e-8;
 const INFO_LOG = [];
-
 window.curvature3D = function(r1, r2, o = {}) {
   const x1 = r1.x || 0;
   const y1 = o.y !== undefined ? o.y : (r1.y || 0);
@@ -104,9 +107,7 @@ window.curvature3D = function(r1, r2, o = {}) {
   const speed = Math.hypot(x1, y1, z1);
   return speed < EPS ? 0 : cross / (speed ** 3);
 };
-
 function eq(a, b) { return Math.abs(a - b) < EPS; }
-
 function promptVector(text) {
   const words = String(text).trim().split(/\s+/).filter(Boolean);
   let qy = 0, qz = 0;
@@ -117,13 +118,11 @@ function promptVector(text) {
   }
   return { qx: words.length, qy, qz, words };
 }
-
 function promptCurvature(q) {
   const r1 = { x: 0.012, y: q.qy * 0.012, z: q.qz * 0.004 };
   const r2 = { x: 0, y: -q.qy * 0.012 * 0.012, z: -q.qz * 0.004 * 0.004 };
   return window.curvature3D(r1, r2, { y: r1.y });
 }
-
 function buildInfoReturn(prompt, source) {
   const q = promptVector(prompt);
   const kappa = promptCurvature(q);
@@ -146,18 +145,17 @@ function buildInfoReturn(prompt, source) {
       qz_minus_qy: q.qz - q.qy,
       kappa_minus_qz: kappa - q.qz,
       kappa_minus_qy: kappa - q.qy
-    }
+    },
+    wiki: null
   };
   INFO_LOG.push(rec);
   window.INFO_LOG = INFO_LOG;
   return rec;
 }
-
 function fmtN(v) { return Number(v).toFixed(6); }
-
 function formatReturn(rec) {
   return [
-    "info-return",
+    "info-return  (β calculus packet)",
     "identity: κ == qz == qy",
     "κ     = " + fmtN(rec.curvature),
     "qy    = " + fmtN(rec.q.qy),
@@ -170,7 +168,6 @@ function formatReturn(rec) {
     "Δ(qz-qy) = " + fmtN(rec.residual.qz_minus_qy)
   ].join("\n");
 }
-
 const LIMITS = {
   q: "Q axis: query length → qx",
   a: "A axis: answer samples qy, qz from word lengths",
@@ -178,7 +175,6 @@ const LIMITS = {
   s: "S axis: supremum later binds search hits to this record",
   d: "D axis: discrete packet; log row is one search seed"
 };
-
 const logEl = document.getElementById("chat-log");
 function line(cls, t) {
   const d = document.createElement("div");
@@ -186,8 +182,16 @@ function line(cls, t) {
   d.textContent = t;
   logEl.appendChild(d);
   logEl.scrollTop = logEl.scrollHeight;
+  return d;
 }
-
+function lineHTML(cls, html) {
+  const d = document.createElement("div");
+  d.className = cls;
+  d.innerHTML = html;
+  logEl.appendChild(d);
+  logEl.scrollTop = logEl.scrollHeight;
+  return d;
+}
 function emitReturn(prompt, source) {
   line("u", "you · " + prompt);
   const rec = buildInfoReturn(prompt, source);
@@ -195,6 +199,49 @@ function emitReturn(prompt, source) {
   line("ret", formatReturn(rec));
   line("apx", "appendix · log[" + (INFO_LOG.length - 1) + "] stored for auto search return");
   return rec;
+}
+
+async function wikiAlpha(query) {
+  const searchUrl = "https://en.wikipedia.org/w/api.php?" + new URLSearchParams({
+    action: "query",
+    list: "search",
+    srsearch: query,
+    srlimit: "1",
+    format: "json",
+    origin: "*"
+  });
+  const search = await fetch(searchUrl).then(r => {
+    if (!r.ok) throw new Error("search " + r.status);
+    return r.json();
+  });
+  const hit = search && search.query && search.query.search && search.query.search[0];
+  if (!hit) return { empty: true, query };
+  const title = hit.title;
+  const snippet = String(hit.snippet || "").replace(/<[^>]+>/g, "").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+  let extract = snippet;
+  let pageUrl = "https://en.wikipedia.org/wiki/" + encodeURIComponent(title.replace(/ /g, "_"));
+  let thumb = "";
+  try {
+    const sumUrl = "https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(title);
+    const sum = await fetch(sumUrl).then(r => r.json());
+    if (sum && sum.extract) extract = sum.extract;
+    if (sum && sum.content_urls && sum.content_urls.desktop) pageUrl = sum.content_urls.desktop.page;
+    if (sum && sum.thumbnail && sum.thumbnail.source) thumb = sum.thumbnail.source;
+  } catch (e) { /* keep snippet */ }
+  return { empty: false, title, snippet, extract, pageUrl, thumb, query, wordcount: hit.wordcount };
+}
+
+function formatAlpha(w) {
+  if (w.empty) {
+    return "α-response · no Wikipedia hit for \"" + w.query + "\"\n(page not opened)";
+  }
+  const body = (w.extract || w.snippet || "").slice(0, 520);
+  return (
+    "α-response · BEFORE Wikipedia\n" +
+    "top cited: " + w.title + "\n" +
+    body +
+    (body.length >= 520 ? "…" : "")
+  );
 }
 
 document.querySelectorAll(".keys b").forEach(b => {
@@ -205,7 +252,6 @@ addEventListener("keydown", e => {
   const k = e.key.toLowerCase();
   if (LIMITS[k]) emitReturn(LIMITS[k], "key:" + k);
 });
-
 function makeCalc() {
   const wrap = document.createElement("div"); wrap.className = "calc-face";
   const img = document.createElement("img"); img.src = "cal.png";
@@ -226,7 +272,6 @@ function paint(c, main, sub) {
   x.fillStyle = "#a5b4fc"; x.font = "11px ui-monospace,monospace";
   x.fillText(sub, dx + dw - 10, dy + dh * .76);
 }
-
 const cone = document.getElementById("cone-box"), cc = cone.getContext("2d");
 function drawCone(phase) {
   const w = cone.width, h = cone.height;
@@ -241,9 +286,8 @@ function drawCone(phase) {
   cc.quadraticCurveTo(ox - 8, oy, ox, oy + 22 + Math.cos(phase) * 4);
   cc.closePath(); cc.fill(); cc.stroke();
   cc.fillStyle = "#a5b4fc"; cc.font = "10px monospace";
-  cc.fillText("κ == qz == qy", 90, 14);
+  cc.fillText("κ == qz == qy  ·  α wiki @ 4 words", 70, 14);
 }
-
 function drawHelix() {
   const c = document.getElementById("helix-canvas"), x = c.getContext("2d"), w = c.width, h = c.height;
   x.fillStyle = "rgba(10,10,20,.9)"; x.fillRect(0, 0, w, h);
@@ -257,7 +301,6 @@ function drawHelix() {
   }
   x.stroke();
 }
-
 function knockWhite(img) {
   return new Promise(res => {
     const t = new Image(); t.crossOrigin = "anonymous"; t.src = img.src;
@@ -272,17 +315,39 @@ function knockWhite(img) {
   });
 }
 
-window.runAIFeedback = function() {
-  const prompt = document.getElementById("feedback-input").value.trim();
+window.runAIFeedback = async function() {
+  const input = document.getElementById("feedback-input");
+  const prompt = input.value.trim();
   if (!prompt) {
     line("s", "aid · empty prompt; no info-return");
     return;
   }
   const rec = emitReturn(prompt, "input");
   if (rec.words.length === 4) {
-    window.open("https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(prompt) + "&go=Go", "_blank");
-    line("apx", "appendix · 4-word packet also indexed on Wikipedia");
+    line("wait", "aid · α-model · four-word packet → citing Wikipedia before any page open…");
+    try {
+      const w = await wikiAlpha(prompt);
+      rec.wiki = w;
+      const html = w.empty
+        ? formatAlpha(w)
+        : ("α-response · BEFORE entering Wikipedia\n" +
+           "<b>top cited:</b> " + w.title.replace(/</g, "&lt;") + "\n" +
+           (w.extract || w.snippet || "").slice(0, 520).replace(/</g, "&lt;") +
+           ((w.extract || "").length > 520 ? "…" : "") +
+           "\n<a href=\"" + w.pageUrl + "\" target=\"_blank\" rel=\"noopener\">open cited page →</a>");
+      lineHTML("alpha", html);
+      line("apx", "appendix · α packet bound to log[" + (INFO_LOG.length - 1) + "]; wiki tab after cite");
+      if (!w.empty) {
+        window.open(w.pageUrl, "_blank", "noopener");
+      }
+    } catch (err) {
+      line("alpha", "α-response · cite failed: " + (err && err.message ? err.message : err) +
+        "\nfallback search tab only");
+      window.open("https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(prompt) + "&go=Go", "_blank", "noopener");
+    }
   }
+  input.value = "";
+  input.focus();
 };
 document.getElementById("feedback-btn").onclick = runAIFeedback;
 document.getElementById("feedback-input").onkeydown = e => { if (e.key === "Enter") runAIFeedback(); };
@@ -291,7 +356,6 @@ const canvas = document.getElementById("wave-canvas"), ctx = canvas.getContext("
 function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
 addEventListener("resize", resize); resize();
 const fmt = (v, d = 3) => Number(v).toFixed(d);
-
 function drawWaves(phase) {
   const w = canvas.width, h = canvas.height; ctx.clearRect(0, 0, w, h);
   [[Math.sin, "167,139,250"], [Math.cos, "34,211,238"]].forEach(([fn, col]) => {
@@ -308,7 +372,6 @@ function drawWaves(phase) {
     }
   });
 }
-
 function updateUTC() {
   const now = new Date();
   const sec = now.getUTCSeconds() + now.getUTCMilliseconds() / 1000;
@@ -331,7 +394,6 @@ function updateUTC() {
   drawWaves(rad); drawCone(rad);
   requestAnimationFrame(updateUTC);
 }
-
 knockWhite(img).then(() => { drawHelix(); updateUTC(); });
 addEventListener("mousemove", e => {
   const left = e.clientX < innerWidth / 2, dx = e.clientX - innerWidth / 2, dy = e.clientY - innerHeight / 2;
@@ -345,9 +407,9 @@ addEventListener("mouseleave", () => {
   img.classList.remove("active");
   document.getElementById("micro-alert").classList.remove("visible");
 });
-
-line("s", "aid · every prompt returns κ == qz == qy");
-line("apx", "appendix · window.INFO_LOG is the queue for automatic search replies");
+line("s", "aid · every prompt returns κ == qz == qy (β calculus)");
+line("apx", "appendix · type exactly four words → α cite appears in this box before Wikipedia opens");
+line("apx", "appendix · window.INFO_LOG holds packets; rec.wiki is the alpha hit");
 </script>
 </body>
 </html>
