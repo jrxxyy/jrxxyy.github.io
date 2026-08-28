@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calling Functions • UTC Trig + 3D Cube</title>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -31,9 +32,7 @@
             image-rendering: crisp-edges;
         }
 
-        #zz-image.active {
-            opacity: 0.72;
-        }
+        #zz-image.active { opacity: 0.72; }
 
         /* Small Helix under the image */
         #helix-container {
@@ -66,29 +65,12 @@
         }
 
         /* 3D Cube Panel */
-        #cube-panel {
-            position: fixed;
-            top: 1.2rem;
-            left: 1.2rem;
-            z-index: 40;
-            width: 190px;
-            perspective: 800px;
-        }
-
-        /* Wrapper for cube + overlay */
-        .cube-wrapper {
+        .cube {
             position: relative;
-            width: 154px;
-            height: 154px;
-            margin: 0 auto;
-        }
-
-        .cube-container {
-            width: 154px;
-            height: 154px;
-            position: relative;
+            width: 200px;
+            height: 200px;
             transform-style: preserve-3d;
-            animation: spinCube 18s infinite linear;
+            animation: spinCube 8s linear infinite;
         }
 
         @keyframes spinCube {
@@ -117,10 +99,17 @@
         .face.top    { transform: rotateX(90deg)  translateZ(77px); }
         .face.bottom { transform: rotateX(-90deg) translateZ(77px); }
 
-        .face img {
-            max-width: 90%;
-            height: auto;
-            filter: invert(1) brightness(1.45) sepia(0.3) hue-rotate(160deg);
+        /* Container host for cal.png */
+        .img-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         /* Light professional overlay of abcc.png */
@@ -188,9 +177,6 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
 
-        #time-panel .label { color: #a5b4fc; font-weight: 600; display: inline-block; width: 70px; }
-        #time-panel .value { font-variant-numeric: tabular-nums; }
-
         #micro-alert {
             position: fixed;
             top: 1rem;
@@ -211,54 +197,40 @@
         }
 
         #micro-alert.visible { transform: translateY(0); opacity: 1; }
-        #micro-alert b { display: inline-block; width: 5.4rem; font-weight: 600; color: #a5b4fc; }
     </style>
 </head>
+
 <body>
+
     <canvas id="wave-canvas"></canvas>
     <img id="zz-image" src="zz.png" alt="zz.png">
 
-    <!-- Small 3D Helix under the image -->
+    <!-- Small 3D Helix -->
     <div id="helix-container">
         <canvas id="helix-canvas" width="180" height="140"></canvas>
     </div>
 
-    <div id="cube-panel">
-        <!-- Wrapper containing the cube + light abcc.png overlay -->
-        <div class="cube-wrapper">
-            <div class="cube-container">
-                <div class="face front">
-                    <img src="https://latex.codecogs.com/svg.image?\mathbf{r}(t)=\langle\cos&space;t,\sin&space;t,t\rangle" alt="r(t)">
-                </div>
-                <div class="face back">
-                    <img src="https://latex.codecogs.com/svg.image?\mathbf{r}'(t)=\langle-\sin&space;t,\cos&space;t,1\rangle" alt="r'(t)">
-                </div>
-                <div class="face right">
-                    <img src="https://latex.codecogs.com/svg.image?\mathbf{r}''(t)=\langle-\cos&space;t,-\sin&space;t,0\rangle" alt="r''(t)">
-                </div>
-                <div class="face left">
-                    <img src="https://latex.codecogs.com/svg.image?\kappa=\dfrac{1}{2}" alt="kappa">
-                </div>
-                <div class="face top">
-                    <img src="https://latex.codecogs.com/svg.image?t\in[1,5]" alt="t range">
-                </div>
-                <div class="face bottom">
-                    <img src="https://latex.codecogs.com/svg.image?\text{Helix (framed)}" alt="Helix">
-                </div>
-            </div>
-
-            <!-- Light professional overlay -->
-            <img src="abcc.png" class="cube-overlay" alt="abcc overlay">
-        </div>
-
-        <div id="ai-feedback">
-            <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop (4 words only)</div>
-            <input type="text" id="feedback-input" placeholder="Type exactly 4 words…" maxlength="60">
-            <button onclick="runAIFeedback()">Feed →</button>
-            <div id="feedback-result" style="margin-top:8px;font-size:11px;color:#22d3ee;"></div>
-        </div>
+    <!-- Cube Panel -->
+    <div class="cube">
+        <div class="face front" id="face-front"></div>
+        <div class="face back"></div>
+        <div class="face right" id="face-right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
     </div>
 
+    <img src="abcc.png" class="cube-overlay" alt="abcc overlay">
+
+    <!-- AI Feedback -->
+    <div id="ai-feedback">
+        <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop (4 words only)</div>
+        <input type="text" id="feedback-input" placeholder="Type exactly 4 words…" maxlength="60">
+        <button onclick="runAIFeedback()">Feed →</button>
+        <div id="feedback-result" style="margin-top:8px;font-size:11px;color:#22d3ee;"></div>
+    </div>
+
+    <!-- Time Panel -->
     <div id="time-panel">
         <div><span class="label">UTC</span> <span class="value" id="utc-time">--:--:--</span></div>
         <div><span class="label">Angle</span> <span class="value" id="utc-angle">0.0°</span></div>
@@ -272,6 +244,28 @@
         <div><b>Cosine:</b> <span id="ma-cos">1.000</span></div>
         <div><b>Distance:</b> <span id="ma-dist">0 px</span></div>
     </div>
+
+    <script>
+        // Create container host for cal.png
+        function createImageContainer() {
+            const container = document.createElement("div");
+            container.className = "img-container";
+
+            const img = document.createElement("img");
+            img.src = "cal.png";
+            img.alt = "cal image";
+
+            container.appendChild(img);
+            return container;
+        }
+
+        // Insert container into FRONT + RIGHT cube faces
+        document.getElementById("face-front").appendChild(createImageContainer());
+        document.getElementById("face-right").appendChild(createImageContainer());
+    </script>
+
+</body>
+</html>
 
 <script>
     function drawHelix() {
