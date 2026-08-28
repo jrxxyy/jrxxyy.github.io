@@ -1,551 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calling Functions • UTC Trig + 3D Cube</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0a0a0f;
-            overflow: hidden;
-            font-family: system-ui, -apple-system, sans-serif;
-            color: #e0e7ff;
-        }
-
-        .stage {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2.5rem;
-            z-index: 10;
-        }
-
-        #zz-image {
-            position: absolute;
-            left: 8%;
-            top: 50%;
-            transform: translateY(-50%);
-            max-width: 240px;
-            max-height: 38vh;
-            transition: filter 0.35s ease, opacity 0.35s ease;
-            cursor: pointer;
-            z-index: 12;
-            opacity: 0.88;
-            filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.25));
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-        }
-
-        #zz-image.active { opacity: 0.72; }
-
-        #helix-container {
-            position: absolute;
-            bottom: 18%;
-            left: 50%;
-            transform: translateX(25px);
-            z-index: 15;
-            width: 180px;
-            height: 140px;
-            background: rgba(10, 10, 20, 0.7);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        #helix-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        #wave-canvas {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0.55;
-        }
-
-        .cube-wrap {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            perspective: 700px;
-        }
-
-        .cube {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            transform-style: preserve-3d;
-            animation: spinCube 8s linear infinite;
-        }
-
-        @keyframes spinCube {
-            from { transform: rotateX(-18deg) rotateY(0deg); }
-            to   { transform: rotateX(-18deg) rotateY(360deg); }
-        }
-
-        .face {
-            position: absolute;
-            width: 154px;
-            height: 154px;
-            left: 23px;
-            top: 23px;
-            background: rgba(15, 15, 35, 0.85);
-            border: 1px solid rgba(99, 102, 241, 0.55);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-            box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
-            overflow: hidden;
-        }
-
-        .face.front  { transform: translateZ(77px); }
-        .face.back   { transform: rotateY(180deg) translateZ(77px); }
-        .face.right  { transform: rotateY(90deg)  translateZ(77px); }
-        .face.left   { transform: rotateY(-90deg) translateZ(77px); }
-        .face.top    { transform: rotateX(90deg)  translateZ(77px); }
-        .face.bottom { transform: rotateX(-90deg) translateZ(77px); }
-
-        .calc-face {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        .calc-face img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .calc-face canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .cube-overlay {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.18;
-            mix-blend-mode: screen;
-            pointer-events: none;
-            border-radius: 8px;
-            z-index: 2;
-            filter: contrast(1.1) brightness(1.15);
-        }
-
-        #ai-feedback {
-            width: 200px;
-            background: rgba(15, 15, 35, 0.9);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            border-radius: 10px;
-            padding: 10px;
-            font-size: 12px;
-        }
-
-        #ai-feedback input {
-            width: 100%;
-            background: #0f0f1a;
-            border: 1px solid #4338ca;
-            color: #e0e7ff;
-            padding: 6px 8px;
-            border-radius: 6px;
-            margin-bottom: 6px;
-            font-size: 12px;
-        }
-
-        #ai-feedback button {
-            width: 100%;
-            background: #4f46e5;
-            border: none;
-            color: white;
-            padding: 6px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        #ai-feedback button:hover { background: #6366f1; }
-
-        #time-panel {
-            position: fixed;
-            bottom: 1.5rem;
-            left: 1.5rem;
-            background: rgba(15, 15, 25, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            font-size: 13px;
-            line-height: 1.5;
-            z-index: 20;
-            min-width: 220px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-
-        #time-panel .label { color: #a5b4fc; margin-right: 0.4rem; }
-
-        #micro-alert {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(0, 0, 0, 0.78);
-            color: #fff;
-            padding: 0.55rem 0.75rem;
-            border-radius: 8px;
-            font-size: 12px;
-            line-height: 1.35;
-            transform: translateY(-10px);
-            opacity: 0;
-            transition: transform 0.25s ease, opacity 0.25s ease;
-            pointer-events: none;
-            min-width: 11rem;
-            z-index: 30;
-            backdrop-filter: blur(8px);
-        }
-
-        #micro-alert.visible { transform: translateY(0); opacity: 1; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTC Trig + 3D Cube</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0a0f;overflow:hidden;font-family:system-ui,sans-serif;color:#e0e7ff}
+.stage{display:flex;align-items:center;gap:2.5rem;z-index:10}
+#zz-image{position:absolute;left:8%;top:50%;transform:translateY(-50%);max-width:240px;max-height:38vh;transition:opacity .35s;cursor:pointer;z-index:12;opacity:.88;filter:drop-shadow(0 0 18px rgba(99,102,241,.25))}
+#zz-image.active{opacity:.72}
+#helix-container{position:absolute;bottom:18%;left:50%;transform:translateX(25px);z-index:15;width:180px;height:140px;background:rgba(10,10,20,.7);border:1px solid rgba(99,102,241,.4);border-radius:10px;overflow:hidden}
+#helix-canvas,#wave-canvas{width:100%;height:100%;display:block}
+#wave-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.55}
+.cube-wrap{position:relative;width:200px;height:200px;perspective:700px}
+.cube{width:200px;height:200px;transform-style:preserve-3d;animation:spinCube 8s linear infinite}
+@keyframes spinCube{from{transform:rotateX(-18deg) rotateY(0)}to{transform:rotateX(-18deg) rotateY(360deg)}}
+.face{position:absolute;width:154px;height:154px;left:23px;top:23px;background:rgba(15,15,35,.85);border:1px solid rgba(99,102,241,.55);display:flex;align-items:center;justify-content:center;padding:8px;overflow:hidden;box-shadow:0 0 25px rgba(99,102,241,.25)}
+.front{transform:translateZ(77px)}.back{transform:rotateY(180deg) translateZ(77px)}
+.right{transform:rotateY(90deg) translateZ(77px)}.left{transform:rotateY(-90deg) translateZ(77px)}
+.top{transform:rotateX(90deg) translateZ(77px)}.bottom{transform:rotateX(-90deg) translateZ(77px)}
+.calc-face,.calc-face img,.calc-face canvas{width:100%;height:100%}
+.calc-face{position:relative}
+.calc-face canvas{position:absolute;inset:0;pointer-events:none}
+.cube-overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.18;mix-blend-mode:screen;pointer-events:none;filter:contrast(1.1) brightness(1.15)}
+#ai-feedback{width:200px;background:rgba(15,15,35,.9);border:1px solid rgba(99,102,241,.4);border-radius:10px;padding:10px;font-size:12px}
+#ai-feedback input,#ai-feedback button{width:100%;padding:6px 8px;border-radius:6px;font-size:12px;margin-bottom:6px}
+#ai-feedback input{background:#0f0f1a;border:1px solid #4338ca;color:#e0e7ff}
+#ai-feedback button{background:#4f46e5;border:0;color:#fff;cursor:pointer}
+#time-panel{position:fixed;bottom:1.5rem;left:1.5rem;background:rgba(15,15,25,.85);border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:1rem 1.25rem;font-size:13px;line-height:1.5;z-index:20;min-width:220px}
+#time-panel .label{color:#a5b4fc;margin-right:.4rem}
+#micro-alert{position:fixed;top:1rem;right:1rem;background:rgba(0,0,0,.78);padding:.55rem .75rem;border-radius:8px;font-size:12px;transform:translateY(-10px);opacity:0;transition:.25s;pointer-events:none;z-index:30}
+#micro-alert.visible{transform:none;opacity:1}
+</style>
 </head>
 <body>
-    <canvas id="wave-canvas"></canvas>
-    <img id="zz-image" src="zz.png" alt="zz.png">
-
-    <div id="helix-container">
-        <canvas id="helix-canvas" width="180" height="140"></canvas>
+<canvas id="wave-canvas"></canvas>
+<img id="zz-image" src="zz.png" alt="zz">
+<div id="helix-container"><canvas id="helix-canvas" width="180" height="140"></canvas></div>
+<div class="stage">
+  <div class="cube-wrap">
+    <div class="cube">
+      <div class="face front" id="face-front"></div>
+      <div class="face back"></div>
+      <div class="face right" id="face-right"></div>
+      <div class="face left"></div>
+      <div class="face top"></div>
+      <div class="face bottom"></div>
     </div>
+    <img src="abcc.png" class="cube-overlay" alt="">
+  </div>
+  <div id="ai-feedback">
+    <div style="margin-bottom:6px;color:#a5b4fc">AI Feedback Loop (4 words only)</div>
+    <input id="feedback-input" placeholder="Type exactly 4 words…" maxlength="60">
+    <button type="button" id="feedback-btn">Feed →</button>
+    <div id="feedback-result" style="margin-top:8px;font-size:11px;color:#22d3ee"></div>
+  </div>
+</div>
+<div id="time-panel">
+  <div><span class="label">UTC</span><span id="utc-time">--:--:--</span></div>
+  <div><span class="label">Angle</span><span id="utc-angle">0.0°</span></div>
+  <div><span class="label">sin</span><span id="utc-sin">0.000</span></div>
+  <div><span class="label">cos</span><span id="utc-cos">1.000</span></div>
+  <div><span class="label">tan</span><span id="utc-tan">0.000</span></div>
+</div>
+<div id="micro-alert">
+  <div><b>Angle:</b> <span id="ma-angle">0°</span></div>
+  <div><b>Cosine:</b> <span id="ma-cos">1.000</span></div>
+  <div><b>Distance:</b> <span id="ma-dist">0 px</span></div>
+</div>
+<script>
+function makeCalc(){
+  const wrap=document.createElement("div");
+  wrap.className="calc-face";
+  const img=document.createElement("img");
+  img.src="cal.png";
+  const c=document.createElement("canvas");
+  c.width=c.height=308;
+  wrap.append(img,c);
+  return {wrap,c};
+}
+const front=makeCalc(), right=makeCalc();
+document.getElementById("face-front").appendChild(front.wrap);
+document.getElementById("face-right").appendChild(right.wrap);
 
-    <div class="stage">
-        <div class="cube-wrap">
-            <div class="cube">
-                <div class="face front" id="face-front"></div>
-                <div class="face back"></div>
-                <div class="face right" id="face-right"></div>
-                <div class="face left"></div>
-                <div class="face top"></div>
-                <div class="face bottom"></div>
-            </div>
-            <img src="abcc.png" class="cube-overlay" alt="abcc overlay">
-        </div>
+function paint(c, main, sub){
+  const x=c.getContext("2d"), w=c.width, h=c.height;
+  x.clearRect(0,0,w,h);
+  const dx=w*.12, dy=h*.10, dw=w*.76, dh=h*.28;
+  x.fillStyle="rgba(8,10,24,.72)";
+  x.fillRect(dx,dy,dw,dh);
+  x.textAlign="right";
+  x.textBaseline="middle";
+  x.fillStyle="#22d3ee";
+  x.font="bold 26px ui-monospace,monospace";
+  x.fillText(main, dx+dw-12, dy+dh*.4);
+  x.fillStyle="#a5b4fc";
+  x.font="13px ui-monospace,monospace";
+  x.fillText(sub, dx+dw-12, dy+dh*.76);
+}
 
-        <div id="ai-feedback">
-            <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop (4 words only)</div>
-            <input type="text" id="feedback-input" placeholder="Type exactly 4 words…" maxlength="60">
-            <button type="button" id="feedback-btn">Feed →</button>
-            <div id="feedback-result" style="margin-top:8px;font-size:11px;color:#22d3ee;"></div>
-        </div>
-    </div>
+function drawHelix(){
+  const c=document.getElementById("helix-canvas"), x=c.getContext("2d"), w=c.width, h=c.height;
+  x.fillStyle="rgba(10,10,20,.9)";
+  x.fillRect(0,0,w,h);
+  const s=28, cx=w/2, cy=h/2+10;
+  x.strokeStyle="rgba(165,180,252,.5)";
+  x.beginPath();
+  x.moveTo(cx-60,cy); x.lineTo(cx+60,cy);
+  x.moveTo(cx,cy+40); x.lineTo(cx,cy-50);
+  x.stroke();
+  x.strokeStyle="#22d3ee";
+  x.lineWidth=2.2;
+  x.beginPath();
+  for(let t=1;t<=5;t+=.05){
+    const px=cx+Math.cos(t)*s+t*8, py=cy-Math.sin(t)*s-t*6;
+    t===1?x.moveTo(px,py):x.lineTo(px,py);
+  }
+  x.stroke();
+  x.fillStyle="#a5b4fc";
+  x.font="10px monospace";
+  x.fillText("⟨cos t, sin t, t⟩",8,14);
+  x.fillText("t = 1 → 5",8,26);
+}
 
-    <div id="time-panel">
-        <div><span class="label">UTC</span> <span class="value" id="utc-time">--:--:--</span></div>
-        <div><span class="label">Angle</span> <span class="value" id="utc-angle">0.0°</span></div>
-        <div><span class="label">sin</span> <span class="value" id="utc-sin">0.000</span></div>
-        <div><span class="label">cos</span> <span class="value" id="utc-cos">1.000</span></div>
-        <div><span class="label">tan</span> <span class="value" id="utc-tan">0.000</span></div>
-    </div>
+function knockWhite(img){
+  return new Promise(res=>{
+    const t=new Image();
+    t.crossOrigin="anonymous";
+    t.src=img.src;
+    t.onload=()=>{
+      try{
+        const c=document.createElement("canvas"), x=c.getContext("2d");
+        c.width=t.naturalWidth; c.height=t.naturalHeight;
+        x.drawImage(t,0,0);
+        const d=x.getImageData(0,0,c.width,c.height), p=d.data;
+        for(let i=0;i<p.length;i+=4) if(p[i]>240&&p[i+1]>240&&p[i+2]>240) p[i+3]=0;
+        x.putImageData(d,0,0);
+        img.src=c.toDataURL("image/png");
+      }catch(e){}
+      res();
+    };
+    t.onerror=res;
+  });
+}
 
-    <div id="micro-alert" aria-hidden="true">
-        <div><b>Angle:</b> <span id="ma-angle">0°</span></div>
-        <div><b>Cosine:</b> <span id="ma-cos">1.000</span></div>
-        <div><b>Distance:</b> <span id="ma-dist">0 px</span></div>
-    </div>
+window.curvature3D=function(r1,r2,o={}){
+  const x1=r1.x||0,y1=o.y!==undefined?o.y:(r1.y||0),z1=r1.z||0;
+  const x2=r2.x||0,y2=r2.y||0,z2=r2.z||0;
+  const m=Math.hypot(y1*z2-z1*y2,z1*x2-x1*z2,x1*y2-y1*x2);
+  const s=Math.hypot(x1,y1,z1);
+  return s<1e-8?0:m/(s**3);
+};
 
-    <script>
-        function createCalcFace() {
-            const wrap = document.createElement("div");
-            wrap.className = "calc-face";
+window.runAIFeedback=function(){
+  const out=document.getElementById("feedback-result");
+  const words=document.getElementById("feedback-input").value.trim().split(/\s+/).filter(Boolean);
+  if(words.length!==4){out.style.color="#f87171";out.textContent="Please enter exactly 4 words.";return;}
+  const q=words.join(" ");
+  window.open("https://en.wikipedia.org/wiki/Special:Search?search="+encodeURIComponent(q)+"&go=Go","_blank");
+  out.style.color="#22d3ee";
+  out.innerHTML="Searching Wikipedia for:<br><b>"+q+"</b>";
+};
+document.getElementById("feedback-btn").onclick=runAIFeedback;
+document.getElementById("feedback-input").onkeydown=e=>{if(e.key==="Enter")runAIFeedback();};
 
-            const img = document.createElement("img");
-            img.src = "cal.png";
-            img.alt = "calculator";
+const canvas=document.getElementById("wave-canvas"), ctx=canvas.getContext("2d"), img=document.getElementById("zz-image");
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+addEventListener("resize",resize);resize();
+const fmt=(v,d=3)=>Number(v).toFixed(d);
 
-            const overlay = document.createElement("canvas");
-            overlay.width = 308;
-            overlay.height = 308;
+function drawWaves(phase){
+  const w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  [[Math.sin,"167,139,250"],[Math.cos,"34,211,238"]].forEach(([fn,col])=>{
+    let px=0,py=h/2+fn(phase)*80;
+    for(let x=1;x<w;x++){
+      const t=x*.012+phase,y=h/2+fn(t)*80;
+      const r1={x:.012,y:(fn===Math.sin?Math.cos(t):-Math.sin(t))*80*.012,z:.004};
+      const r2={x:0,y:-fn(t)*80*.012*.012,z:0};
+      const k=curvature3D(r1,r2,{y:r1.y});
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);
+      ctx.strokeStyle=`rgba(${col},${.35+Math.min(k*45,.55)})`;
+      ctx.lineWidth=1.8+Math.min(k*14,2.8);
+      ctx.stroke();
+      px=x;py=y;
+    }
+  });
+  ctx.beginPath();
+  ctx.strokeStyle="rgba(255,255,255,.08)";
+  ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
+}
 
-            wrap.appendChild(img);
-            wrap.appendChild(overlay);
-            return { wrap, overlay };
-        }
+function updateUTC(){
+  const now=new Date();
+  const sec=now.getUTCSeconds()+now.getUTCMilliseconds()/1000;
+  const deg=sec/60*360, rad=deg*Math.PI/180;
+  const s=Math.sin(rad), c=Math.cos(rad), t=Math.tan(rad);
+  const tanStr=Math.abs(t)>100?"∞":fmt(t);
+  document.getElementById("utc-time").textContent=
+    String(now.getUTCHours()).padStart(2,"0")+":"+
+    String(now.getUTCMinutes()).padStart(2,"0")+":"+
+    String(now.getUTCSeconds()).padStart(2,"0");
+  document.getElementById("utc-angle").textContent=deg.toFixed(1)+"°";
+  document.getElementById("utc-sin").textContent=fmt(s);
+  document.getElementById("utc-cos").textContent=fmt(c);
+  document.getElementById("utc-tan").textContent=tanStr;
+  paint(front.c, deg.toFixed(1)+"°", "sin "+fmt(s)+"  cos "+fmt(c));
+  paint(right.c, s.toFixed(4), "tan "+tanStr+"  cos "+fmt(c));
+  img.style.transform=`translateY(-50%) rotate(${s*6}deg) scale(${1+c*.08})`;
+  drawWaves(rad);
+  requestAnimationFrame(updateUTC);
+}
 
-        const frontCalc = createCalcFace();
-        const rightCalc = createCalcFace();
-        document.getElementById("face-front").appendChild(frontCalc.wrap);
-        document.getElementById("face-right").appendChild(rightCalc.wrap);
+knockWhite(img).then(()=>{drawHelix();updateUTC();});
 
-        function paintCalc(canvas, payload) {
-            const ctx = canvas.getContext("2d");
-            const w = canvas.width;
-            const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
-
-            const dx = w * 0.12, dy = h * 0.10, dw = w * 0.76, dh = h * 0.28;
-            ctx.fillStyle = "rgba(8, 10, 24, 0.72)";
-            ctx.fillRect(dx, dy, dw, dh);
-
-            ctx.fillStyle = "#22d3ee";
-            ctx.font = "bold 26px ui-monospace, monospace";
-            ctx.textAlign = "right";
-            ctx.textBaseline = "middle";
-            ctx.fillText(payload.main, dx + dw - 12, dy + dh * 0.40);
-
-            ctx.fillStyle = "#a5b4fc";
-            ctx.font = "13px ui-monospace, monospace";
-            ctx.fillText(payload.sub, dx + dw - 12, dy + dh * 0.76);
-        }
-
-        function updateCalcFaces(angleDeg, sin, cos, tan) {
-            const tanStr = Math.abs(tan) > 100 ? "∞" : tan.toFixed(3);
-            paintCalc(frontCalc.overlay, {
-                main: angleDeg.toFixed(1) + "°",
-                sub: "sin " + sin.toFixed(3) + "  cos " + cos.toFixed(3)
-            });
-            paintCalc(rightCalc.overlay, {
-                main: sin.toFixed(4),
-                sub: "tan " + tanStr + "  cos " + cos.toFixed(3)
-            });
-        }
-
-        function drawHelix() {
-            const canvas = document.getElementById("helix-canvas");
-            const ctx = canvas.getContext("2d");
-            const w = canvas.width;
-            const h = canvas.height;
-
-            ctx.fillStyle = "rgba(10,10,20,0.9)";
-            ctx.fillRect(0, 0, w, h);
-
-            const scale = 28;
-            const cx = w / 2;
-            const cy = h / 2 + 10;
-
-            ctx.strokeStyle = "rgba(165,180,252,0.5)";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(cx - 60, cy); ctx.lineTo(cx + 60, cy);
-            ctx.moveTo(cx, cy + 40); ctx.lineTo(cx, cy - 50);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.strokeStyle = "#22d3ee";
-            ctx.lineWidth = 2.2;
-
-            for (let t = 1; t <= 5; t += 0.05) {
-                const x = Math.cos(t);
-                const y = Math.sin(t);
-                const z = t;
-                const px = cx + (x * scale) + (z * 8);
-                const py = cy - (y * scale) - (z * 6);
-                if (t === 1) ctx.moveTo(px, py);
-                else ctx.lineTo(px, py);
-            }
-            ctx.stroke();
-
-            ctx.fillStyle = "#a5b4fc";
-            ctx.font = "10px monospace";
-            ctx.fillText("⟨cos t, sin t, t⟩", 8, 14);
-            ctx.fillText("t = 1 → 5", 8, 26);
-        }
-
-        function removeWhiteBackground(img) {
-            return new Promise(resolve => {
-                const temp = new Image();
-                temp.crossOrigin = "anonymous";
-                temp.src = img.src;
-                temp.onload = () => {
-                    try {
-                        const c = document.createElement("canvas");
-                        const cctx = c.getContext("2d");
-                        c.width = temp.naturalWidth;
-                        c.height = temp.naturalHeight;
-                        cctx.drawImage(temp, 0, 0);
-                        const imageData = cctx.getImageData(0, 0, c.width, c.height);
-                        const data = imageData.data;
-                        for (let i = 0; i < data.length; i += 4) {
-                            if (data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240) {
-                                data[i + 3] = 0;
-                            }
-                        }
-                        cctx.putImageData(imageData, 0, 0);
-                        img.src = c.toDataURL("image/png");
-                    } catch (err) {
-                        /* file:// or CORS — keep original */
-                    }
-                    resolve();
-                };
-                temp.onerror = resolve;
-            });
-        }
-
-        window.curvature3D = function (r1, r2, options = {}) {
-            const x1 = r1.x || 0;
-            const y1 = options.y !== undefined ? options.y : (r1.y || 0);
-            const z1 = r1.z || 0;
-            const x2 = r2.x || 0;
-            const y2 = r2.y || 0;
-            const z2 = r2.z || 0;
-            const cx = y1 * z2 - z1 * y2;
-            const cy = z1 * x2 - x1 * z2;
-            const cz = x1 * y2 - y1 * x2;
-            const crossMag = Math.hypot(cx, cy, cz);
-            const speed = Math.hypot(x1, y1, z1);
-            return speed < 1e-8 ? 0 : crossMag / (speed ** 3);
-        };
-
-        window.runAIFeedback = function () {
-            const input = document.getElementById("feedback-input");
-            const result = document.getElementById("feedback-result");
-            const words = input.value.trim().split(/\s+/).filter(w => w.length > 0);
-
-            if (words.length !== 4) {
-                result.style.color = "#f87171";
-                result.textContent = "Please enter exactly 4 words.";
-                return;
-            }
-
-            const query = words.join(" ");
-            window.open(
-                "https://en.wikipedia.org/wiki/Special:Search?search=" +
-                encodeURIComponent(query) + "&go=Go",
-                "_blank"
-            );
-            result.style.color = "#22d3ee";
-            result.innerHTML = "Searching Wikipedia for:<br><b>" + query + "</b>";
-        };
-
-        document.getElementById("feedback-btn").addEventListener("click", window.runAIFeedback);
-        document.getElementById("feedback-input").addEventListener("keydown", e => {
-            if (e.key === "Enter") window.runAIFeedback();
-        });
-
-        const canvas = document.getElementById("wave-canvas");
-        const ctx = canvas.getContext("2d");
-        const img = document.getElementById("zz-image");
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener("resize", resize);
-        resize();
-
-        function fmt(v, d = 3) {
-            return Number(v).toFixed(d);
-        }
-
-        function updateUTC() {
-            const now = new Date();
-            const totalSeconds = now.getUTCSeconds() + now.getUTCMilliseconds() / 1000;
-            const angleDeg = (totalSeconds / 60) * 360;
-            const angleRad = angleDeg * Math.PI / 180;
-            const sin = Math.sin(angleRad);
-            const cos = Math.cos(angleRad);
-            const tan = Math.tan(angleRad);
-
-            document.getElementById("utc-time").textContent =
-                String(now.getUTCHours()).padStart(2, "0") + ":" +
-                String(now.getUTCMinutes()).padStart(2, "0") + ":" +
-                String(now.getUTCSeconds()).padStart(2, "0");
-            document.getElementById("utc-angle").textContent = angleDeg.toFixed(1) + "°";
-            document.getElementById("utc-sin").textContent = fmt(sin);
-            document.getElementById("utc-cos").textContent = fmt(cos);
-            document.getElementById("utc-tan").textContent = Math.abs(tan) > 100 ? "∞" : fmt(tan);
-
-            updateCalcFaces(angleDeg, sin, cos, tan);
-
-            img.style.transform =
-                "translateY(-50%) rotate(" + (sin * 6) + "deg) scale(" + (1 + cos * 0.08) + ")";
-            drawWaves(angleRad);
-            requestAnimationFrame(updateUTC);
-        }
-
-        function drawWaves(phase) {
-            const w = canvas.width;
-            const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
-
-            [
-                [Math.sin, "167,139,250"],
-                [Math.cos, "34,211,238"]
-            ].forEach(([fn, color]) => {
-                let prevX = 0;
-                let prevY = h / 2 + fn(phase) * 80;
-
-                for (let x = 1; x < w; x++) {
-                    const t = x * 0.012 + phase;
-                    const y = h / 2 + fn(t) * 80;
-                    const r1 = {
-                        x: 0.012,
-                        y: (fn === Math.sin ? Math.cos(t) : -Math.sin(t)) * 80 * 0.012,
-                        z: 0.004
-                    };
-                    const r2 = { x: 0, y: -fn(t) * 80 * 0.012 * 0.012, z: 0 };
-                    const k = window.curvature3D(r1, r2, { y: r1.y });
-
-                    ctx.beginPath();
-                    ctx.moveTo(prevX, prevY);
-                    ctx.lineTo(x, y);
-                    ctx.strokeStyle = "rgba(" + color + "," + (0.35 + Math.min(k * 45, 0.55)) + ")";
-                    ctx.lineWidth = 1.8 + Math.min(k * 14, 2.8);
-                    ctx.stroke();
-
-                    prevX = x;
-                    prevY = y;
-                }
-            });
-
-            ctx.beginPath();
-            ctx.strokeStyle = "rgba(255,255,255,0.08)";
-            ctx.moveTo(0, h / 2);
-            ctx.lineTo(w, h / 2);
-            ctx.stroke();
-        }
-
-        removeWhiteBackground(img).then(() => {
-            drawHelix();
-            updateUTC();
-        });
-
-        document.addEventListener("mousemove", e => {
-            const isLeft = e.clientX < window.innerWidth / 2;
-            const cx = window.innerWidth / 2;
-            const cy = window.innerHeight / 2;
-            const dx = e.clientX - cx;
-            const dy = e.clientY - cy;
-            const dist = Math.hypot(dx, dy);
-            const ang = Math.atan2(dy, dx) * 180 / Math.PI;
-
-            document.getElementById("ma-angle").textContent = Math.round(ang) + "°";
-            document.getElementById("ma-cos").textContent = fmt(Math.cos(Math.atan2(dy, dx)));
-            document.getElementById("ma-dist").textContent = Math.round(dist) + " px";
-
-            img.classList.toggle("active", isLeft);
-            document.getElementById("micro-alert").classList.toggle("visible", isLeft);
-        });
-
-        document.addEventListener("mouseleave", () => {
-            img.classList.remove("active");
-            document.getElementById("micro-alert").classList.remove("visible");
-        });
-    </script>
+addEventListener("mousemove",e=>{
+  const left=e.clientX<innerWidth/2;
+  const dx=e.clientX-innerWidth/2, dy=e.clientY-innerHeight/2;
+  document.getElementById("ma-angle").textContent=Math.round(Math.atan2(dy,dx)*180/Math.PI)+"°";
+  document.getElementById("ma-cos").textContent=fmt(Math.cos(Math.atan2(dy,dx)));
+  document.getElementById("ma-dist").textContent=Math.round(Math.hypot(dx,dy))+" px";
+  img.classList.toggle("active",left);
+  document.getElementById("micro-alert").classList.toggle("visible",left);
+});
+addEventListener("mouseleave",()=>{
+  img.classList.remove("active");
+  document.getElementById("micro-alert").classList.remove("visible");
+});
+</script>
 </body>
 </html>
