@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calling Functions • UTC Trig + 3D Cube</title>
-
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -19,12 +18,20 @@
             color: #e0e7ff;
         }
 
+        .stage {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2.5rem;
+            z-index: 10;
+        }
+
         #zz-image {
-            max-width: 55%;
-            max-height: 55vh;
+            max-width: 280px;
+            max-height: 40vh;
             transition: transform 0.35s ease, opacity 0.35s ease;
             cursor: pointer;
-            z-index: 10;
             will-change: transform;
             opacity: 0.88;
             filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.25));
@@ -34,7 +41,6 @@
 
         #zz-image.active { opacity: 0.72; }
 
-        /* Small Helix under the image */
         #helix-container {
             position: absolute;
             bottom: 18%;
@@ -57,14 +63,21 @@
 
         #wave-canvas {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            inset: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             pointer-events: none;
             opacity: 0.55;
         }
 
-        /* 3D Cube Panel */
+        .cube-wrap {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            perspective: 700px;
+        }
+
         .cube {
             position: relative;
             width: 200px;
@@ -82,6 +95,8 @@
             position: absolute;
             width: 154px;
             height: 154px;
+            left: 23px;
+            top: 23px;
             background: rgba(15, 15, 35, 0.85);
             border: 1px solid rgba(99, 102, 241, 0.55);
             backdrop-filter: blur(10px);
@@ -90,6 +105,7 @@
             justify-content: center;
             padding: 12px;
             box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
+            overflow: hidden;
         }
 
         .face.front  { transform: translateZ(77px); }
@@ -99,7 +115,6 @@
         .face.top    { transform: rotateX(90deg)  translateZ(77px); }
         .face.bottom { transform: rotateX(-90deg) translateZ(77px); }
 
-        /* Container host for cal.png */
         .img-container {
             width: 100%;
             height: 100%;
@@ -112,11 +127,9 @@
             object-fit: contain;
         }
 
-        /* Light professional overlay of abcc.png */
         .cube-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -124,12 +137,12 @@
             mix-blend-mode: screen;
             pointer-events: none;
             border-radius: 8px;
-            z-index: 10;
+            z-index: 2;
             filter: contrast(1.1) brightness(1.15);
         }
 
         #ai-feedback {
-            margin-top: 14px;
+            width: 200px;
             background: rgba(15, 15, 35, 0.9);
             border: 1px solid rgba(99, 102, 241, 0.4);
             border-radius: 10px;
@@ -177,6 +190,8 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
 
+        #time-panel .label { color: #a5b4fc; margin-right: 0.4rem; }
+
         #micro-alert {
             position: fixed;
             top: 1rem;
@@ -199,38 +214,35 @@
         #micro-alert.visible { transform: translateY(0); opacity: 1; }
     </style>
 </head>
-
 <body>
-
     <canvas id="wave-canvas"></canvas>
     <img id="zz-image" src="zz.png" alt="zz.png">
 
-    <!-- Small 3D Helix -->
     <div id="helix-container">
         <canvas id="helix-canvas" width="180" height="140"></canvas>
     </div>
 
-    <!-- Cube Panel -->
-    <div class="cube">
-        <div class="face front" id="face-front"></div>
-        <div class="face back"></div>
-        <div class="face right" id="face-right"></div>
-        <div class="face left"></div>
-        <div class="face top"></div>
-        <div class="face bottom"></div>
+    <div class="stage">
+        <div class="cube-wrap">
+            <div class="cube">
+                <div class="face front" id="face-front"></div>
+                <div class="face back"></div>
+                <div class="face right" id="face-right"></div>
+                <div class="face left"></div>
+                <div class="face top"></div>
+                <div class="face bottom"></div>
+            </div>
+            <img src="abcc.png" class="cube-overlay" alt="abcc overlay">
+        </div>
+
+        <div id="ai-feedback">
+            <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop (4 words only)</div>
+            <input type="text" id="feedback-input" placeholder="Type exactly 4 words…" maxlength="60">
+            <button type="button" id="feedback-btn">Feed →</button>
+            <div id="feedback-result" style="margin-top:8px;font-size:11px;color:#22d3ee;"></div>
+        </div>
     </div>
 
-    <img src="abcc.png" class="cube-overlay" alt="abcc overlay">
-
-    <!-- AI Feedback -->
-    <div id="ai-feedback">
-        <div style="margin-bottom:6px;color:#a5b4fc;">AI Feedback Loop (4 words only)</div>
-        <input type="text" id="feedback-input" placeholder="Type exactly 4 words…" maxlength="60">
-        <button onclick="runAIFeedback()">Feed →</button>
-        <div id="feedback-result" style="margin-top:8px;font-size:11px;color:#22d3ee;"></div>
-    </div>
-
-    <!-- Time Panel -->
     <div id="time-panel">
         <div><span class="label">UTC</span> <span class="value" id="utc-time">--:--:--</span></div>
         <div><span class="label">Angle</span> <span class="value" id="utc-angle">0.0°</span></div>
@@ -246,208 +258,236 @@
     </div>
 
     <script>
-        // Create container host for cal.png
         function createImageContainer() {
             const container = document.createElement("div");
             container.className = "img-container";
-
             const img = document.createElement("img");
             img.src = "cal.png";
             img.alt = "cal image";
-
             container.appendChild(img);
             return container;
         }
 
-        // Insert container into FRONT + RIGHT cube faces
         document.getElementById("face-front").appendChild(createImageContainer());
         document.getElementById("face-right").appendChild(createImageContainer());
-    </script>
 
-</body>
-</html>
+        function drawHelix() {
+            const canvas = document.getElementById("helix-canvas");
+            const ctx = canvas.getContext("2d");
+            const w = canvas.width;
+            const h = canvas.height;
 
-<script>
-    function drawHelix() {
-        const canvas = document.getElementById('helix-canvas');
-        const ctx = canvas.getContext('2d');
-        const w = canvas.width;
-        const h = canvas.height;
+            ctx.fillStyle = "rgba(10,10,20,0.9)";
+            ctx.fillRect(0, 0, w, h);
 
-        ctx.fillStyle = 'rgba(10,10,20,0.9)';
-        ctx.fillRect(0, 0, w, h);
+            const scale = 28;
+            const cx = w / 2;
+            const cy = h / 2 + 10;
 
-        const scale = 28;
-        const cx = w / 2;
-        const cy = h / 2 + 10;
-
-        ctx.strokeStyle = 'rgba(165,180,252,0.5)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(cx - 60, cy); ctx.lineTo(cx + 60, cy);
-        ctx.moveTo(cx, cy + 40); ctx.lineTo(cx, cy - 50);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.strokeStyle = '#22d3ee';
-        ctx.lineWidth = 2.2;
-
-        for (let t = 1; t <= 5; t += 0.05) {
-            const x = Math.cos(t);
-            const y = Math.sin(t);
-            const z = t;
-            const px = cx + (x * scale) + (z * 8);
-            const py = cy - (y * scale) - (z * 6);
-            if (t === 1) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-        }
-        ctx.stroke();
-
-        ctx.fillStyle = '#a5b4fc';
-        ctx.font = '10px monospace';
-        ctx.fillText('⟨cos t, sin t, t⟩', 8, 14);
-        ctx.fillText('t = 1 → 5', 8, 26);
-    }
-
-    function removeWhiteBackground(img) {
-        return new Promise(resolve => {
-            const temp = new Image();
-            temp.crossOrigin = "anonymous";
-            temp.src = img.src;
-            temp.onload = () => {
-                const c = document.createElement('canvas');
-                const ctx = c.getContext('2d');
-                c.width = temp.naturalWidth;
-                c.height = temp.naturalHeight;
-                ctx.drawImage(temp, 0, 0);
-                const data = ctx.getImageData(0, 0, c.width, c.height).data;
-                for (let i = 0; i < data.length; i += 4) {
-                    if (data[i] > 240 && data[i+1] > 240 && data[i+2] > 240) data[i+3] = 0;
-                }
-                ctx.putImageData(new ImageData(data, c.width, c.height), 0, 0);
-                img.src = c.toDataURL('image/png');
-                resolve();
-            };
-            temp.onerror = resolve;
-        });
-    }
-
-    window.curvature3D = function(r1, r2, options = {}) {
-        const x1 = r1.x || 0;
-        const y1 = options.y !== undefined ? options.y : (r1.y || 0);
-        const z1 = r1.z || 0;
-        const x2 = r2.x || 0;
-        const y2 = r2.y || 0;
-        const z2 = r2.z || 0;
-        const cx = y1*z2 - z1*y2;
-        const cy = z1*x2 - x1*z2;
-        const cz = x1*y2 - y1*x2;
-        const crossMag = Math.hypot(cx, cy, cz);
-        const speed = Math.hypot(x1, y1, z1);
-        return speed < 1e-8 ? 0 : crossMag / (speed ** 3);
-    };
-
-    window.runAIFeedback = function() {
-        const input = document.getElementById('feedback-input');
-        const result = document.getElementById('feedback-result');
-        const words = input.value.trim().split(/\s+/).filter(w => w.length > 0);
-
-        if (words.length !== 4) {
-            result.style.color = "#f87171";
-            result.textContent = "Please enter exactly 4 words.";
-            return;
-        }
-
-        const query = words.join(' ');
-        window.open(`https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(query)}&go=Go`, '_blank');
-        result.style.color = "#22d3ee";
-        result.innerHTML = `Searching Wikipedia for:<br><b>${query}</b>`;
-    };
-
-    const canvas = document.getElementById('wave-canvas');
-    const ctx = canvas.getContext('2d');
-    const img = document.getElementById('zz-image');
-
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    function fmt(v, d=3){ return Number(v).toFixed(d); }
-
-    function updateUTC() {
-        const now = new Date();
-        const totalSeconds = now.getUTCSeconds() + now.getUTCMilliseconds()/1000;
-        const angleDeg = (totalSeconds/60)*360;
-        const angleRad = angleDeg * Math.PI/180;
-        const sin = Math.sin(angleRad);
-        const cos = Math.cos(angleRad);
-        const tan = Math.tan(angleRad);
-
-        document.getElementById('utc-time').textContent = 
-            `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}:${String(now.getUTCSeconds()).padStart(2,'0')}`;
-        document.getElementById('utc-angle').textContent = angleDeg.toFixed(1)+'°';
-        document.getElementById('utc-sin').textContent = fmt(sin);
-        document.getElementById('utc-cos').textContent = fmt(cos);
-        document.getElementById('utc-tan').textContent = Math.abs(tan)>100 ? '∞' : fmt(tan);
-
-        img.style.transform = `rotate(${sin*6}deg) scale(${1+cos*0.08})`;
-        drawWaves(angleRad);
-        requestAnimationFrame(updateUTC);
-    }
-
-    function drawWaves(phase) {
-        const w = canvas.width, h = canvas.height;
-        ctx.clearRect(0,0,w,h);
-
-        [[Math.sin, '167,139,250'], [Math.cos, '34,211,238']].forEach(([fn, color]) => {
+            ctx.strokeStyle = "rgba(165,180,252,0.5)";
+            ctx.lineWidth = 1;
             ctx.beginPath();
-            for (let x = 0; x < w; x++) {
-                const t = x * 0.012 + phase;
-                const y = h/2 + fn(t) * 80;
-                const r1 = {x:0.012, y: (fn===Math.sin ? Math.cos(t) : -Math.sin(t))*80*0.012, z:0.004};
-                const r2 = {x:0, y: -fn(t)*80*0.012*0.012, z:0};
-                const k = window.curvature3D(r1, r2, {y: r1.y});
-                ctx.strokeStyle = `rgba(${color},${0.35+Math.min(k*45,0.55)})`;
-                ctx.lineWidth = 1.8 + Math.min(k*14, 2.8);
-                x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+            ctx.moveTo(cx - 60, cy); ctx.lineTo(cx + 60, cy);
+            ctx.moveTo(cx, cy + 40); ctx.lineTo(cx, cy - 50);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.strokeStyle = "#22d3ee";
+            ctx.lineWidth = 2.2;
+
+            for (let t = 1; t <= 5; t += 0.05) {
+                const x = Math.cos(t);
+                const y = Math.sin(t);
+                const z = t;
+                const px = cx + (x * scale) + (z * 8);
+                const py = cy - (y * scale) - (z * 6);
+                if (t === 1) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
             }
             ctx.stroke();
+
+            ctx.fillStyle = "#a5b4fc";
+            ctx.font = "10px monospace";
+            ctx.fillText("⟨cos t, sin t, t⟩", 8, 14);
+            ctx.fillText("t = 1 → 5", 8, 26);
+        }
+
+        function removeWhiteBackground(img) {
+            return new Promise(resolve => {
+                const temp = new Image();
+                temp.crossOrigin = "anonymous";
+                temp.src = img.src;
+                temp.onload = () => {
+                    try {
+                        const c = document.createElement("canvas");
+                        const ctx = c.getContext("2d");
+                        c.width = temp.naturalWidth;
+                        c.height = temp.naturalHeight;
+                        ctx.drawImage(temp, 0, 0);
+                        const imageData = ctx.getImageData(0, 0, c.width, c.height);
+                        const data = imageData.data;
+                        for (let i = 0; i < data.length; i += 4) {
+                            if (data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240) {
+                                data[i + 3] = 0;
+                            }
+                        }
+                        ctx.putImageData(imageData, 0, 0);
+                        img.src = c.toDataURL("image/png");
+                    } catch (err) {
+                        // file:// or CORS: keep original image
+                    }
+                    resolve();
+                };
+                temp.onerror = resolve;
+            });
+        }
+
+        window.curvature3D = function (r1, r2, options = {}) {
+            const x1 = r1.x || 0;
+            const y1 = options.y !== undefined ? options.y : (r1.y || 0);
+            const z1 = r1.z || 0;
+            const x2 = r2.x || 0;
+            const y2 = r2.y || 0;
+            const z2 = r2.z || 0;
+            const cx = y1 * z2 - z1 * y2;
+            const cy = z1 * x2 - x1 * z2;
+            const cz = x1 * y2 - y1 * x2;
+            const crossMag = Math.hypot(cx, cy, cz);
+            const speed = Math.hypot(x1, y1, z1);
+            return speed < 1e-8 ? 0 : crossMag / (speed ** 3);
+        };
+
+        window.runAIFeedback = function () {
+            const input = document.getElementById("feedback-input");
+            const result = document.getElementById("feedback-result");
+            const words = input.value.trim().split(/\s+/).filter(w => w.length > 0);
+
+            if (words.length !== 4) {
+                result.style.color = "#f87171";
+                result.textContent = "Please enter exactly 4 words.";
+                return;
+            }
+
+            const query = words.join(" ");
+            window.open(
+                `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(query)}&go=Go`,
+                "_blank"
+            );
+            result.style.color = "#22d3ee";
+            result.innerHTML = `Searching Wikipedia for:<br><b>${query}</b>`;
+        };
+
+        document.getElementById("feedback-btn").addEventListener("click", window.runAIFeedback);
+        document.getElementById("feedback-input").addEventListener("keydown", e => {
+            if (e.key === "Enter") window.runAIFeedback();
         });
 
-        ctx.beginPath();
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.moveTo(0, h/2);
-        ctx.lineTo(w, h/2);
-        ctx.stroke();
-    }
+        const canvas = document.getElementById("wave-canvas");
+        const ctx = canvas.getContext("2d");
+        const img = document.getElementById("zz-image");
 
-    removeWhiteBackground(img).then(() => {
-        drawHelix();
-        updateUTC();
-    });
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resize);
+        resize();
 
-    document.addEventListener('mousemove', e => {
-        const isLeft = e.clientX < window.innerWidth/2;
-        const cx = window.innerWidth/2, cy = window.innerHeight/2;
-        const dx = e.clientX - cx, dy = e.clientY - cy;
-        const dist = Math.hypot(dx, dy);
-        const ang = Math.atan2(dy, dx) * 180 / Math.PI;
+        function fmt(v, d = 3) {
+            return Number(v).toFixed(d);
+        }
 
-        document.getElementById('ma-angle').textContent = Math.round(ang) + '°';
-        document.getElementById('ma-cos').textContent = fmt(Math.cos(Math.atan2(dy,dx)));
-        document.getElementById('ma-dist').textContent = Math.round(dist) + ' px';
+        function updateUTC() {
+            const now = new Date();
+            const totalSeconds = now.getUTCSeconds() + now.getUTCMilliseconds() / 1000;
+            const angleDeg = (totalSeconds / 60) * 360;
+            const angleRad = angleDeg * Math.PI / 180;
+            const sin = Math.sin(angleRad);
+            const cos = Math.cos(angleRad);
+            const tan = Math.tan(angleRad);
 
-        img.classList.toggle('active', isLeft);
-        document.getElementById('micro-alert').classList.toggle('visible', isLeft);
-    });
+            document.getElementById("utc-time").textContent =
+                `${String(now.getUTCHours()).padStart(2, "0")}:` +
+                `${String(now.getUTCMinutes()).padStart(2, "0")}:` +
+                `${String(now.getUTCSeconds()).padStart(2, "0")}`;
+            document.getElementById("utc-angle").textContent = angleDeg.toFixed(1) + "°";
+            document.getElementById("utc-sin").textContent = fmt(sin);
+            document.getElementById("utc-cos").textContent = fmt(cos);
+            document.getElementById("utc-tan").textContent = Math.abs(tan) > 100 ? "∞" : fmt(tan);
 
-    document.addEventListener('mouseleave', () => {
-        img.classList.remove('active');
-        document.getElementById('micro-alert').classList.remove('visible');
-    });
-</script>
+            img.style.transform = `rotate(${sin * 6}deg) scale(${1 + cos * 0.08})`;
+            drawWaves(angleRad);
+            requestAnimationFrame(updateUTC);
+        }
+
+        function drawWaves(phase) {
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            [
+                [Math.sin, "167,139,250"],
+                [Math.cos, "34,211,238"]
+            ].forEach(([fn, color]) => {
+                let prevX = 0;
+                let prevY = h / 2 + fn(phase) * 80;
+
+                for (let x = 1; x < w; x++) {
+                    const t = x * 0.012 + phase;
+                    const y = h / 2 + fn(t) * 80;
+                    const r1 = {
+                        x: 0.012,
+                        y: (fn === Math.sin ? Math.cos(t) : -Math.sin(t)) * 80 * 0.012,
+                        z: 0.004
+                    };
+                    const r2 = { x: 0, y: -fn(t) * 80 * 0.012 * 0.012, z: 0 };
+                    const k = window.curvature3D(r1, r2, { y: r1.y });
+
+                    ctx.beginPath();
+                    ctx.moveTo(prevX, prevY);
+                    ctx.lineTo(x, y);
+                    ctx.strokeStyle = `rgba(${color},${0.35 + Math.min(k * 45, 0.55)})`;
+                    ctx.lineWidth = 1.8 + Math.min(k * 14, 2.8);
+                    ctx.stroke();
+
+                    prevX = x;
+                    prevY = y;
+                }
+            });
+
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(255,255,255,0.08)";
+            ctx.moveTo(0, h / 2);
+            ctx.lineTo(w, h / 2);
+            ctx.stroke();
+        }
+
+        removeWhiteBackground(img).then(() => {
+            drawHelix();
+            updateUTC();
+        });
+
+        document.addEventListener("mousemove", e => {
+            const isLeft = e.clientX < window.innerWidth / 2;
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            const dx = e.clientX - cx;
+            const dy = e.clientY - cy;
+            const dist = Math.hypot(dx, dy);
+            const ang = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            document.getElementById("ma-angle").textContent = Math.round(ang) + "°";
+            document.getElementById("ma-cos").textContent = fmt(Math.cos(Math.atan2(dy, dx)));
+            document.getElementById("ma-dist").textContent = Math.round(dist) + " px";
+
+            img.classList.toggle("active", isLeft);
+            document.getElementById("micro-alert").classList.toggle("visible", isLeft);
+        });
+
+        document.addEventListener("mouseleave", () => {
+            img.classList.remove("active");
+            document.getElementById("micro-alert").classList.remove("visible");
+        });
+    </script>
 </body>
 </html>
