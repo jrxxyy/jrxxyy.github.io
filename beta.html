@@ -28,11 +28,15 @@
         }
 
         #zz-image {
-            max-width: 280px;
-            max-height: 40vh;
-            transition: transform 0.35s ease, opacity 0.35s ease;
+            position: absolute;
+            left: 8%;
+            top: 50%;
+            transform: translateY(-50%);
+            max-width: 240px;
+            max-height: 38vh;
+            transition: filter 0.35s ease, opacity 0.35s ease;
             cursor: pointer;
-            will-change: transform;
+            z-index: 12;
             opacity: 0.88;
             filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.25));
             image-rendering: -webkit-optimize-contrast;
@@ -103,7 +107,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 12px;
+            padding: 8px;
             box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
             overflow: hidden;
         }
@@ -115,16 +119,24 @@
         .face.top    { transform: rotateX(90deg)  translateZ(77px); }
         .face.bottom { transform: rotateX(-90deg) translateZ(77px); }
 
-        .img-container {
+        .calc-face {
+            position: relative;
             width: 100%;
             height: 100%;
-            display: flex;
         }
 
-        .img-container img {
+        .calc-face img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
+
+        .calc-face canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
 
         .cube-overlay {
@@ -258,18 +270,60 @@
     </div>
 
     <script>
-        function createImageContainer() {
-            const container = document.createElement("div");
-            container.className = "img-container";
+        function createCalcFace() {
+            const wrap = document.createElement("div");
+            wrap.className = "calc-face";
+
             const img = document.createElement("img");
             img.src = "cal.png";
-            img.alt = "cal image";
-            container.appendChild(img);
-            return container;
+            img.alt = "calculator";
+
+            const overlay = document.createElement("canvas");
+            overlay.width = 308;
+            overlay.height = 308;
+
+            wrap.appendChild(img);
+            wrap.appendChild(overlay);
+            return { wrap, overlay };
         }
 
-        document.getElementById("face-front").appendChild(createImageContainer());
-        document.getElementById("face-right").appendChild(createImageContainer());
+        const frontCalc = createCalcFace();
+        const rightCalc = createCalcFace();
+        document.getElementById("face-front").appendChild(frontCalc.wrap);
+        document.getElementById("face-right").appendChild(rightCalc.wrap);
+
+        function paintCalc(canvas, payload) {
+            const ctx = canvas.getContext("2d");
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const dx = w * 0.12, dy = h * 0.10, dw = w * 0.76, dh = h * 0.28;
+            ctx.fillStyle = "rgba(8, 10, 24, 0.72)";
+            ctx.fillRect(dx, dy, dw, dh);
+
+            ctx.fillStyle = "#22d3ee";
+            ctx.font = "bold 26px ui-monospace, monospace";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText(payload.main, dx + dw - 12, dy + dh * 0.40);
+
+            ctx.fillStyle = "#a5b4fc";
+            ctx.font = "13px ui-monospace, monospace";
+            ctx.fillText(payload.sub, dx + dw - 12, dy + dh * 0.76);
+        }
+
+        function updateCalcFaces(angleDeg, sin, cos, tan) {
+            const tanStr = Math.abs(tan) > 100 ? "∞" : tan.toFixed(3);
+            paintCalc(frontCalc.overlay, {
+                main: angleDeg.toFixed(1) + "°",
+                sub: "sin " + sin.toFixed(3) + "  cos " + cos.toFixed(3)
+            });
+            paintCalc(rightCalc.overlay, {
+                main: sin.toFixed(4),
+                sub: "tan " + tanStr + "  cos " + cos.toFixed(3)
+            });
+        }
 
         function drawHelix() {
             const canvas = document.getElementById("helix-canvas");
@@ -320,21 +374,21 @@
                 temp.onload = () => {
                     try {
                         const c = document.createElement("canvas");
-                        const ctx = c.getContext("2d");
+                        const cctx = c.getContext("2d");
                         c.width = temp.naturalWidth;
                         c.height = temp.naturalHeight;
-                        ctx.drawImage(temp, 0, 0);
-                        const imageData = ctx.getImageData(0, 0, c.width, c.height);
+                        cctx.drawImage(temp, 0, 0);
+                        const imageData = cctx.getImageData(0, 0, c.width, c.height);
                         const data = imageData.data;
                         for (let i = 0; i < data.length; i += 4) {
                             if (data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240) {
                                 data[i + 3] = 0;
                             }
                         }
-                        ctx.putImageData(imageData, 0, 0);
+                        cctx.putImageData(imageData, 0, 0);
                         img.src = c.toDataURL("image/png");
                     } catch (err) {
-                        // file:// or CORS: keep original image
+                        /* file:// or CORS — keep original */
                     }
                     resolve();
                 };
@@ -370,11 +424,12 @@
 
             const query = words.join(" ");
             window.open(
-                `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(query)}&go=Go`,
+                "https://en.wikipedia.org/wiki/Special:Search?search=" +
+                encodeURIComponent(query) + "&go=Go",
                 "_blank"
             );
             result.style.color = "#22d3ee";
-            result.innerHTML = `Searching Wikipedia for:<br><b>${query}</b>`;
+            result.innerHTML = "Searching Wikipedia for:<br><b>" + query + "</b>";
         };
 
         document.getElementById("feedback-btn").addEventListener("click", window.runAIFeedback);
@@ -407,15 +462,18 @@
             const tan = Math.tan(angleRad);
 
             document.getElementById("utc-time").textContent =
-                `${String(now.getUTCHours()).padStart(2, "0")}:` +
-                `${String(now.getUTCMinutes()).padStart(2, "0")}:` +
-                `${String(now.getUTCSeconds()).padStart(2, "0")}`;
+                String(now.getUTCHours()).padStart(2, "0") + ":" +
+                String(now.getUTCMinutes()).padStart(2, "0") + ":" +
+                String(now.getUTCSeconds()).padStart(2, "0");
             document.getElementById("utc-angle").textContent = angleDeg.toFixed(1) + "°";
             document.getElementById("utc-sin").textContent = fmt(sin);
             document.getElementById("utc-cos").textContent = fmt(cos);
             document.getElementById("utc-tan").textContent = Math.abs(tan) > 100 ? "∞" : fmt(tan);
 
-            img.style.transform = `rotate(${sin * 6}deg) scale(${1 + cos * 0.08})`;
+            updateCalcFaces(angleDeg, sin, cos, tan);
+
+            img.style.transform =
+                "translateY(-50%) rotate(" + (sin * 6) + "deg) scale(" + (1 + cos * 0.08) + ")";
             drawWaves(angleRad);
             requestAnimationFrame(updateUTC);
         }
@@ -446,7 +504,7 @@
                     ctx.beginPath();
                     ctx.moveTo(prevX, prevY);
                     ctx.lineTo(x, y);
-                    ctx.strokeStyle = `rgba(${color},${0.35 + Math.min(k * 45, 0.55)})`;
+                    ctx.strokeStyle = "rgba(" + color + "," + (0.35 + Math.min(k * 45, 0.55)) + ")";
                     ctx.lineWidth = 1.8 + Math.min(k * 14, 2.8);
                     ctx.stroke();
 
