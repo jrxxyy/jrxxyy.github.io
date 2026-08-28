@@ -3,41 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UTC Trig + 3D Cube</title>
+<title>UTC Trig + L∞ Chat</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0a0f;overflow:hidden;font-family:system-ui,sans-serif;color:#e0e7ff}
-.stage{display:flex;align-items:center;gap:2.5rem;z-index:10}
-#zz-image{position:absolute;left:8%;top:50%;transform:translateY(-50%);max-width:240px;max-height:38vh;transition:opacity .35s;cursor:pointer;z-index:12;opacity:.88;filter:drop-shadow(0 0 18px rgba(99,102,241,.25))}
+.stage{display:flex;align-items:center;gap:1.6rem;z-index:10}
+#zz-image{position:absolute;left:6%;top:50%;transform:translateY(-50%);max-width:200px;max-height:32vh;z-index:12;opacity:.88;filter:drop-shadow(0 0 18px rgba(99,102,241,.25))}
 #zz-image.active{opacity:.72}
-#helix-container{position:absolute;bottom:18%;left:50%;transform:translateX(25px);z-index:15;width:180px;height:140px;background:rgba(10,10,20,.7);border:1px solid rgba(99,102,241,.4);border-radius:10px;overflow:hidden}
+#helix-container{position:absolute;bottom:16%;left:50%;transform:translateX(25px);z-index:15;width:160px;height:120px;background:rgba(10,10,20,.7);border:1px solid rgba(99,102,241,.4);border-radius:10px;overflow:hidden}
 #helix-canvas,#wave-canvas{width:100%;height:100%;display:block}
-#wave-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.55}
-.cube-wrap{position:relative;width:200px;height:200px;perspective:700px}
-.cube{width:200px;height:200px;transform-style:preserve-3d;animation:spinCube 8s linear infinite}
+#wave-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.45}
+.cube-wrap{position:relative;width:170px;height:170px;perspective:700px}
+.cube{width:170px;height:170px;transform-style:preserve-3d;animation:spinCube 8s linear infinite}
 @keyframes spinCube{from{transform:rotateX(-18deg) rotateY(0)}to{transform:rotateX(-18deg) rotateY(360deg)}}
-.face{position:absolute;width:154px;height:154px;left:23px;top:23px;background:rgba(15,15,35,.85);border:1px solid rgba(99,102,241,.55);display:flex;align-items:center;justify-content:center;padding:8px;overflow:hidden;box-shadow:0 0 25px rgba(99,102,241,.25)}
-.front{transform:translateZ(77px)}.back{transform:rotateY(180deg) translateZ(77px)}
-.right{transform:rotateY(90deg) translateZ(77px)}.left{transform:rotateY(-90deg) translateZ(77px)}
-.top{transform:rotateX(90deg) translateZ(77px)}.bottom{transform:rotateX(-90deg) translateZ(77px)}
+.face{position:absolute;width:130px;height:130px;left:20px;top:20px;background:rgba(15,15,35,.85);border:1px solid rgba(99,102,241,.55);overflow:hidden}
+.front{transform:translateZ(65px)}.back{transform:rotateY(180deg) translateZ(65px)}
+.right{transform:rotateY(90deg) translateZ(65px)}.left{transform:rotateY(-90deg) translateZ(65px)}
+.top{transform:rotateX(90deg) translateZ(65px)}.bottom{transform:rotateX(-90deg) translateZ(65px)}
 .calc-face,.calc-face img,.calc-face canvas{width:100%;height:100%}
 .calc-face{position:relative}
 .calc-face canvas{position:absolute;inset:0;pointer-events:none}
-.cube-overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.18;mix-blend-mode:screen;pointer-events:none;filter:contrast(1.1) brightness(1.15)}
-#ai-feedback{width:200px;background:rgba(15,15,35,.9);border:1px solid rgba(99,102,241,.4);border-radius:10px;padding:10px;font-size:12px}
-#ai-feedback input,#ai-feedback button{width:100%;padding:6px 8px;border-radius:6px;font-size:12px;margin-bottom:6px}
+.cube-overlay{position:absolute;inset:0;opacity:.18;mix-blend-mode:screen;pointer-events:none}
+#dock{width:280px;display:flex;flex-direction:column;gap:8px;z-index:16}
+#cone-box{height:88px;border:1px solid rgba(99,102,241,.4);border-radius:10px;background:rgba(10,10,20,.75);overflow:hidden}
+#chat{
+  height:220px;display:flex;flex-direction:column;
+  background:rgba(15,15,35,.92);border:1px solid rgba(99,102,241,.4);border-radius:10px;font-size:11px
+}
+#chat-log{flex:1;overflow:auto;padding:8px;line-height:1.4}
+#chat-log .u{color:#a5b4fc}
+#chat-log .s{color:#22d3ee}
+#chat-log .apx{color:#94a3b8;font-style:italic}
+.keys{display:flex;gap:4px;padding:0 8px 6px}
+.keys b{flex:1;text-align:center;background:#1e1b4b;border-radius:4px;padding:3px 0;cursor:pointer;color:#c7d2fe}
+#ai-feedback{padding:8px;border-top:1px solid rgba(99,102,241,.25)}
+#ai-feedback input,#ai-feedback button{width:100%;padding:6px;border-radius:6px;font-size:12px;margin-top:4px}
 #ai-feedback input{background:#0f0f1a;border:1px solid #4338ca;color:#e0e7ff}
-#ai-feedback button{background:#4f46e5;border:0;color:#fff;cursor:pointer}
-#time-panel{position:fixed;bottom:1.5rem;left:1.5rem;background:rgba(15,15,25,.85);border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:1rem 1.25rem;font-size:13px;line-height:1.5;z-index:20;min-width:220px}
-#time-panel .label{color:#a5b4fc;margin-right:.4rem}
-#micro-alert{position:fixed;top:1rem;right:1rem;background:rgba(0,0,0,.78);padding:.55rem .75rem;border-radius:8px;font-size:12px;transform:translateY(-10px);opacity:0;transition:.25s;pointer-events:none;z-index:30}
-#micro-alert.visible{transform:none;opacity:1}
+#ai-feedback button{background:#4f46e5;border:0;color:#fff}
+#time-panel{position:fixed;bottom:1.2rem;left:1.2rem;background:rgba(15,15,25,.85);border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:.8rem 1rem;font-size:12px;z-index:20}
+#time-panel .label{color:#a5b4fc;margin-right:.35rem}
+#micro-alert{position:fixed;top:1rem;right:1rem;background:rgba(0,0,0,.78);padding:.5rem .7rem;border-radius:8px;font-size:12px;opacity:0;transform:translateY(-8px);transition:.25s;z-index:30;pointer-events:none}
+#micro-alert.visible{opacity:1;transform:none}
 </style>
 </head>
 <body>
 <canvas id="wave-canvas"></canvas>
 <img id="zz-image" src="zz.png" alt="zz">
-<div id="helix-container"><canvas id="helix-canvas" width="180" height="140"></canvas></div>
+<div id="helix-container"><canvas id="helix-canvas" width="160" height="120"></canvas></div>
 <div class="stage">
   <div class="cube-wrap">
     <div class="cube">
@@ -50,11 +62,19 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
     </div>
     <img src="abcc.png" class="cube-overlay" alt="">
   </div>
-  <div id="ai-feedback">
-    <div style="margin-bottom:6px;color:#a5b4fc">AI Feedback Loop (4 words only)</div>
-    <input id="feedback-input" placeholder="Type exactly 4 words…" maxlength="60">
-    <button type="button" id="feedback-btn">Feed →</button>
-    <div id="feedback-result" style="margin-top:8px;font-size:11px;color:#22d3ee"></div>
+  <div id="dock">
+    <canvas id="cone-box" width="280" height="88" title="vector cone ahead of the 4-word gate"></canvas>
+    <div id="chat">
+      <div id="chat-log"></div>
+      <div class="keys">
+        <b data-k="q">Q</b><b data-k="a">A</b><b data-k="z">Z</b><b data-k="s">S</b><b data-k="d">D</b>
+      </div>
+      <div id="ai-feedback">
+        <div style="color:#a5b4fc">4-word gate → appendix</div>
+        <input id="feedback-input" placeholder="exactly 4 words" maxlength="60">
+        <button type="button" id="feedback-btn">Feed →</button>
+      </div>
+    </div>
   </div>
 </div>
 <div id="time-panel">
@@ -63,6 +83,7 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
   <div><span class="label">sin</span><span id="utc-sin">0.000</span></div>
   <div><span class="label">cos</span><span id="utc-cos">1.000</span></div>
   <div><span class="label">tan</span><span id="utc-tan">0.000</span></div>
+  <div><span class="label">‖v‖∞</span><span id="utc-linf">0.000</span></div>
 </div>
 <div id="micro-alert">
   <div><b>Angle:</b> <span id="ma-angle">0°</span></div>
@@ -70,77 +91,94 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
   <div><b>Distance:</b> <span id="ma-dist">0 px</span></div>
 </div>
 <script>
+const LIMITS={
+  q:{u:"Q · query",s:"L∞ is the max-norm: ‖x‖∞ = max_i |x_i|. Chat limit = that max token of meaning.",apx:"appendix/Q: ask with one axis; the cone points at the bound, not the average."},
+  a:{u:"A · answer",s:"Example: x=(0.2, −0.9, 0.4) → ‖x‖∞=0.9. The chat aid answers on the peak component.",apx:"appendix/A: feedback mirrors the largest |term|, then cites the rest as remainder."},
+  z:{u:"Z · zero approach",s:"lim_{ε→0+} ‖x‖∞ stays the height of the tallest spike. Vanishing coords do not pull L∞ down.",apx:"appendix/Z: zero is a floor, not a gate. The cone still has aperture."},
+  s:{u:"S · supremum",s:"On functions, ‖f‖∞ = ess-sup |f|. Advanced form: lim_{p→∞} ‖f‖_p = ‖f‖∞ when f ∈ L^∞ ∩ L^{p0}.",apx:"appendix/S: APOC theory treats the chat cap as that essential supremum."},
+  d:{u:"D · discrete / dual",s:"ℓ∞ dual is (roughly) ℓ¹. A 4-word packet is an ℓ¹ budget; L∞ is the loudest word.",apx:"appendix/D: Q,A,Z,S,D are five rays of one cone; the axis is the L∞ chat limit."}
+};
+
+const log=document.getElementById("chat-log");
+function line(cls,t){const d=document.createElement("div");d.className=cls;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;}
+function aid(k){
+  const e=LIMITS[k]; if(!e)return;
+  line("u","you · "+e.u);
+  line("s","aid · "+e.s);
+  line("apx","server-appendix · "+e.apx);
+}
+document.querySelectorAll(".keys b").forEach(b=>b.onclick=()=>aid(b.dataset.k));
+addEventListener("keydown",e=>{
+  if(["INPUT","TEXTAREA"].includes(e.target.tagName))return;
+  const k=e.key.toLowerCase();
+  if(LIMITS[k]) aid(k);
+});
+line("s","aid · APOC cone online. Keys Q A Z S D show L∞ chat-limit forms.");
+line("apx","server-appendix · 4-word gate sits behind the cone. Extra words are clipped by ‖·‖∞.");
+
 function makeCalc(){
-  const wrap=document.createElement("div");
-  wrap.className="calc-face";
-  const img=document.createElement("img");
-  img.src="cal.png";
-  const c=document.createElement("canvas");
-  c.width=c.height=308;
-  wrap.append(img,c);
-  return {wrap,c};
+  const wrap=document.createElement("div"); wrap.className="calc-face";
+  const img=document.createElement("img"); img.src="cal.png";
+  const c=document.createElement("canvas"); c.width=c.height=260;
+  wrap.append(img,c); return {wrap,c};
 }
 const front=makeCalc(), right=makeCalc();
 document.getElementById("face-front").appendChild(front.wrap);
 document.getElementById("face-right").appendChild(right.wrap);
-
-function paint(c, main, sub){
-  const x=c.getContext("2d"), w=c.width, h=c.height;
+function paint(c,main,sub){
+  const x=c.getContext("2d"),w=c.width,h=c.height;
   x.clearRect(0,0,w,h);
-  const dx=w*.12, dy=h*.10, dw=w*.76, dh=h*.28;
-  x.fillStyle="rgba(8,10,24,.72)";
-  x.fillRect(dx,dy,dw,dh);
-  x.textAlign="right";
-  x.textBaseline="middle";
-  x.fillStyle="#22d3ee";
-  x.font="bold 26px ui-monospace,monospace";
-  x.fillText(main, dx+dw-12, dy+dh*.4);
-  x.fillStyle="#a5b4fc";
-  x.font="13px ui-monospace,monospace";
-  x.fillText(sub, dx+dw-12, dy+dh*.76);
+  const dx=w*.12,dy=h*.1,dw=w*.76,dh=h*.28;
+  x.fillStyle="rgba(8,10,24,.72)"; x.fillRect(dx,dy,dw,dh);
+  x.textAlign="right"; x.textBaseline="middle";
+  x.fillStyle="#22d3ee"; x.font="bold 22px ui-monospace,monospace";
+  x.fillText(main,dx+dw-10,dy+dh*.4);
+  x.fillStyle="#a5b4fc"; x.font="11px ui-monospace,monospace";
+  x.fillText(sub,dx+dw-10,dy+dh*.76);
+}
+
+const cone=document.getElementById("cone-box"), cc=cone.getContext("2d");
+function drawCone(phase){
+  const w=cone.width,h=cone.height;
+  cc.clearRect(0,0,w,h);
+  const ox=28,oy=h/2, tipX=w-22, tipY=h/2+Math.sin(phase)*6;
+  cc.strokeStyle="rgba(165,180,252,.45)";
+  cc.beginPath(); cc.moveTo(8,oy); cc.lineTo(tipX,tipY); cc.stroke();
+  cc.fillStyle="rgba(34,211,238,.18)";
+  cc.strokeStyle="#22d3ee";
+  cc.beginPath();
+  cc.moveTo(tipX,tipY);
+  cc.lineTo(ox, oy-22-Math.cos(phase)*4);
+  cc.quadraticCurveTo(ox-8,oy, ox, oy+22+Math.cos(phase)*4);
+  cc.closePath(); cc.fill(); cc.stroke();
+  cc.fillStyle="#a5b4fc"; cc.font="10px monospace";
+  cc.fillText("vector cone → L∞ gate", 70, 14);
 }
 
 function drawHelix(){
-  const c=document.getElementById("helix-canvas"), x=c.getContext("2d"), w=c.width, h=c.height;
-  x.fillStyle="rgba(10,10,20,.9)";
-  x.fillRect(0,0,w,h);
-  const s=28, cx=w/2, cy=h/2+10;
+  const c=document.getElementById("helix-canvas"),x=c.getContext("2d"),w=c.width,h=c.height;
+  x.fillStyle="rgba(10,10,20,.9)"; x.fillRect(0,0,w,h);
+  const s=22,cx=w/2,cy=h/2+8;
   x.strokeStyle="rgba(165,180,252,.5)";
-  x.beginPath();
-  x.moveTo(cx-60,cy); x.lineTo(cx+60,cy);
-  x.moveTo(cx,cy+40); x.lineTo(cx,cy-50);
-  x.stroke();
-  x.strokeStyle="#22d3ee";
-  x.lineWidth=2.2;
-  x.beginPath();
+  x.beginPath(); x.moveTo(cx-50,cy); x.lineTo(cx+50,cy); x.moveTo(cx,cy+32); x.lineTo(cx,cy-40); x.stroke();
+  x.strokeStyle="#22d3ee"; x.lineWidth=2; x.beginPath();
   for(let t=1;t<=5;t+=.05){
-    const px=cx+Math.cos(t)*s+t*8, py=cy-Math.sin(t)*s-t*6;
+    const px=cx+Math.cos(t)*s+t*6, py=cy-Math.sin(t)*s-t*5;
     t===1?x.moveTo(px,py):x.lineTo(px,py);
   }
   x.stroke();
-  x.fillStyle="#a5b4fc";
-  x.font="10px monospace";
-  x.fillText("⟨cos t, sin t, t⟩",8,14);
-  x.fillText("t = 1 → 5",8,26);
 }
 
 function knockWhite(img){
   return new Promise(res=>{
-    const t=new Image();
-    t.crossOrigin="anonymous";
-    t.src=img.src;
-    t.onload=()=>{
-      try{
-        const c=document.createElement("canvas"), x=c.getContext("2d");
-        c.width=t.naturalWidth; c.height=t.naturalHeight;
-        x.drawImage(t,0,0);
-        const d=x.getImageData(0,0,c.width,c.height), p=d.data;
-        for(let i=0;i<p.length;i+=4) if(p[i]>240&&p[i+1]>240&&p[i+2]>240) p[i+3]=0;
-        x.putImageData(d,0,0);
-        img.src=c.toDataURL("image/png");
-      }catch(e){}
-      res();
-    };
+    const t=new Image(); t.crossOrigin="anonymous"; t.src=img.src;
+    t.onload=()=>{try{
+      const c=document.createElement("canvas"),x=c.getContext("2d");
+      c.width=t.naturalWidth;c.height=t.naturalHeight;x.drawImage(t,0,0);
+      const d=x.getImageData(0,0,c.width,c.height),p=d.data;
+      for(let i=0;i<p.length;i+=4) if(p[i]>240&&p[i+1]>240&&p[i+2]>240) p[i+3]=0;
+      x.putImageData(d,0,0); img.src=c.toDataURL("image/png");
+    }catch(e){} res();};
     t.onerror=res;
   });
 }
@@ -154,25 +192,29 @@ window.curvature3D=function(r1,r2,o={}){
 };
 
 window.runAIFeedback=function(){
-  const out=document.getElementById("feedback-result");
   const words=document.getElementById("feedback-input").value.trim().split(/\s+/).filter(Boolean);
-  if(words.length!==4){out.style.color="#f87171";out.textContent="Please enter exactly 4 words.";return;}
+  if(words.length!==4){
+    line("s","aid · gate closed. ‖packet‖0 must be 4 (chat L∞ policy).");
+    line("apx","server-appendix · extra or missing words are dropped; Q A Z S D still work.");
+    return;
+  }
   const q=words.join(" ");
+  line("u","you · "+q);
+  const linf=Math.max(...words.map(w=>w.length));
+  line("s","aid · accepted. ‖words‖∞ = longest word length "+linf+".");
+  line("apx","server-appendix · logged 4-token packet; Wikipedia is the public index.");
   window.open("https://en.wikipedia.org/wiki/Special:Search?search="+encodeURIComponent(q)+"&go=Go","_blank");
-  out.style.color="#22d3ee";
-  out.innerHTML="Searching Wikipedia for:<br><b>"+q+"</b>";
 };
 document.getElementById("feedback-btn").onclick=runAIFeedback;
 document.getElementById("feedback-input").onkeydown=e=>{if(e.key==="Enter")runAIFeedback();};
 
 const canvas=document.getElementById("wave-canvas"), ctx=canvas.getContext("2d"), img=document.getElementById("zz-image");
 function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
-addEventListener("resize",resize);resize();
+addEventListener("resize",resize); resize();
 const fmt=(v,d=3)=>Number(v).toFixed(d);
 
 function drawWaves(phase){
-  const w=canvas.width,h=canvas.height;
-  ctx.clearRect(0,0,w,h);
+  const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h);
   [[Math.sin,"167,139,250"],[Math.cos,"34,211,238"]].forEach(([fn,col])=>{
     let px=0,py=h/2+fn(phase)*80;
     for(let x=1;x<w;x++){
@@ -180,16 +222,12 @@ function drawWaves(phase){
       const r1={x:.012,y:(fn===Math.sin?Math.cos(t):-Math.sin(t))*80*.012,z:.004};
       const r2={x:0,y:-fn(t)*80*.012*.012,z:0};
       const k=curvature3D(r1,r2,{y:r1.y});
-      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(x,y);
       ctx.strokeStyle=`rgba(${col},${.35+Math.min(k*45,.55)})`;
-      ctx.lineWidth=1.8+Math.min(k*14,2.8);
-      ctx.stroke();
-      px=x;py=y;
+      ctx.lineWidth=1.8+Math.min(k*14,2.8); ctx.stroke();
+      px=x; py=y;
     }
   });
-  ctx.beginPath();
-  ctx.strokeStyle="rgba(255,255,255,.08)";
-  ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
 }
 
 function updateUTC(){
@@ -198,36 +236,9 @@ function updateUTC(){
   const deg=sec/60*360, rad=deg*Math.PI/180;
   const s=Math.sin(rad), c=Math.cos(rad), t=Math.tan(rad);
   const tanStr=Math.abs(t)>100?"∞":fmt(t);
+  const linf=Math.max(Math.abs(s),Math.abs(c),Math.min(Math.abs(t),99));
   document.getElementById("utc-time").textContent=
     String(now.getUTCHours()).padStart(2,"0")+":"+
     String(now.getUTCMinutes()).padStart(2,"0")+":"+
     String(now.getUTCSeconds()).padStart(2,"0");
-  document.getElementById("utc-angle").textContent=deg.toFixed(1)+"°";
-  document.getElementById("utc-sin").textContent=fmt(s);
-  document.getElementById("utc-cos").textContent=fmt(c);
-  document.getElementById("utc-tan").textContent=tanStr;
-  paint(front.c, deg.toFixed(1)+"°", "sin "+fmt(s)+"  cos "+fmt(c));
-  paint(right.c, s.toFixed(4), "tan "+tanStr+"  cos "+fmt(c));
-  img.style.transform=`translateY(-50%) rotate(${s*6}deg) scale(${1+c*.08})`;
-  drawWaves(rad);
-  requestAnimationFrame(updateUTC);
-}
-
-knockWhite(img).then(()=>{drawHelix();updateUTC();});
-
-addEventListener("mousemove",e=>{
-  const left=e.clientX<innerWidth/2;
-  const dx=e.clientX-innerWidth/2, dy=e.clientY-innerHeight/2;
-  document.getElementById("ma-angle").textContent=Math.round(Math.atan2(dy,dx)*180/Math.PI)+"°";
-  document.getElementById("ma-cos").textContent=fmt(Math.cos(Math.atan2(dy,dx)));
-  document.getElementById("ma-dist").textContent=Math.round(Math.hypot(dx,dy))+" px";
-  img.classList.toggle("active",left);
-  document.getElementById("micro-alert").classList.toggle("visible",left);
-});
-addEventListener("mouseleave",()=>{
-  img.classList.remove("active");
-  document.getElementById("micro-alert").classList.remove("visible");
-});
-</script>
-</body>
-</html>
+  document.getElement
