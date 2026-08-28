@@ -13,17 +13,43 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
 #helix-container{position:absolute;bottom:16%;left:50%;transform:translateX(25px);z-index:15;width:160px;height:120px;background:rgba(10,10,20,.7);border:1px solid rgba(99,102,241,.4);border-radius:10px;overflow:hidden}
 #helix-canvas,#wave-canvas{width:100%;height:100%;display:block}
 #wave-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.45}
-.cube-wrap{position:relative;width:170px;height:170px;perspective:700px}
-.cube{width:170px;height:170px;transform-style:preserve-3d;animation:spinCube 8s linear infinite}
+
+#corner-cube{
+  position:fixed;
+  top:12px;
+  left:12px;
+  width:150px;
+  height:150px;
+  perspective:700px;
+  z-index:40;
+  pointer-events:none;
+}
+#corner-cube .cube{
+  width:150px;
+  height:150px;
+  transform-style:preserve-3d;
+  animation:spinCube 8s linear infinite;
+}
 @keyframes spinCube{from{transform:rotateX(-18deg) rotateY(0)}to{transform:rotateX(-18deg) rotateY(360deg)}}
-.face{position:absolute;width:130px;height:130px;left:20px;top:20px;background:rgba(15,15,35,.85);border:1px solid rgba(99,102,241,.55);overflow:hidden}
-.front{transform:translateZ(65px)}.back{transform:rotateY(180deg) translateZ(65px)}
-.right{transform:rotateY(90deg) translateZ(65px)}.left{transform:rotateY(-90deg) translateZ(65px)}
-.top{transform:rotateX(90deg) translateZ(65px)}.bottom{transform:rotateX(-90deg) translateZ(65px)}
-.calc-face,.calc-face img,.calc-face canvas{width:100%;height:100%}
-.calc-face{position:relative}
-.calc-face canvas{position:absolute;inset:0;pointer-events:none}
-.cube-overlay{position:absolute;inset:0;opacity:.18;mix-blend-mode:screen;pointer-events:none}
+#corner-cube .face{
+  position:absolute;width:114px;height:114px;left:18px;top:18px;
+  background:rgba(15,15,35,.85);border:1px solid rgba(99,102,241,.55);overflow:hidden
+}
+#corner-cube .front{transform:translateZ(57px)}
+#corner-cube .back{transform:rotateY(180deg) translateZ(57px)}
+#corner-cube .right{transform:rotateY(90deg) translateZ(57px)}
+#corner-cube .left{transform:rotateY(-90deg) translateZ(57px)}
+#corner-cube .top{transform:rotateX(90deg) translateZ(57px)}
+#corner-cube .bottom{transform:rotateX(-90deg) translateZ(57px)}
+#corner-cube .calc-face,
+#corner-cube .calc-face img,
+#corner-cube .calc-face canvas{width:100%;height:100%}
+#corner-cube .calc-face{position:relative}
+#corner-cube .calc-face canvas{position:absolute;inset:0;pointer-events:none}
+#corner-cube .cube-overlay{
+  position:absolute;inset:0;opacity:.18;mix-blend-mode:screen;pointer-events:none
+}
+
 #dock{width:280px;display:flex;flex-direction:column;gap:8px;z-index:16}
 #cone-box{height:88px;border:1px solid rgba(99,102,241,.4);border-radius:10px;background:rgba(10,10,20,.75);overflow:hidden}
 #chat{
@@ -50,18 +76,20 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
 <canvas id="wave-canvas"></canvas>
 <img id="zz-image" src="zz.png" alt="zz">
 <div id="helix-container"><canvas id="helix-canvas" width="160" height="120"></canvas></div>
-<div class="stage">
-  <div class="cube-wrap">
-    <div class="cube">
-      <div class="face front" id="face-front"></div>
-      <div class="face back"></div>
-      <div class="face right" id="face-right"></div>
-      <div class="face left"></div>
-      <div class="face top"></div>
-      <div class="face bottom"></div>
-    </div>
-    <img src="abcc.png" class="cube-overlay" alt="">
+
+<div id="corner-cube" class="corner-cube">
+  <div class="cube">
+    <div class="face front" id="face-front"></div>
+    <div class="face back"></div>
+    <div class="face right" id="face-right"></div>
+    <div class="face left"></div>
+    <div class="face top"></div>
+    <div class="face bottom"></div>
   </div>
+  <img src="abcc.png" class="cube-overlay" alt="">
+</div>
+
+<div class="stage">
   <div id="dock">
     <canvas id="cone-box" width="280" height="88" title="vector cone ahead of the 4-word gate"></canvas>
     <div id="chat">
@@ -98,23 +126,16 @@ const LIMITS={
   s:{u:"S · supremum",s:"On functions, ‖f‖∞ = ess-sup |f|. Advanced form: lim_{p→∞} ‖f‖_p = ‖f‖∞ when f ∈ L^∞ ∩ L^{p0}.",apx:"appendix/S: APOC theory treats the chat cap as that essential supremum."},
   d:{u:"D · discrete / dual",s:"ℓ∞ dual is (roughly) ℓ¹. A 4-word packet is an ℓ¹ budget; L∞ is the loudest word.",apx:"appendix/D: Q,A,Z,S,D are five rays of one cone; the axis is the L∞ chat limit."}
 };
-
 const log=document.getElementById("chat-log");
 function line(cls,t){const d=document.createElement("div");d.className=cls;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;}
-function aid(k){
-  const e=LIMITS[k]; if(!e)return;
-  line("u","you · "+e.u);
-  line("s","aid · "+e.s);
-  line("apx","server-appendix · "+e.apx);
-}
+function aid(k){const e=LIMITS[k];if(!e)return;line("u","you · "+e.u);line("s","aid · "+e.s);line("apx","server-appendix · "+e.apx);}
 document.querySelectorAll(".keys b").forEach(b=>b.onclick=()=>aid(b.dataset.k));
 addEventListener("keydown",e=>{
   if(["INPUT","TEXTAREA"].includes(e.target.tagName))return;
-  const k=e.key.toLowerCase();
-  if(LIMITS[k]) aid(k);
+  const k=e.key.toLowerCase(); if(LIMITS[k]) aid(k);
 });
 line("s","aid · APOC cone online. Keys Q A Z S D show L∞ chat-limit forms.");
-line("apx","server-appendix · 4-word gate sits behind the cone. Extra words are clipped by ‖·‖∞.");
+line("apx","server-appendix · 4-word gate sits behind the cone.");
 
 function makeCalc(){
   const wrap=document.createElement("div"); wrap.className="calc-face";
@@ -144,8 +165,7 @@ function drawCone(phase){
   const ox=28,oy=h/2, tipX=w-22, tipY=h/2+Math.sin(phase)*6;
   cc.strokeStyle="rgba(165,180,252,.45)";
   cc.beginPath(); cc.moveTo(8,oy); cc.lineTo(tipX,tipY); cc.stroke();
-  cc.fillStyle="rgba(34,211,238,.18)";
-  cc.strokeStyle="#22d3ee";
+  cc.fillStyle="rgba(34,211,238,.18)"; cc.strokeStyle="#22d3ee";
   cc.beginPath();
   cc.moveTo(tipX,tipY);
   cc.lineTo(ox, oy-22-Math.cos(phase)*4);
@@ -194,15 +214,14 @@ window.curvature3D=function(r1,r2,o={}){
 window.runAIFeedback=function(){
   const words=document.getElementById("feedback-input").value.trim().split(/\s+/).filter(Boolean);
   if(words.length!==4){
-    line("s","aid · gate closed. ‖packet‖0 must be 4 (chat L∞ policy).");
-    line("apx","server-appendix · extra or missing words are dropped; Q A Z S D still work.");
+    line("s","aid · gate closed. ‖packet‖0 must be 4.");
+    line("apx","server-appendix · Q A Z S D still work.");
     return;
   }
   const q=words.join(" ");
   line("u","you · "+q);
-  const linf=Math.max(...words.map(w=>w.length));
-  line("s","aid · accepted. ‖words‖∞ = longest word length "+linf+".");
-  line("apx","server-appendix · logged 4-token packet; Wikipedia is the public index.");
+  line("s","aid · accepted. ‖words‖∞ = "+Math.max(...words.map(w=>w.length))+".");
+  line("apx","server-appendix · 4-token packet logged.");
   window.open("https://en.wikipedia.org/wiki/Special:Search?search="+encodeURIComponent(q)+"&go=Go","_blank");
 };
 document.getElementById("feedback-btn").onclick=runAIFeedback;
@@ -241,4 +260,31 @@ function updateUTC(){
     String(now.getUTCHours()).padStart(2,"0")+":"+
     String(now.getUTCMinutes()).padStart(2,"0")+":"+
     String(now.getUTCSeconds()).padStart(2,"0");
-  document.getElement
+  document.getElementById("utc-angle").textContent=deg.toFixed(1)+"°";
+  document.getElementById("utc-sin").textContent=fmt(s);
+  document.getElementById("utc-cos").textContent=fmt(c);
+  document.getElementById("utc-tan").textContent=tanStr;
+  document.getElementById("utc-linf").textContent=fmt(linf);
+  paint(front.c,deg.toFixed(1)+"°","sin "+fmt(s)+"  cos "+fmt(c));
+  paint(right.c,s.toFixed(4),"‖·‖∞ "+fmt(linf));
+  img.style.transform=`translateY(-50%) rotate(${s*6}deg) scale(${1+c*.08})`;
+  drawWaves(rad); drawCone(rad);
+  requestAnimationFrame(updateUTC);
+}
+
+knockWhite(img).then(()=>{drawHelix();updateUTC();});
+addEventListener("mousemove",e=>{
+  const left=e.clientX<innerWidth/2, dx=e.clientX-innerWidth/2, dy=e.clientY-innerHeight/2;
+  document.getElementById("ma-angle").textContent=Math.round(Math.atan2(dy,dx)*180/Math.PI)+"°";
+  document.getElementById("ma-cos").textContent=fmt(Math.cos(Math.atan2(dy,dx)));
+  document.getElementById("ma-dist").textContent=Math.round(Math.hypot(dx,dy))+" px";
+  img.classList.toggle("active",left);
+  document.getElementById("micro-alert").classList.toggle("visible",left);
+});
+addEventListener("mouseleave",()=>{
+  img.classList.remove("active");
+  document.getElementById("micro-alert").classList.remove("visible");
+});
+</script>
+</body>
+</html>
