@@ -363,14 +363,13 @@ window.runAIFeedback = async function() {
            ((w.extract || "").length > 520 ? "…" : "") +
            "\n<a href=\"" + w.pageUrl + "\" target=\"_blank\" rel=\"noopener\">open cited page →</a>");
       lineHTML("alpha", html);
-      line("apx", "appendix · α packet bound to log[" + (INFO_LOG.length - 1) + "]; wiki tab after cite");
-      if (!w.empty) {
-        window.open(w.pageUrl, "_blank", "noopener");
-      }
+      line("apx", "appendix · α packet bound to log[" + (INFO_LOG.length - 1) + "]; click blue link only if you want the page");
     } catch (err) {
-      line("alpha", "α-response · cite failed: " + (err && err.message ? err.message : err) +
-        "\nfallback search tab only");
-      window.open("https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(prompt) + "&go=Go", "_blank", "noopener");
+      const fallback = "https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(prompt) + "&go=Go";
+      lineHTML("alpha",
+        "α-response · cite failed: " + String(err && err.message ? err.message : err) +
+        "\n<a href=\"" + fallback + "\" target=\"_blank\" rel=\"noopener\">open Wikipedia search →</a>");
+      line("apx", "appendix · no auto-nav; choose the blue link after reading the module");
     }
   }
   input.value = "";
@@ -435,7 +434,7 @@ addEventListener("mouseleave", () => {
   document.getElementById("micro-alert").classList.remove("visible");
 });
 line("s", "aid · every prompt returns κ == qz == qy (β calculus)");
-line("apx", "appendix · type exactly four words → α cite appears in this box before Wikipedia opens");
+line("apx", "appendix · type exactly four words → α cite in this box; blue link is optional");
 line("apx", "appendix · window.INFO_LOG holds packets; rec.wiki is the alpha hit");
 </script>
 </body>
