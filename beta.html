@@ -13,53 +13,28 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
 #helix-container{position:absolute;bottom:16%;left:50%;transform:translateX(25px);z-index:15;width:160px;height:120px;background:rgba(10,10,20,.7);border:1px solid rgba(99,102,241,.4);border-radius:10px;overflow:hidden}
 #helix-canvas,#wave-canvas{width:100%;height:100%;display:block}
 #wave-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.45}
-
-#corner-cube{
-  position:fixed;
-  top:12px;
-  left:12px;
-  width:150px;
-  height:150px;
-  perspective:700px;
-  z-index:40;
-  pointer-events:none;
-}
-#corner-cube .cube{
-  width:150px;
-  height:150px;
-  transform-style:preserve-3d;
-  animation:spinCube 8s linear infinite;
-}
+#corner-cube{position:fixed;top:12px;left:12px;width:150px;height:150px;perspective:700px;z-index:40;pointer-events:none}
+#corner-cube .cube{width:150px;height:150px;transform-style:preserve-3d;animation:spinCube 8s linear infinite}
 @keyframes spinCube{from{transform:rotateX(-18deg) rotateY(0)}to{transform:rotateX(-18deg) rotateY(360deg)}}
-#corner-cube .face{
-  position:absolute;width:114px;height:114px;left:18px;top:18px;
-  background:rgba(15,15,35,.85);border:1px solid rgba(99,102,241,.55);overflow:hidden
-}
+#corner-cube .face{position:absolute;width:114px;height:114px;left:18px;top:18px;background:rgba(15,15,35,.85);border:1px solid rgba(99,102,241,.55);overflow:hidden}
 #corner-cube .front{transform:translateZ(57px)}
 #corner-cube .back{transform:rotateY(180deg) translateZ(57px)}
 #corner-cube .right{transform:rotateY(90deg) translateZ(57px)}
 #corner-cube .left{transform:rotateY(-90deg) translateZ(57px)}
 #corner-cube .top{transform:rotateX(90deg) translateZ(57px)}
 #corner-cube .bottom{transform:rotateX(-90deg) translateZ(57px)}
-#corner-cube .calc-face,
-#corner-cube .calc-face img,
-#corner-cube .calc-face canvas{width:100%;height:100%}
+#corner-cube .calc-face,#corner-cube .calc-face img,#corner-cube .calc-face canvas{width:100%;height:100%}
 #corner-cube .calc-face{position:relative}
 #corner-cube .calc-face canvas{position:absolute;inset:0;pointer-events:none}
-#corner-cube .cube-overlay{
-  position:absolute;inset:0;opacity:.18;mix-blend-mode:screen;pointer-events:none
-}
-
-#dock{width:280px;display:flex;flex-direction:column;gap:8px;z-index:16}
+#corner-cube .cube-overlay{position:absolute;inset:0;opacity:.18;mix-blend-mode:screen;pointer-events:none}
+#dock{width:300px;display:flex;flex-direction:column;gap:8px;z-index:16}
 #cone-box{height:88px;border:1px solid rgba(99,102,241,.4);border-radius:10px;background:rgba(10,10,20,.75);overflow:hidden}
-#chat{
-  height:220px;display:flex;flex-direction:column;
-  background:rgba(15,15,35,.92);border:1px solid rgba(99,102,241,.4);border-radius:10px;font-size:11px
-}
+#chat{height:260px;display:flex;flex-direction:column;background:rgba(15,15,35,.92);border:1px solid rgba(99,102,241,.4);border-radius:10px;font-size:11px}
 #chat-log{flex:1;overflow:auto;padding:8px;line-height:1.4}
 #chat-log .u{color:#a5b4fc}
 #chat-log .s{color:#22d3ee}
 #chat-log .apx{color:#94a3b8;font-style:italic}
+#chat-log .ret{color:#86efac;white-space:pre-wrap}
 .keys{display:flex;gap:4px;padding:0 8px 6px}
 .keys b{flex:1;text-align:center;background:#1e1b4b;border-radius:4px;padding:3px 0;cursor:pointer;color:#c7d2fe}
 #ai-feedback{padding:8px;border-top:1px solid rgba(99,102,241,.25)}
@@ -76,7 +51,6 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
 <canvas id="wave-canvas"></canvas>
 <img id="zz-image" src="zz.png" alt="zz">
 <div id="helix-container"><canvas id="helix-canvas" width="160" height="120"></canvas></div>
-
 <div id="corner-cube" class="corner-cube">
   <div class="cube">
     <div class="face front" id="face-front"></div>
@@ -88,18 +62,17 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
   </div>
   <img src="abcc.png" class="cube-overlay" alt="">
 </div>
-
 <div class="stage">
   <div id="dock">
-    <canvas id="cone-box" width="280" height="88" title="vector cone ahead of the 4-word gate"></canvas>
+    <canvas id="cone-box" width="300" height="88"></canvas>
     <div id="chat">
       <div id="chat-log"></div>
       <div class="keys">
         <b data-k="q">Q</b><b data-k="a">A</b><b data-k="z">Z</b><b data-k="s">S</b><b data-k="d">D</b>
       </div>
       <div id="ai-feedback">
-        <div style="color:#a5b4fc">4-word gate → appendix</div>
-        <input id="feedback-input" placeholder="exactly 4 words" maxlength="60">
+        <div style="color:#a5b4fc">prompt → κ == qz == qy</div>
+        <input id="feedback-input" placeholder="message (4 words still opens wiki)" maxlength="120">
         <button type="button" id="feedback-btn">Feed →</button>
       </div>
     </div>
@@ -119,172 +92,262 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
   <div><b>Distance:</b> <span id="ma-dist">0 px</span></div>
 </div>
 <script>
-const LIMITS={
-  q:{u:"Q · query",s:"L∞ is the max-norm: ‖x‖∞ = max_i |x_i|. Chat limit = that max token of meaning.",apx:"appendix/Q: ask with one axis; the cone points at the bound, not the average."},
-  a:{u:"A · answer",s:"Example: x=(0.2, −0.9, 0.4) → ‖x‖∞=0.9. The chat aid answers on the peak component.",apx:"appendix/A: feedback mirrors the largest |term|, then cites the rest as remainder."},
-  z:{u:"Z · zero approach",s:"lim_{ε→0+} ‖x‖∞ stays the height of the tallest spike. Vanishing coords do not pull L∞ down.",apx:"appendix/Z: zero is a floor, not a gate. The cone still has aperture."},
-  s:{u:"S · supremum",s:"On functions, ‖f‖∞ = ess-sup |f|. Advanced form: lim_{p→∞} ‖f‖_p = ‖f‖∞ when f ∈ L^∞ ∩ L^{p0}.",apx:"appendix/S: APOC theory treats the chat cap as that essential supremum."},
-  d:{u:"D · discrete / dual",s:"ℓ∞ dual is (roughly) ℓ¹. A 4-word packet is an ℓ¹ budget; L∞ is the loudest word.",apx:"appendix/D: Q,A,Z,S,D are five rays of one cone; the axis is the L∞ chat limit."}
-};
-const log=document.getElementById("chat-log");
-function line(cls,t){const d=document.createElement("div");d.className=cls;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;}
-function aid(k){const e=LIMITS[k];if(!e)return;line("u","you · "+e.u);line("s","aid · "+e.s);line("apx","server-appendix · "+e.apx);}
-document.querySelectorAll(".keys b").forEach(b=>b.onclick=()=>aid(b.dataset.k));
-addEventListener("keydown",e=>{
-  if(["INPUT","TEXTAREA"].includes(e.target.tagName))return;
-  const k=e.key.toLowerCase(); if(LIMITS[k]) aid(k);
-});
-line("s","aid · APOC cone online. Keys Q A Z S D show L∞ chat-limit forms.");
-line("apx","server-appendix · 4-word gate sits behind the cone.");
+const EPS = 1e-8;
+const INFO_LOG = [];
 
-function makeCalc(){
-  const wrap=document.createElement("div"); wrap.className="calc-face";
-  const img=document.createElement("img"); img.src="cal.png";
-  const c=document.createElement("canvas"); c.width=c.height=260;
-  wrap.append(img,c); return {wrap,c};
+window.curvature3D = function(r1, r2, o = {}) {
+  const x1 = r1.x || 0;
+  const y1 = o.y !== undefined ? o.y : (r1.y || 0);
+  const z1 = r1.z || 0;
+  const x2 = r2.x || 0, y2 = r2.y || 0, z2 = r2.z || 0;
+  const cross = Math.hypot(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2);
+  const speed = Math.hypot(x1, y1, z1);
+  return speed < EPS ? 0 : cross / (speed ** 3);
+};
+
+function eq(a, b) { return Math.abs(a - b) < EPS; }
+
+function promptVector(text) {
+  const words = String(text).trim().split(/\s+/).filter(Boolean);
+  let qy = 0, qz = 0;
+  for (let i = 0; i < words.length; i++) {
+    const L = words[i].length;
+    qy += L * Math.sin(i + 1);
+    qz += L * Math.cos(i + 1);
+  }
+  return { qx: words.length, qy, qz, words };
 }
-const front=makeCalc(), right=makeCalc();
+
+function promptCurvature(q) {
+  const r1 = { x: 0.012, y: q.qy * 0.012, z: q.qz * 0.004 };
+  const r2 = { x: 0, y: -q.qy * 0.012 * 0.012, z: -q.qz * 0.004 * 0.004 };
+  return window.curvature3D(r1, r2, { y: r1.y });
+}
+
+function buildInfoReturn(prompt, source) {
+  const q = promptVector(prompt);
+  const kappa = promptCurvature(q);
+  const rec = {
+    type: "info-return",
+    ts: new Date().toISOString(),
+    source,
+    prompt,
+    words: q.words,
+    q: { qx: q.qx, qy: q.qy, qz: q.qz },
+    curvature: kappa,
+    identity: "curvature == qz == qy",
+    equal: {
+      qz_eq_qy: eq(q.qz, q.qy),
+      kappa_eq_qz: eq(kappa, q.qz),
+      kappa_eq_qy: eq(kappa, q.qy),
+      chain: eq(kappa, q.qz) && eq(q.qz, q.qy)
+    },
+    residual: {
+      qz_minus_qy: q.qz - q.qy,
+      kappa_minus_qz: kappa - q.qz,
+      kappa_minus_qy: kappa - q.qy
+    }
+  };
+  INFO_LOG.push(rec);
+  window.INFO_LOG = INFO_LOG;
+  return rec;
+}
+
+function fmtN(v) { return Number(v).toFixed(6); }
+
+function formatReturn(rec) {
+  return [
+    "info-return",
+    "identity: κ == qz == qy",
+    "κ     = " + fmtN(rec.curvature),
+    "qy    = " + fmtN(rec.q.qy),
+    "qz    = " + fmtN(rec.q.qz),
+    "qx    = " + rec.q.qx,
+    "qz==qy: " + rec.equal.qz_eq_qy,
+    "κ==qz : " + rec.equal.kappa_eq_qz,
+    "κ==qy : " + rec.equal.kappa_eq_qy,
+    "chain : " + rec.equal.chain,
+    "Δ(qz-qy) = " + fmtN(rec.residual.qz_minus_qy)
+  ].join("\n");
+}
+
+const LIMITS = {
+  q: "Q axis: query length → qx",
+  a: "A axis: answer samples qy, qz from word lengths",
+  z: "Z axis: compare qz to qy",
+  s: "S axis: supremum later binds search hits to this record",
+  d: "D axis: discrete packet; log row is one search seed"
+};
+
+const logEl = document.getElementById("chat-log");
+function line(cls, t) {
+  const d = document.createElement("div");
+  d.className = cls;
+  d.textContent = t;
+  logEl.appendChild(d);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function emitReturn(prompt, source) {
+  line("u", "you · " + prompt);
+  const rec = buildInfoReturn(prompt, source);
+  line("s", "aid · curvature == qz == qy");
+  line("ret", formatReturn(rec));
+  line("apx", "appendix · log[" + (INFO_LOG.length - 1) + "] stored for auto search return");
+  return rec;
+}
+
+document.querySelectorAll(".keys b").forEach(b => {
+  b.onclick = () => emitReturn(LIMITS[b.dataset.k], "key:" + b.dataset.k);
+});
+addEventListener("keydown", e => {
+  if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
+  const k = e.key.toLowerCase();
+  if (LIMITS[k]) emitReturn(LIMITS[k], "key:" + k);
+});
+
+function makeCalc() {
+  const wrap = document.createElement("div"); wrap.className = "calc-face";
+  const img = document.createElement("img"); img.src = "cal.png";
+  const c = document.createElement("canvas"); c.width = c.height = 260;
+  wrap.append(img, c); return { wrap, c };
+}
+const front = makeCalc(), right = makeCalc();
 document.getElementById("face-front").appendChild(front.wrap);
 document.getElementById("face-right").appendChild(right.wrap);
-function paint(c,main,sub){
-  const x=c.getContext("2d"),w=c.width,h=c.height;
-  x.clearRect(0,0,w,h);
-  const dx=w*.12,dy=h*.1,dw=w*.76,dh=h*.28;
-  x.fillStyle="rgba(8,10,24,.72)"; x.fillRect(dx,dy,dw,dh);
-  x.textAlign="right"; x.textBaseline="middle";
-  x.fillStyle="#22d3ee"; x.font="bold 22px ui-monospace,monospace";
-  x.fillText(main,dx+dw-10,dy+dh*.4);
-  x.fillStyle="#a5b4fc"; x.font="11px ui-monospace,monospace";
-  x.fillText(sub,dx+dw-10,dy+dh*.76);
+function paint(c, main, sub) {
+  const x = c.getContext("2d"), w = c.width, h = c.height;
+  x.clearRect(0, 0, w, h);
+  const dx = w * .12, dy = h * .1, dw = w * .76, dh = h * .28;
+  x.fillStyle = "rgba(8,10,24,.72)"; x.fillRect(dx, dy, dw, dh);
+  x.textAlign = "right"; x.textBaseline = "middle";
+  x.fillStyle = "#22d3ee"; x.font = "bold 22px ui-monospace,monospace";
+  x.fillText(main, dx + dw - 10, dy + dh * .4);
+  x.fillStyle = "#a5b4fc"; x.font = "11px ui-monospace,monospace";
+  x.fillText(sub, dx + dw - 10, dy + dh * .76);
 }
 
-const cone=document.getElementById("cone-box"), cc=cone.getContext("2d");
-function drawCone(phase){
-  const w=cone.width,h=cone.height;
-  cc.clearRect(0,0,w,h);
-  const ox=28,oy=h/2, tipX=w-22, tipY=h/2+Math.sin(phase)*6;
-  cc.strokeStyle="rgba(165,180,252,.45)";
-  cc.beginPath(); cc.moveTo(8,oy); cc.lineTo(tipX,tipY); cc.stroke();
-  cc.fillStyle="rgba(34,211,238,.18)"; cc.strokeStyle="#22d3ee";
+const cone = document.getElementById("cone-box"), cc = cone.getContext("2d");
+function drawCone(phase) {
+  const w = cone.width, h = cone.height;
+  cc.clearRect(0, 0, w, h);
+  const ox = 28, oy = h / 2, tipX = w - 22, tipY = h / 2 + Math.sin(phase) * 6;
+  cc.strokeStyle = "rgba(165,180,252,.45)";
+  cc.beginPath(); cc.moveTo(8, oy); cc.lineTo(tipX, tipY); cc.stroke();
+  cc.fillStyle = "rgba(34,211,238,.18)"; cc.strokeStyle = "#22d3ee";
   cc.beginPath();
-  cc.moveTo(tipX,tipY);
-  cc.lineTo(ox, oy-22-Math.cos(phase)*4);
-  cc.quadraticCurveTo(ox-8,oy, ox, oy+22+Math.cos(phase)*4);
+  cc.moveTo(tipX, tipY);
+  cc.lineTo(ox, oy - 22 - Math.cos(phase) * 4);
+  cc.quadraticCurveTo(ox - 8, oy, ox, oy + 22 + Math.cos(phase) * 4);
   cc.closePath(); cc.fill(); cc.stroke();
-  cc.fillStyle="#a5b4fc"; cc.font="10px monospace";
-  cc.fillText("vector cone → L∞ gate", 70, 14);
+  cc.fillStyle = "#a5b4fc"; cc.font = "10px monospace";
+  cc.fillText("κ == qz == qy", 90, 14);
 }
 
-function drawHelix(){
-  const c=document.getElementById("helix-canvas"),x=c.getContext("2d"),w=c.width,h=c.height;
-  x.fillStyle="rgba(10,10,20,.9)"; x.fillRect(0,0,w,h);
-  const s=22,cx=w/2,cy=h/2+8;
-  x.strokeStyle="rgba(165,180,252,.5)";
-  x.beginPath(); x.moveTo(cx-50,cy); x.lineTo(cx+50,cy); x.moveTo(cx,cy+32); x.lineTo(cx,cy-40); x.stroke();
-  x.strokeStyle="#22d3ee"; x.lineWidth=2; x.beginPath();
-  for(let t=1;t<=5;t+=.05){
-    const px=cx+Math.cos(t)*s+t*6, py=cy-Math.sin(t)*s-t*5;
-    t===1?x.moveTo(px,py):x.lineTo(px,py);
+function drawHelix() {
+  const c = document.getElementById("helix-canvas"), x = c.getContext("2d"), w = c.width, h = c.height;
+  x.fillStyle = "rgba(10,10,20,.9)"; x.fillRect(0, 0, w, h);
+  const s = 22, cx = w / 2, cy = h / 2 + 8;
+  x.strokeStyle = "rgba(165,180,252,.5)";
+  x.beginPath(); x.moveTo(cx - 50, cy); x.lineTo(cx + 50, cy); x.moveTo(cx, cy + 32); x.lineTo(cx, cy - 40); x.stroke();
+  x.strokeStyle = "#22d3ee"; x.lineWidth = 2; x.beginPath();
+  for (let t = 1; t <= 5; t += .05) {
+    const px = cx + Math.cos(t) * s + t * 6, py = cy - Math.sin(t) * s - t * 5;
+    t === 1 ? x.moveTo(px, py) : x.lineTo(px, py);
   }
   x.stroke();
 }
 
-function knockWhite(img){
-  return new Promise(res=>{
-    const t=new Image(); t.crossOrigin="anonymous"; t.src=img.src;
-    t.onload=()=>{try{
-      const c=document.createElement("canvas"),x=c.getContext("2d");
-      c.width=t.naturalWidth;c.height=t.naturalHeight;x.drawImage(t,0,0);
-      const d=x.getImageData(0,0,c.width,c.height),p=d.data;
-      for(let i=0;i<p.length;i+=4) if(p[i]>240&&p[i+1]>240&&p[i+2]>240) p[i+3]=0;
-      x.putImageData(d,0,0); img.src=c.toDataURL("image/png");
-    }catch(e){} res();};
-    t.onerror=res;
+function knockWhite(img) {
+  return new Promise(res => {
+    const t = new Image(); t.crossOrigin = "anonymous"; t.src = img.src;
+    t.onload = () => { try {
+      const c = document.createElement("canvas"), x = c.getContext("2d");
+      c.width = t.naturalWidth; c.height = t.naturalHeight; x.drawImage(t, 0, 0);
+      const d = x.getImageData(0, 0, c.width, c.height), p = d.data;
+      for (let i = 0; i < p.length; i += 4) if (p[i] > 240 && p[i + 1] > 240 && p[i + 2] > 240) p[i + 3] = 0;
+      x.putImageData(d, 0, 0); img.src = c.toDataURL("image/png");
+    } catch (e) {} res(); };
+    t.onerror = res;
   });
 }
 
-window.curvature3D=function(r1,r2,o={}){
-  const x1=r1.x||0,y1=o.y!==undefined?o.y:(r1.y||0),z1=r1.z||0;
-  const x2=r2.x||0,y2=r2.y||0,z2=r2.z||0;
-  const m=Math.hypot(y1*z2-z1*y2,z1*x2-x1*z2,x1*y2-y1*x2);
-  const s=Math.hypot(x1,y1,z1);
-  return s<1e-8?0:m/(s**3);
-};
-
-window.runAIFeedback=function(){
-  const words=document.getElementById("feedback-input").value.trim().split(/\s+/).filter(Boolean);
-  if(words.length!==4){
-    line("s","aid · gate closed. ‖packet‖0 must be 4.");
-    line("apx","server-appendix · Q A Z S D still work.");
+window.runAIFeedback = function() {
+  const prompt = document.getElementById("feedback-input").value.trim();
+  if (!prompt) {
+    line("s", "aid · empty prompt; no info-return");
     return;
   }
-  const q=words.join(" ");
-  line("u","you · "+q);
-  line("s","aid · accepted. ‖words‖∞ = "+Math.max(...words.map(w=>w.length))+".");
-  line("apx","server-appendix · 4-token packet logged.");
-  window.open("https://en.wikipedia.org/wiki/Special:Search?search="+encodeURIComponent(q)+"&go=Go","_blank");
+  const rec = emitReturn(prompt, "input");
+  if (rec.words.length === 4) {
+    window.open("https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(prompt) + "&go=Go", "_blank");
+    line("apx", "appendix · 4-word packet also indexed on Wikipedia");
+  }
 };
-document.getElementById("feedback-btn").onclick=runAIFeedback;
-document.getElementById("feedback-input").onkeydown=e=>{if(e.key==="Enter")runAIFeedback();};
+document.getElementById("feedback-btn").onclick = runAIFeedback;
+document.getElementById("feedback-input").onkeydown = e => { if (e.key === "Enter") runAIFeedback(); };
 
-const canvas=document.getElementById("wave-canvas"), ctx=canvas.getContext("2d"), img=document.getElementById("zz-image");
-function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
-addEventListener("resize",resize); resize();
-const fmt=(v,d=3)=>Number(v).toFixed(d);
+const canvas = document.getElementById("wave-canvas"), ctx = canvas.getContext("2d"), img = document.getElementById("zz-image");
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+addEventListener("resize", resize); resize();
+const fmt = (v, d = 3) => Number(v).toFixed(d);
 
-function drawWaves(phase){
-  const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h);
-  [[Math.sin,"167,139,250"],[Math.cos,"34,211,238"]].forEach(([fn,col])=>{
-    let px=0,py=h/2+fn(phase)*80;
-    for(let x=1;x<w;x++){
-      const t=x*.012+phase,y=h/2+fn(t)*80;
-      const r1={x:.012,y:(fn===Math.sin?Math.cos(t):-Math.sin(t))*80*.012,z:.004};
-      const r2={x:0,y:-fn(t)*80*.012*.012,z:0};
-      const k=curvature3D(r1,r2,{y:r1.y});
-      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(x,y);
-      ctx.strokeStyle=`rgba(${col},${.35+Math.min(k*45,.55)})`;
-      ctx.lineWidth=1.8+Math.min(k*14,2.8); ctx.stroke();
-      px=x; py=y;
+function drawWaves(phase) {
+  const w = canvas.width, h = canvas.height; ctx.clearRect(0, 0, w, h);
+  [[Math.sin, "167,139,250"], [Math.cos, "34,211,238"]].forEach(([fn, col]) => {
+    let px = 0, py = h / 2 + fn(phase) * 80;
+    for (let x = 1; x < w; x++) {
+      const t = x * .012 + phase, y = h / 2 + fn(t) * 80;
+      const r1 = { x: .012, y: (fn === Math.sin ? Math.cos(t) : -Math.sin(t)) * 80 * .012, z: .004 };
+      const r2 = { x: 0, y: -fn(t) * 80 * .012 * .012, z: 0 };
+      const k = curvature3D(r1, r2, { y: r1.y });
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y);
+      ctx.strokeStyle = `rgba(${col},${.35 + Math.min(k * 45, .55)})`;
+      ctx.lineWidth = 1.8 + Math.min(k * 14, 2.8); ctx.stroke();
+      px = x; py = y;
     }
   });
 }
 
-function updateUTC(){
-  const now=new Date();
-  const sec=now.getUTCSeconds()+now.getUTCMilliseconds()/1000;
-  const deg=sec/60*360, rad=deg*Math.PI/180;
-  const s=Math.sin(rad), c=Math.cos(rad), t=Math.tan(rad);
-  const tanStr=Math.abs(t)>100?"∞":fmt(t);
-  const linf=Math.max(Math.abs(s),Math.abs(c),Math.min(Math.abs(t),99));
-  document.getElementById("utc-time").textContent=
-    String(now.getUTCHours()).padStart(2,"0")+":"+
-    String(now.getUTCMinutes()).padStart(2,"0")+":"+
-    String(now.getUTCSeconds()).padStart(2,"0");
-  document.getElementById("utc-angle").textContent=deg.toFixed(1)+"°";
-  document.getElementById("utc-sin").textContent=fmt(s);
-  document.getElementById("utc-cos").textContent=fmt(c);
-  document.getElementById("utc-tan").textContent=tanStr;
-  document.getElementById("utc-linf").textContent=fmt(linf);
-  paint(front.c,deg.toFixed(1)+"°","sin "+fmt(s)+"  cos "+fmt(c));
-  paint(right.c,s.toFixed(4),"‖·‖∞ "+fmt(linf));
-  img.style.transform=`translateY(-50%) rotate(${s*6}deg) scale(${1+c*.08})`;
+function updateUTC() {
+  const now = new Date();
+  const sec = now.getUTCSeconds() + now.getUTCMilliseconds() / 1000;
+  const deg = sec / 60 * 360, rad = deg * Math.PI / 180;
+  const s = Math.sin(rad), c = Math.cos(rad), t = Math.tan(rad);
+  const tanStr = Math.abs(t) > 100 ? "∞" : fmt(t);
+  const linf = Math.max(Math.abs(s), Math.abs(c), Math.min(Math.abs(t), 99));
+  document.getElementById("utc-time").textContent =
+    String(now.getUTCHours()).padStart(2, "0") + ":" +
+    String(now.getUTCMinutes()).padStart(2, "0") + ":" +
+    String(now.getUTCSeconds()).padStart(2, "0");
+  document.getElementById("utc-angle").textContent = deg.toFixed(1) + "°";
+  document.getElementById("utc-sin").textContent = fmt(s);
+  document.getElementById("utc-cos").textContent = fmt(c);
+  document.getElementById("utc-tan").textContent = tanStr;
+  document.getElementById("utc-linf").textContent = fmt(linf);
+  paint(front.c, deg.toFixed(1) + "°", "sin " + fmt(s) + "  cos " + fmt(c));
+  paint(right.c, s.toFixed(4), "‖·‖∞ " + fmt(linf));
+  img.style.transform = `translateY(-50%) rotate(${s * 6}deg) scale(${1 + c * .08})`;
   drawWaves(rad); drawCone(rad);
   requestAnimationFrame(updateUTC);
 }
 
-knockWhite(img).then(()=>{drawHelix();updateUTC();});
-addEventListener("mousemove",e=>{
-  const left=e.clientX<innerWidth/2, dx=e.clientX-innerWidth/2, dy=e.clientY-innerHeight/2;
-  document.getElementById("ma-angle").textContent=Math.round(Math.atan2(dy,dx)*180/Math.PI)+"°";
-  document.getElementById("ma-cos").textContent=fmt(Math.cos(Math.atan2(dy,dx)));
-  document.getElementById("ma-dist").textContent=Math.round(Math.hypot(dx,dy))+" px";
-  img.classList.toggle("active",left);
-  document.getElementById("micro-alert").classList.toggle("visible",left);
+knockWhite(img).then(() => { drawHelix(); updateUTC(); });
+addEventListener("mousemove", e => {
+  const left = e.clientX < innerWidth / 2, dx = e.clientX - innerWidth / 2, dy = e.clientY - innerHeight / 2;
+  document.getElementById("ma-angle").textContent = Math.round(Math.atan2(dy, dx) * 180 / Math.PI) + "°";
+  document.getElementById("ma-cos").textContent = fmt(Math.cos(Math.atan2(dy, dx)));
+  document.getElementById("ma-dist").textContent = Math.round(Math.hypot(dx, dy)) + " px";
+  img.classList.toggle("active", left);
+  document.getElementById("micro-alert").classList.toggle("visible", left);
 });
-addEventListener("mouseleave",()=>{
+addEventListener("mouseleave", () => {
   img.classList.remove("active");
   document.getElementById("micro-alert").classList.remove("visible");
 });
+
+line("s", "aid · every prompt returns κ == qz == qy");
+line("apx", "appendix · window.INFO_LOG is the queue for automatic search replies");
 </script>
 </body>
 </html>
