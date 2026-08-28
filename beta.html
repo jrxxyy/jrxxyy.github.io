@@ -10,23 +10,25 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
 .stage{display:flex;align-items:center;gap:1.6rem;z-index:10}
 #zz-image{position:absolute;left:6%;top:50%;transform:translateY(-50%);max-width:200px;max-height:32vh;z-index:12;opacity:.88;filter:drop-shadow(0 0 18px rgba(99,102,241,.25))}
 #zz-image.active{opacity:.72}
-#helix-container{position:absolute;bottom:16%;left:50%;transform:translateX(25px);z-index:15;width:160px;height:120px;background:rgba(10,10,20,.7);border:1px solid rgba(99,102,241,.4);border-radius:10px;overflow:hidden}
-#helix-canvas,#wave-canvas{width:100%;height:100%;display:block}
-#wave-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.45}
-#corner-cube{position:fixed;top:12px;left:12px;width:150px;height:150px;perspective:700px;z-index:40;pointer-events:none}
-#corner-cube .cube{width:150px;height:150px;transform-style:preserve-3d;animation:spinCube 8s linear infinite}
+#wave-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.45;width:100%;height:100%;display:block}
+.spin-cube{position:fixed;top:12px;width:150px;height:150px;perspective:700px;z-index:40;pointer-events:none}
+#corner-cube{left:12px}
+#helix-container{right:12px}
+.spin-cube .cube{width:150px;height:150px;transform-style:preserve-3d;animation:spinCube 8s linear infinite}
+#helix-container .cube{animation-direction:reverse}
 @keyframes spinCube{from{transform:rotateX(-18deg) rotateY(0)}to{transform:rotateX(-18deg) rotateY(360deg)}}
-#corner-cube .face{position:absolute;width:114px;height:114px;left:18px;top:18px;background:rgba(15,15,35,.85);border:1px solid rgba(99,102,241,.55);overflow:hidden}
-#corner-cube .front{transform:translateZ(57px)}
-#corner-cube .back{transform:rotateY(180deg) translateZ(57px)}
-#corner-cube .right{transform:rotateY(90deg) translateZ(57px)}
-#corner-cube .left{transform:rotateY(-90deg) translateZ(57px)}
-#corner-cube .top{transform:rotateX(90deg) translateZ(57px)}
-#corner-cube .bottom{transform:rotateX(-90deg) translateZ(57px)}
-#corner-cube .calc-face,#corner-cube .calc-face img,#corner-cube .calc-face canvas{width:100%;height:100%}
-#corner-cube .calc-face{position:relative}
-#corner-cube .calc-face canvas{position:absolute;inset:0;pointer-events:none}
-#corner-cube .cube-overlay{position:absolute;inset:0;opacity:.18;mix-blend-mode:screen;pointer-events:none}
+.spin-cube .face{position:absolute;width:114px;height:114px;left:18px;top:18px;background:rgba(15,15,35,.85);border:1px solid rgba(99,102,241,.55);overflow:hidden}
+.spin-cube .front{transform:translateZ(57px)}
+.spin-cube .back{transform:rotateY(180deg) translateZ(57px)}
+.spin-cube .right{transform:rotateY(90deg) translateZ(57px)}
+.spin-cube .left{transform:rotateY(-90deg) translateZ(57px)}
+.spin-cube .top{transform:rotateX(90deg) translateZ(57px)}
+.spin-cube .bottom{transform:rotateX(-90deg) translateZ(57px)}
+.spin-cube .calc-face,.spin-cube .calc-face img,.spin-cube .calc-face canvas{width:100%;height:100%}
+.spin-cube .calc-face{position:relative}
+.spin-cube .calc-face canvas{position:absolute;inset:0;pointer-events:none}
+.spin-cube .cube-overlay{position:absolute;inset:0;opacity:.18;mix-blend-mode:screen;pointer-events:none}
+#helix-canvas{width:100%;height:100%;display:block}
 #dock{width:340px;display:flex;flex-direction:column;gap:8px;z-index:16}
 #cone-box{height:88px;border:1px solid rgba(99,102,241,.4);border-radius:10px;background:rgba(10,10,20,.75);overflow:hidden}
 #chat{height:320px;display:flex;flex-direction:column;background:rgba(15,15,35,.92);border:1px solid rgba(99,102,241,.4);border-radius:10px;font-size:11px}
@@ -47,15 +49,25 @@ body{height:100vh;display:flex;align-items:center;justify-content:center;backgro
 #ai-feedback button{background:#4f46e5;border:0;color:#fff;cursor:pointer}
 #time-panel{position:fixed;bottom:1.2rem;left:1.2rem;background:rgba(15,15,25,.85);border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:.8rem 1rem;font-size:12px;z-index:20}
 #time-panel .label{color:#a5b4fc;margin-right:.35rem}
-#micro-alert{position:fixed;top:1rem;right:1rem;background:rgba(0,0,0,.78);padding:.5rem .7rem;border-radius:8px;font-size:12px;opacity:0;transform:translateY(-8px);transition:.25s;z-index:30;pointer-events:none}
+#micro-alert{position:fixed;top:178px;right:12px;background:rgba(0,0,0,.78);padding:.5rem .7rem;border-radius:8px;font-size:12px;opacity:0;transform:translateY(-8px);transition:.25s;z-index:30;pointer-events:none}
 #micro-alert.visible{opacity:1;transform:none}
 </style>
 </head>
 <body>
 <canvas id="wave-canvas"></canvas>
 <img id="zz-image" src="zz.png" alt="zz">
-<div id="helix-container"><canvas id="helix-canvas" width="160" height="120"></canvas></div>
-<div id="corner-cube" class="corner-cube">
+<div id="helix-container" class="spin-cube">
+  <div class="cube">
+    <div class="face front" id="helix-face-front"></div>
+    <div class="face back"></div>
+    <div class="face right" id="helix-face-right"></div>
+    <div class="face left"></div>
+    <div class="face top"></div>
+    <div class="face bottom"></div>
+  </div>
+  <img src="abcc.png" class="cube-overlay" alt="">
+</div>
+<div id="corner-cube" class="spin-cube">
   <div class="cube">
     <div class="face front" id="face-front"></div>
     <div class="face back"></div>
@@ -261,6 +273,14 @@ function makeCalc() {
 const front = makeCalc(), right = makeCalc();
 document.getElementById("face-front").appendChild(front.wrap);
 document.getElementById("face-right").appendChild(right.wrap);
+function makeHelixFace() {
+  const wrap = document.createElement("div"); wrap.className = "calc-face";
+  const c = document.createElement("canvas"); c.width = 260; c.height = 260;
+  wrap.append(c); return { wrap, c };
+}
+const helixFront = makeHelixFace(), helixRight = makeHelixFace();
+document.getElementById("helix-face-front").appendChild(helixFront.wrap);
+document.getElementById("helix-face-right").appendChild(helixRight.wrap);
 function paint(c, main, sub) {
   const x = c.getContext("2d"), w = c.width, h = c.height;
   x.clearRect(0, 0, w, h);
@@ -288,18 +308,25 @@ function drawCone(phase) {
   cc.fillStyle = "#a5b4fc"; cc.font = "10px monospace";
   cc.fillText("κ == qz == qy  ·  α wiki @ 4 words", 70, 14);
 }
-function drawHelix() {
-  const c = document.getElementById("helix-canvas"), x = c.getContext("2d"), w = c.width, h = c.height;
-  x.fillStyle = "rgba(10,10,20,.9)"; x.fillRect(0, 0, w, h);
-  const s = 22, cx = w / 2, cy = h / 2 + 8;
-  x.strokeStyle = "rgba(165,180,252,.5)";
-  x.beginPath(); x.moveTo(cx - 50, cy); x.lineTo(cx + 50, cy); x.moveTo(cx, cy + 32); x.lineTo(cx, cy - 40); x.stroke();
-  x.strokeStyle = "#22d3ee"; x.lineWidth = 2; x.beginPath();
-  for (let t = 1; t <= 5; t += .05) {
-    const px = cx + Math.cos(t) * s + t * 6, py = cy - Math.sin(t) * s - t * 5;
+function paintHelixOn(c, phase) {
+  const x = c.getContext("2d"), w = c.width, h = c.height;
+  x.fillStyle = "rgba(10,10,20,.92)"; x.fillRect(0, 0, w, h);
+  const s = 48, cx = w / 2, cy = h / 2 + 10;
+  x.strokeStyle = "rgba(165,180,252,.45)";
+  x.beginPath(); x.moveTo(cx - 90, cy); x.lineTo(cx + 90, cy); x.moveTo(cx, cy + 70); x.lineTo(cx, cy - 80); x.stroke();
+  x.strokeStyle = "#22d3ee"; x.lineWidth = 3; x.beginPath();
+  const off = phase || 0;
+  for (let t = 1; t <= 6; t += .04) {
+    const px = cx + Math.cos(t + off) * s + t * 10, py = cy - Math.sin(t + off) * s - t * 8;
     t === 1 ? x.moveTo(px, py) : x.lineTo(px, py);
   }
   x.stroke();
+  x.fillStyle = "#a5b4fc"; x.font = "13px ui-monospace,monospace";
+  x.fillText("helix κ", 16, 22);
+}
+function drawHelix(phase) {
+  paintHelixOn(helixFront.c, phase);
+  paintHelixOn(helixRight.c, (phase || 0) + 1.2);
 }
 function knockWhite(img) {
   return new Promise(res => {
@@ -391,7 +418,7 @@ function updateUTC() {
   paint(front.c, deg.toFixed(1) + "°", "sin " + fmt(s) + "  cos " + fmt(c));
   paint(right.c, s.toFixed(4), "‖·‖∞ " + fmt(linf));
   img.style.transform = `translateY(-50%) rotate(${s * 6}deg) scale(${1 + c * .08})`;
-  drawWaves(rad); drawCone(rad);
+  drawWaves(rad); drawCone(rad); drawHelix(rad);
   requestAnimationFrame(updateUTC);
 }
 knockWhite(img).then(() => { drawHelix(); updateUTC(); });
