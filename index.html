@@ -19,7 +19,6 @@
             margin: 0;
             background-color: #000;
         }
-
         .background {
             position: fixed;
             top: 0;
@@ -32,7 +31,6 @@
             filter: brightness(1.2);
             transform: scale(1.1);
         }
-
         #visor-cli {
             position: fixed;
             top: 0;
@@ -44,13 +42,11 @@
             overflow: hidden;
             background: transparent;
         }
-
         #visor-bend {
             width: 100%;
             height: 100%;
             display: block;
         }
-
         .main-container {
             display: flex;
             align-items: center;
@@ -58,7 +54,6 @@
             position: relative;
             z-index: 2;
         }
-
         .grey-box {
             width: 150px;
             height: 150px;
@@ -72,7 +67,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .dot {
             position: absolute;
             width: 0.1em;
@@ -80,18 +74,15 @@
             border-radius: 50%;
             animation: moveDot 3s infinite;
         }
-
         @keyframes moveDot {
             0%, 100% { transform: translate(0, 0); }
             25% { transform: translate(140px, 0); }
             50% { transform: translate(140px, 140px); }
             75% { transform: translate(0, 140px); }
         }
-
         .grey-box:hover .dot {
             transform: scale(2.5);
         }
-
         .container {
             width: 150px;
             height: 150px;
@@ -99,7 +90,6 @@
             overflow: hidden;
             border: 1px solid #fff;
         }
-
         .container.math-box {
             width: 230px;
             height: auto;
@@ -112,11 +102,58 @@
             background: rgba(0, 0, 0, 0.35);
             border: 1px solid #fff;
         }
-
         .container.math-box mjx-container {
             margin: 0.3em 0 !important;
         }
-
+        .reflex-wrap {
+            width: min(520px, 92vw);
+            margin: 8px auto 4px;
+            position: relative;
+            text-align: center;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .reflex-stage {
+            position: relative;
+            opacity: 0.42;
+            filter: contrast(1.15) saturate(0.85);
+            transform: scaleX(-1);
+            animation: reflexDrift 18s linear infinite reverse;
+        }
+        @keyframes reflexDrift {
+            0%   { transform: scaleX(-1) translateX(0); }
+            100% { transform: scaleX(-1) translateX(-18px); }
+        }
+        .reflex-stage svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            mix-blend-mode: screen;
+        }
+        .reflex-feed {
+            margin-top: 4px;
+            overflow: hidden;
+            height: 16px;
+            font: 10px/16px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            color: rgba(180, 255, 210, 0.55);
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            transform: scaleX(-1);
+        }
+        .reflex-feed span {
+            display: inline-block;
+            animation: feedScroll 22s linear infinite reverse;
+        }
+        @keyframes feedScroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+        .reflex-caption {
+            margin-top: 2px;
+            font: 9px/1.3 ui-monospace, Menlo, Consolas, monospace;
+            color: rgba(255,255,255,0.38);
+            letter-spacing: 0.04em;
+        }
         .box {
             width: 25px;
             height: 25px;
@@ -127,11 +164,9 @@
             background-position: center;
             position: relative;
         }
-
         .box1, .box2, .box3 {
             background-image: url('https://th.bing.com/th/id/R.d968ea9c17cea392394660237dcafb60?rik=%2bcc8mtfA9quRdw&pid=ImgRaw&r=0');
         }
-
         .transparent-image {
             width: 233%;
             height: 233%;
@@ -142,7 +177,6 @@
             padding: 0;
             transform: scale(2.0);
         }
-
         .beaker {
             width: 50px;
             height: 100px;
@@ -151,7 +185,6 @@
             z-index: 2;
             margin: 20px 0;
         }
-
         .measurement {
             position: absolute;
             bottom: 0;
@@ -160,14 +193,12 @@
             font-size: 6px;
             color: #333;
         }
-
         .generator-button {
             position: absolute;
             bottom: 5px;
             right: 10px;
             z-index: 2;
         }
-
         .yinyang {
             width: 33px;
             height: 33px;
@@ -178,7 +209,6 @@
             margin: 0 10px;
             box-shadow: 0 0 8px rgba(255,255,255,0.3);
         }
-
         .yinyang::before {
             content: '';
             position: absolute;
@@ -191,7 +221,6 @@
             border-radius: 50%;
             box-shadow: 0 16.5px 0 #000000;
         }
-
         .yinyang::after {
             content: '';
             position: absolute;
@@ -204,7 +233,6 @@
             transform: translate(-50%, -50%);
             box-shadow: 0 -8px 0 #ffffff;
         }
-
         .input-box {
             margin-top: 20px;
             text-align: center;
@@ -212,7 +240,6 @@
             position: relative;
             z-index: 2;
         }
-
         .ai-box {
             margin-top: 15px;
             padding: 12px;
@@ -223,7 +250,6 @@
             box-shadow: 0 0 15px;
             backdrop-filter: blur(4px);
         }
-
         .three-boxes {
             display: flex;
             flex-direction: column;
@@ -234,12 +260,10 @@
             gap: 10px;
             z-index: 2;
         }
-
         canvas {
             display: block;
             margin-top: 100px;
         }
-
         .image-holder {
             width: 100px;
             height: 100px;
@@ -258,7 +282,6 @@
 </head>
 <body>
     <div class="background" id="background"></div>
-
     <div id="visor-cli" aria-hidden="true">
         <svg id="visor-bend" viewBox="0 0 800 200" preserveAspectRatio="none">
             <defs>
@@ -277,12 +300,10 @@
             </text>
         </svg>
     </div>
-
     <div class="main-container">
         <p style="color: white; margin: 20px 0 20px 80px;">
             For more details, please visit the <a href="visa.html">Visa Information</a> page.
         </p>
-
         <div class="container math-box">
             <svg viewBox="-60 -70 160 140" width="200" height="150" aria-label="Cartesian plane y=1 and y=-1">
                 <line x1="-50" y1="0" x2="90" y2="0" stroke="#fff" stroke-width="1.2"/>
@@ -309,17 +330,53 @@
             \]
         </div>
 
+        <div class="reflex-wrap" aria-hidden="true">
+          <div class="reflex-stage">
+            <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+              <line x1="28" y1="200" x2="500" y2="200" stroke="#fff" stroke-width="1"/>
+              <line x1="40" y1="16" x2="40" y2="212" stroke="#fff" stroke-width="1"/>
+              <polygon points="500,200 492,196 492,204" fill="#fff"/>
+              <polygon points="40,16 36,24 44,24" fill="#fff"/>
+              <text x="488" y="216" fill="#fff" font-size="11">x</text>
+              <text x="48" y="22" fill="#fff" font-size="11">y</text>
+              <rect x="168" y="18" width="132" height="182" fill="#2ca02c" opacity="0.22"/>
+              <line x1="168" y1="18" x2="168" y2="200" stroke="#7CFF6B" stroke-width="1" stroke-dasharray="4 3"/>
+              <line x1="300" y1="18" x2="300" y2="200" stroke="#7CFF6B" stroke-width="1" stroke-dasharray="4 3"/>
+              <path d="M40,28 C90,70 140,118 168,132 C210,148 250,156 300,158 C360,160 430,148 490,142"
+                    fill="none" stroke="#4da3ff" stroke-width="2.4"/>
+              <circle cx="300" cy="158" r="5" fill="#ff4d4d"/>
+              <text x="312" y="150" fill="#ff8a8a" font-size="10">(c, f(c))  f(c)&gt;0</text>
+              <text x="228" y="214" fill="#7CFF6B" font-size="11">σ</text>
+              <text x="292" y="216" fill="#fff" font-size="11">c</text>
+              <text x="150" y="216" fill="#7CFF6B" font-size="10">c−σ</text>
+              <text x="188" y="108" fill="#b8ffc4" font-size="10">f(x)&gt;0 on (c−σ, c)</text>
+            </svg>
+          </div>
+          <div class="reflex-feed">
+            <span>
+              REFLEX INT σ=0.9 c=2 f(c)=+ ε&lt;f(c) |x−c|&lt;σ ⇒ f(x)&gt;0
+              · 0 1 1 2 3 5 8 13 21 34 55 89
+              · LEFT-NBHD SIGN-PRESERVE · SERVER-END OUTPUT ANALYSIS
+              · DEV PLATFORM FEED · AI FROM/INTO
+              · REFLEX INT σ=0.9 c=2 f(c)=+ ε&lt;f(c) |x−c|&lt;σ ⇒ f(x)&gt;0
+              · 0 1 1 2 3 5 8 13 21 34 55 89
+              · LEFT-NBHD SIGN-PRESERVE · SERVER-END OUTPUT ANALYSIS
+              · DEV PLATFORM FEED · AI FROM/INTO
+            </span>
+          </div>
+          <div class="reflex-caption">
+            nomatic integer reflex · reverse feed · transparent mid-page overlay
+          </div>
+        </div>
+
         <div class="grey-box" id="jr-box">
             .jr.
         </div>
-
         <div class="box">
             <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1"
                  alt="Image" class="transparent-image">
         </div>
-
         <canvas id="canvas" height="50" width="150"></canvas>
-
         <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 100px 0 0 0;">
             TEXTEX
             <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
@@ -328,22 +385,17 @@
             </div>
         </div>
     </div>
-
     <div class="beaker">
         <div class="measurement">1</div>
         <div class="measurement">5</div>
         <div class="measurement">10</div>
     </div>
-
     <div class="yinyang"></div>
-
     <svg height="50" width="150" style="margin: 20px 0;">
         <line x1="0" y1="25" x2="150" y2="25" stroke="red" stroke-width="3" />
     </svg>
-
     <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
     <div id="output" style="margin: 20px 0;"></div>
-
     <div class="input-box">
         <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
         <br>
@@ -351,21 +403,18 @@
         <div id="ai-response" class="ai-box"></div>
         <input type="file" id="image-input" accept="image/*">
     </div>
-
     <div class="three-boxes">
         <div class="box box1"></div>
         <div class="box box2"></div>
         <div class="box box3"></div>
         <div class="image-holder"></div>
     </div>
-
 <script>
     const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
     const backgroundDiv = document.getElementById('background');
     if (backgroundDiv) {
         backgroundDiv.style.backgroundImage = `url('${backgroundImageUrl}')`;
     }
-
     function getRandomColor() {
         const letters = '0123456789ABCDEF';
         let color = '#';
@@ -374,37 +423,31 @@
         }
         return color;
     }
-
     function createDot() {
         const dot = document.createElement('div');
         dot.className = 'dot';
         dot.style.backgroundColor = getRandomColor();
         dot.style.top  = `${Math.random() * 140}px`;
         dot.style.left = `${Math.random() * 140}px`;
-
         const jrBox = document.getElementById('jr-box');
         if (jrBox) {
             jrBox.appendChild(dot);
         }
     }
-
     for (let i = 0; i < 15; i++) {
         createDot();
     }
-
     const clickableWindow = document.getElementById("楽");
     if (clickableWindow) {
         clickableWindow.addEventListener("click", () => {
             window.open(".", "_blank");
         });
     }
-
     function getRandomIndex() {
         const min = 0;
         const max = 13;
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-
     function getRandomOutcome() {
         const outcomes = [
             "ASC|| call initiated.",
@@ -424,52 +467,42 @@
         ];
         document.getElementById("output").textContent = outcomes[getRandomIndex()];
     }
-
     function draw() {
         const canvas = document.querySelector('#canvas');
         if (!canvas || !canvas.getContext) return;
-
         const ctx = canvas.getContext('2d');
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 3;
-
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-
         ctx.beginPath();
         ctx.moveTo(centerX - 50, centerY);
         ctx.lineTo(centerX + 50, centerY);
         ctx.stroke();
-
         ctx.font = '28px Arial';
         ctx.fillStyle = '#0f0';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('☯', centerX, centerY);
     }
-
     draw();
-
     document.getElementById("generate-btn").addEventListener("click", function() {
         const aiBox = document.getElementById("ai-response");
         if (aiBox) aiBox.innerText = "Redirecting...";
         window.location.href = "https://jrxxyy.github.io/beta.html";
     });
-
     (function initVisorCLI(root) {
         if (!root) return;
         const svg = root.querySelector('#visor-bend');
         const path = root.querySelector('#visor-arc');
         const box = document.querySelector('.container.math-box') || document.querySelector('.container');
         if (!svg || !path || !box) return;
-
         function toSvg(x, y, svgRect) {
             return {
                 x: ((x - svgRect.left) / svgRect.width) * 800,
                 y: ((y - svgRect.top) / svgRect.height) * 200
             };
         }
-
         function fitVisorArc() {
             const svgRect = svg.getBoundingClientRect();
             const boxRect = box.getBoundingClientRect();
@@ -478,7 +511,6 @@
             const end   = toSvg(window.innerWidth * 0.88, window.innerHeight * 0.38, svgRect);
             path.setAttribute('d', 'M ' + start.x + ',' + start.y + ' Q ' + ctrl.x + ',' + ctrl.y + ' ' + end.x + ',' + end.y);
         }
-
         window.addEventListener('resize', fitVisorArc);
         if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
             MathJax.startup.promise.then(fitVisorArc).catch(fitVisorArc);
