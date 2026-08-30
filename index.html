@@ -35,10 +35,10 @@
 
         #visor-cli {
             position: fixed;
-            top: 22%;
-            left: 18%;
-            width: 64%;
-            height: 36%;
+            top: 3%;
+            left: 16%;
+            width: 68%;
+            height: 24%;
             z-index: 1;
             pointer-events: none;
             overflow: hidden;
@@ -268,7 +268,7 @@
                     <stop offset="100%" stop-color="#ff4d4d"/>
                 </linearGradient>
             </defs>
-            <path id="visor-arc" d="M 20,140 Q 400,20 780,140"
+            <path id="visor-arc" d="M 20,70 Q 400,8 780,70"
                   fill="none" stroke="url(#spec)" stroke-width="2"/>
             <text font-size="16" fill="#7CFF6B" font-family="Courier New, monospace">
                 <textPath href="#visor-arc" startOffset="2%">
@@ -460,7 +460,6 @@
         if (!root) return;
         const path = root.querySelector('#visor-arc');
         if (!path) return;
-        // later: change path.getAttribute('d') to retune the bend
     })(document.getElementById('visor-cli'));
 </script>
 </body>
