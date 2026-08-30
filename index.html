@@ -37,7 +37,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            z-index: 2;
             pointer-events: none;
             overflow: hidden;
             background: transparent;
@@ -52,7 +52,7 @@
             align-items: center;
             flex-direction: column;
             position: relative;
-            z-index: 2;
+            z-index: 3;
         }
         .grey-box {
             width: 150px;
@@ -106,12 +106,16 @@
             margin: 0.3em 0 !important;
         }
         .reflex-wrap {
-            width: min(520px, 92vw);
-            margin: 8px auto 4px;
-            position: relative;
+            width: min(364px, 64.4vw);
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translateX(-50%) scale(0.7);
+            transform-origin: top center;
+            margin: 0;
             text-align: center;
             pointer-events: none;
-            z-index: 2;
+            z-index: 1;
         }
         .reflex-stage {
             position: relative;
@@ -122,7 +126,7 @@
         }
         @keyframes reflexDrift {
             0%   { transform: scaleX(-1) translateX(0); }
-            100% { transform: scaleX(-1) translateX(-18px); }
+            100% { transform: scaleX(-1) translateX(-12.6px); }
         }
         .reflex-stage svg {
             width: 100%;
@@ -282,6 +286,46 @@
 </head>
 <body>
     <div class="background" id="background"></div>
+
+    <div class="reflex-wrap" id="reflex-wrap" aria-hidden="true">
+      <div class="reflex-stage">
+        <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+          <line x1="28" y1="200" x2="500" y2="200" stroke="#fff" stroke-width="1"/>
+          <line x1="40" y1="16" x2="40" y2="212" stroke="#fff" stroke-width="1"/>
+          <polygon points="500,200 492,196 492,204" fill="#fff"/>
+          <polygon points="40,16 36,24 44,24" fill="#fff"/>
+          <text x="488" y="216" fill="#fff" font-size="11">x</text>
+          <text x="48" y="22" fill="#fff" font-size="11">y</text>
+          <rect x="168" y="18" width="132" height="182" fill="#2ca02c" opacity="0.22"/>
+          <line x1="168" y1="18" x2="168" y2="200" stroke="#7CFF6B" stroke-width="1" stroke-dasharray="4 3"/>
+          <line x1="300" y1="18" x2="300" y2="200" stroke="#7CFF6B" stroke-width="1" stroke-dasharray="4 3"/>
+          <path d="M40,28 C90,70 140,118 168,132 C210,148 250,156 300,158 C360,160 430,148 490,142"
+                fill="none" stroke="#4da3ff" stroke-width="2.4"/>
+          <circle cx="300" cy="158" r="5" fill="#ff4d4d"/>
+          <text x="312" y="150" fill="#ff8a8a" font-size="10">(c, f(c))  f(c)&gt;0</text>
+          <text x="228" y="214" fill="#7CFF6B" font-size="11">σ</text>
+          <text x="292" y="216" fill="#fff" font-size="11">c</text>
+          <text x="150" y="216" fill="#7CFF6B" font-size="10">c−σ</text>
+          <text x="188" y="108" fill="#b8ffc4" font-size="10">f(x)&gt;0 on (c−σ, c)</text>
+        </svg>
+      </div>
+      <div class="reflex-feed">
+        <span>
+          REFLEX INT σ=0.9 c=2 f(c)=+ ε&lt;f(c) |x−c|&lt;σ ⇒ f(x)&gt;0
+          · 0 1 1 2 3 5 8 13 21 34 55 89
+          · LEFT-NBHD SIGN-PRESERVE · SERVER-END OUTPUT ANALYSIS
+          · DEV PLATFORM FEED · AI FROM/INTO
+          · REFLEX INT σ=0.9 c=2 f(c)=+ ε&lt;f(c) |x−c|&lt;σ ⇒ f(x)&gt;0
+          · 0 1 1 2 3 5 8 13 21 34 55 89
+          · LEFT-NBHD SIGN-PRESERVE · SERVER-END OUTPUT ANALYSIS
+          · DEV PLATFORM FEED · AI FROM/INTO
+        </span>
+      </div>
+      <div class="reflex-caption">
+        nomatic integer reflex · reverse feed · transparent mid-page overlay
+      </div>
+    </div>
+
     <div id="visor-cli" aria-hidden="true">
         <svg id="visor-bend" viewBox="0 0 800 200" preserveAspectRatio="none">
             <defs>
@@ -328,45 +372,6 @@
             \[
             \lim f(x) = \lim \frac{-x}{x} = -1
             \]
-        </div>
-
-        <div class="reflex-wrap" aria-hidden="true">
-          <div class="reflex-stage">
-            <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
-              <line x1="28" y1="200" x2="500" y2="200" stroke="#fff" stroke-width="1"/>
-              <line x1="40" y1="16" x2="40" y2="212" stroke="#fff" stroke-width="1"/>
-              <polygon points="500,200 492,196 492,204" fill="#fff"/>
-              <polygon points="40,16 36,24 44,24" fill="#fff"/>
-              <text x="488" y="216" fill="#fff" font-size="11">x</text>
-              <text x="48" y="22" fill="#fff" font-size="11">y</text>
-              <rect x="168" y="18" width="132" height="182" fill="#2ca02c" opacity="0.22"/>
-              <line x1="168" y1="18" x2="168" y2="200" stroke="#7CFF6B" stroke-width="1" stroke-dasharray="4 3"/>
-              <line x1="300" y1="18" x2="300" y2="200" stroke="#7CFF6B" stroke-width="1" stroke-dasharray="4 3"/>
-              <path d="M40,28 C90,70 140,118 168,132 C210,148 250,156 300,158 C360,160 430,148 490,142"
-                    fill="none" stroke="#4da3ff" stroke-width="2.4"/>
-              <circle cx="300" cy="158" r="5" fill="#ff4d4d"/>
-              <text x="312" y="150" fill="#ff8a8a" font-size="10">(c, f(c))  f(c)&gt;0</text>
-              <text x="228" y="214" fill="#7CFF6B" font-size="11">σ</text>
-              <text x="292" y="216" fill="#fff" font-size="11">c</text>
-              <text x="150" y="216" fill="#7CFF6B" font-size="10">c−σ</text>
-              <text x="188" y="108" fill="#b8ffc4" font-size="10">f(x)&gt;0 on (c−σ, c)</text>
-            </svg>
-          </div>
-          <div class="reflex-feed">
-            <span>
-              REFLEX INT σ=0.9 c=2 f(c)=+ ε&lt;f(c) |x−c|&lt;σ ⇒ f(x)&gt;0
-              · 0 1 1 2 3 5 8 13 21 34 55 89
-              · LEFT-NBHD SIGN-PRESERVE · SERVER-END OUTPUT ANALYSIS
-              · DEV PLATFORM FEED · AI FROM/INTO
-              · REFLEX INT σ=0.9 c=2 f(c)=+ ε&lt;f(c) |x−c|&lt;σ ⇒ f(x)&gt;0
-              · 0 1 1 2 3 5 8 13 21 34 55 89
-              · LEFT-NBHD SIGN-PRESERVE · SERVER-END OUTPUT ANALYSIS
-              · DEV PLATFORM FEED · AI FROM/INTO
-            </span>
-          </div>
-          <div class="reflex-caption">
-            nomatic integer reflex · reverse feed · transparent mid-page overlay
-          </div>
         </div>
 
         <div class="grey-box" id="jr-box">
@@ -518,6 +523,25 @@
         setTimeout(fitVisorArc, 50);
         setTimeout(fitVisorArc, 400);
     })(document.getElementById('visor-cli'));
+
+    (function pinReflexBehindVisor() {
+        const wrap = document.getElementById('reflex-wrap');
+        const box = document.querySelector('.container.math-box');
+        if (!wrap || !box) return;
+        function pin() {
+            const r = box.getBoundingClientRect();
+            wrap.style.left = (r.left + r.width / 2) + 'px';
+            wrap.style.top = (r.bottom + 6) + 'px';
+            wrap.style.transform = 'translateX(-50%) scale(0.7)';
+        }
+        window.addEventListener('resize', pin);
+        window.addEventListener('scroll', pin, { passive: true });
+        if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+            MathJax.startup.promise.then(pin).catch(pin);
+        }
+        setTimeout(pin, 50);
+        setTimeout(pin, 400);
+    })();
 </script>
 </body>
 </html>
