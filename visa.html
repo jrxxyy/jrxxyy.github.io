@@ -59,7 +59,6 @@
             font-weight: bold;
         }
 
-        /* FIX: smaller container + moved down + lower z-index */
         .container {
             width: 180px;
             height: 180px;
@@ -67,11 +66,13 @@
             right: 10px;
             top: 60%;
             transform: translateY(-50%);
-            z-index: 2; /* BELOW overlay so it doesn't block the button */
+            z-index: 2;
             margin: 8.5px;
         }
 
         .grey-box {
+            width: 180px;
+            height: 180px;
             background-color: rgba(128, 128, 128, 0.3);
             display: flex;
             justify-content: center;
@@ -81,8 +82,9 @@
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 4;
+            z-index: 2; /* BELOW overlay */
         }
+
 
         .photo-container {
             width: 100%;
