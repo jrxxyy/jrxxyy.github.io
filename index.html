@@ -35,10 +35,10 @@
 
         #visor-cli {
             position: fixed;
-            top: 3%;
-            left: 16%;
-            width: 68%;
-            height: 24%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             pointer-events: none;
             overflow: hidden;
@@ -268,7 +268,7 @@
                     <stop offset="100%" stop-color="#ff4d4d"/>
                 </linearGradient>
             </defs>
-            <path id="visor-arc" d="M 20,70 Q 400,8 780,70"
+            <path id="visor-arc" d="M 20,100 Q 400,20 780,80"
                   fill="none" stroke="url(#spec)" stroke-width="2"/>
             <text font-size="16" fill="#7CFF6B" font-family="Courier New, monospace">
                 <textPath href="#visor-arc" startOffset="2%">
@@ -458,8 +458,33 @@
 
     (function initVisorCLI(root) {
         if (!root) return;
+        const svg = root.querySelector('#visor-bend');
         const path = root.querySelector('#visor-arc');
-        if (!path) return;
+        const box = document.querySelector('.container.math-box') || document.querySelector('.container');
+        if (!svg || !path || !box) return;
+
+        function toSvg(x, y, svgRect) {
+            return {
+                x: ((x - svgRect.left) / svgRect.width) * 800,
+                y: ((y - svgRect.top) / svgRect.height) * 200
+            };
+        }
+
+        function fitVisorArc() {
+            const svgRect = svg.getBoundingClientRect();
+            const boxRect = box.getBoundingClientRect();
+            const start = toSvg(boxRect.right, boxRect.bottom, svgRect);
+            const ctrl  = toSvg(window.innerWidth * 0.56, window.innerHeight * 0.06, svgRect);
+            const end   = toSvg(window.innerWidth * 0.88, window.innerHeight * 0.38, svgRect);
+            path.setAttribute('d', 'M ' + start.x + ',' + start.y + ' Q ' + ctrl.x + ',' + ctrl.y + ' ' + end.x + ',' + end.y);
+        }
+
+        window.addEventListener('resize', fitVisorArc);
+        if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+            MathJax.startup.promise.then(fitVisorArc).catch(fitVisorArc);
+        }
+        setTimeout(fitVisorArc, 50);
+        setTimeout(fitVisorArc, 400);
     })(document.getElementById('visor-cli'));
 </script>
 </body>
