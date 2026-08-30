@@ -20,17 +20,6 @@
             background-attachment: fixed;
         }
 
-        /* Overlay moved OUTSIDE alpha-parent */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 0 10px 10px 0;
-            z-index: 99999; /* now truly above everything */
-        }
-
         .alpha-parent {
             position: absolute;
             top: 0;
@@ -39,6 +28,35 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.15);
             z-index: 1;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            z-index: 2;
+        }
+
+        /* FIXED BUTTON — visible, clickable, centered */
+        .scroll-container {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+
+        .scroll-link {
+            color: white;
+            text-decoration: none;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+            font-weight: bold;
         }
 
         .container {
@@ -51,12 +69,6 @@
             transform: translateY(-50%);
             z-index: 3;
             margin: 8.5px;
-        }
-
-        .character {
-            position: absolute;
-            font-size: 17px;
-            z-index: 4;
         }
 
         .grey-box {
@@ -89,28 +101,12 @@
             opacity: 0.3;
         }
 
-        /* Button is now visible */
-        .scroll-container {
-            margin-top: 15px;
-        }
-
-        .scroll-link {
-            color: white;
-            text-decoration: none;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px 20px;
-            border-radius: 5px;
-            display: inline-block;
-            font-weight: bold;
-        }
-
         .image-container {
             width: 81px;
             height: 81px;
             position: absolute;
             bottom: 10px;
             left: 10px;
-            transform: translateY(0);
             z-index: 3;
             opacity: 0.49;
         }
@@ -128,10 +124,6 @@
                 background-size: cover;
             }
 
-            .character {
-                font-size: 13.6px;
-            }
-
             canvas {
                 width: 42.5%;
                 height: auto;
@@ -142,17 +134,18 @@
 </head>
 <body>
 
-    <!-- Overlay moved ABOVE alpha-parent -->
-    <div class="overlay">
-        <h1>Welcome to the High-Tech World!</h1>
-        <p>Experience the future, today.</p>
-
-        <div class="scroll-container">
-            <a href="#" id="scrollLink" class="scroll-link">ARE YOU A ROBOT</a>
-        </div>
-    </div>
-
     <div class="alpha-parent">
+
+        <div class="overlay">
+            <h1>Welcome to the High-Tech World!</h1>
+            <p>Experience the future, today.</p>
+
+            <!-- FIXED BUTTON -->
+            <div class="scroll-container">
+                <a href="#" id="scrollLink" class="scroll-link">ARE YOU A ROBOT</a>
+            </div>
+        </div>
+
         <div class="container">
             <canvas id="waveCanvas" width="36" height="36"></canvas>
             <img id="canvasImage" src="https://th.bing.com/th/id/OIP.pih7GL-6zTPJWQdZxkuYYAAAAA?w=167&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Canvas Image">
@@ -167,10 +160,10 @@
                 <img src="https://www.bing.com/th/id/OGC.df5f822d078b9b902484b47a53e7fe66?pid=1.7&rurl=https%3a%2f%2fmedia2.giphy.com%2fmedia%2f2UDi9QbjJewfu%2fgiphy.gif&ehk=%2fK2REDFxueknw1qvKscXJvuLpsQI%2fGZiSgQHQLCkGDM%3d" alt="Gif Image">
             </div>
         </div>
+
     </div>
 
     <script>
-        // Disable and enable scroll functions
         function disableScroll() {
             document.body.style.overflow = 'hidden';
         }
@@ -189,7 +182,6 @@
             activateScroll();
         });
 
-        // Swipe detection
         let touchStartX = 0;
         let touchStartY = 0;
         let touchEndX = 0;
