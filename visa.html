@@ -59,15 +59,15 @@
             font-weight: bold;
         }
 
+        /* FIX: smaller container + moved down + lower z-index */
         .container {
-            width: 68%;
-            max-width: 255px;
-            height: 255px;
+            width: 180px;
+            height: 180px;
             position: absolute;
-            right: 0;
-            top: 50%;
+            right: 10px;
+            top: 60%;
             transform: translateY(-50%);
-            z-index: 3;
+            z-index: 2; /* BELOW overlay so it doesn't block the button */
             margin: 8.5px;
         }
 
