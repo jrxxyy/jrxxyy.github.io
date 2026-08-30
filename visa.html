@@ -19,7 +19,6 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
-
         .alpha-parent {
             position: absolute;
             top: 0;
@@ -29,7 +28,6 @@
             background: rgba(0, 0, 0, 0.15);
             z-index: 1;
         }
-
         .overlay {
             position: absolute;
             top: 0;
@@ -39,26 +37,23 @@
             border-radius: 0 10px 10px 0;
             z-index: 2;
         }
-
-        /* FIXED BUTTON — visible, clickable, centered */
         .scroll-container {
-            position: absolute;
-            top: 10px;
+            position: fixed;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 3;
+            z-index: 10;
         }
-
         .scroll-link {
             color: white;
             text-decoration: none;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             padding: 10px 20px;
             border-radius: 5px;
             display: inline-block;
             font-weight: bold;
+            white-space: nowrap;
         }
-
         .container {
             width: 180px;
             height: 180px;
@@ -69,7 +64,6 @@
             z-index: 2;
             margin: 8.5px;
         }
-
         .grey-box {
             width: 180px;
             height: 180px;
@@ -82,10 +76,8 @@
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 2; /* BELOW overlay */
+            z-index: 2;
         }
-
-
         .photo-container {
             width: 100%;
             height: 100%;
@@ -95,14 +87,12 @@
             align-items: center;
             z-index: 3;
         }
-
         .photo-container img {
             width: 99%;
             height: 99%;
             object-fit: cover;
             opacity: 0.3;
         }
-
         .image-container {
             width: 81px;
             height: 81px;
@@ -112,20 +102,17 @@
             z-index: 3;
             opacity: 0.49;
         }
-
         .image-container img {
             width: 177%;
             height: 177%;
             object-fit: cover;
         }
-
         @media screen and (max-width: 600px) {
             .container, .grey-box, .image-container {
                 width: 76.5%;
                 height: auto;
                 background-size: cover;
             }
-
             canvas {
                 width: 42.5%;
                 height: auto;
@@ -135,55 +122,42 @@
     </style>
 </head>
 <body>
-
     <div class="alpha-parent">
-
         <div class="overlay">
             <h1>Welcome to the High-Tech World!</h1>
             <p>Experience the future, today.</p>
-
-            <!-- FIXED BUTTON -->
-            <div class="scroll-container">
-                <a href="#" id="scrollLink" class="scroll-link">ARE YOU A ROBOT</a>
-            </div>
         </div>
-
+        <div class="scroll-container">
+            <a href="#" id="scrollLink" class="scroll-link">ARE YOU A ROBOT</a>
+        </div>
         <div class="container">
             <canvas id="waveCanvas" width="36" height="36"></canvas>
             <img id="canvasImage" src="https://th.bing.com/th/id/OIP.pih7GL-6zTPJWQdZxkuYYAAAAA?w=167&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Canvas Image">
-
             <div id="jr-box" class="grey-box">
                 <div class="photo-container">
                     <img src="https://cdn.myonlinestore.eu/944ccdd9-6be1-11e9-a722-44a8421b9960/image/cache/article/cc8ffd2c78840df2548263c494a8972641be007f.jpg" alt="Photo">
                 </div>
             </div>
-
             <div class="image-container">
                 <img src="https://www.bing.com/th/id/OGC.df5f822d078b9b902484b47a53e7fe66?pid=1.7&rurl=https%3a%2f%2fmedia2.giphy.com%2fmedia%2f2UDi9QbjJewfu%2fgiphy.gif&ehk=%2fK2REDFxueknw1qvKscXJvuLpsQI%2fGZiSgQHQLCkGDM%3d" alt="Gif Image">
             </div>
         </div>
-
     </div>
-
     <script>
         function disableScroll() {
             document.body.style.overflow = 'hidden';
         }
-
         function enableScroll() {
             document.body.style.overflow = 'auto';
         }
-
         function activateScroll() {
             disableScroll();
             setTimeout(enableScroll, 5000);
         }
-
         document.querySelector('#scrollLink').addEventListener('click', function(event) {
             event.preventDefault();
             activateScroll();
         });
-
         let touchStartX = 0;
         let touchStartY = 0;
         let touchEndX = 0;
@@ -192,28 +166,23 @@
         let swipeCount = 0;
         const swipeThreshold = 127.5;
         const swipeTimeThreshold = 300;
-
         function handleTouchStart(event) {
             const touch = event.touches[0];
             touchStartX = touch.clientX;
             touchStartY = touch.clientY;
             swipeStartTime = new Date().getTime();
         }
-
         function handleTouchEnd(event) {
             const touch = event.changedTouches[0];
             touchEndX = touch.clientX;
             touchEndY = touch.clientY;
             const swipeEndTime = new Date().getTime();
             const timeDiff = swipeEndTime - swipeStartTime;
-
             if (timeDiff < swipeTimeThreshold) {
                 const diffX = touchEndX - touchStartX;
                 const diffY = touchEndY - touchStartY;
-
                 if (Math.abs(diffX) > swipeThreshold || Math.abs(diffY) > swipeThreshold) {
                     swipeCount++;
-
                     if (swipeCount === 2) {
                         if (Math.abs(diffX) > Math.abs(diffY)) {
                             if (diffX > 0) window.location.href = 'https://jrxxyy.github.io/visad.html';
@@ -225,10 +194,8 @@
                     }
                 }
             }
-
             setTimeout(() => { swipeCount = 0; }, 500);
         }
-
         document.addEventListener('touchstart', handleTouchStart, false);
         document.addEventListener('touchend', handleTouchEnd, false);
     </script>
