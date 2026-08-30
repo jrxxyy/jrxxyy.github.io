@@ -35,23 +35,20 @@
 
         #visor-cli {
             position: fixed;
-            top: 28%;
-            left: 32%;
-            width: 28%;
-            height: 22%;
+            top: 22%;
+            left: 18%;
+            width: 64%;
+            height: 36%;
             z-index: 1;
             pointer-events: none;
             overflow: hidden;
             background: transparent;
-            color: #7CFF6B;
-            font: 12px/1.4 "Courier New", monospace;
-            text-shadow: 0 0 6px rgba(0, 255, 100, 0.4);
         }
 
-        #visor-cli pre {
-            margin: 0;
-            padding: 6px;
-            white-space: pre-wrap;
+        #visor-bend {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .main-container {
@@ -263,7 +260,22 @@
     <div class="background" id="background"></div>
 
     <div id="visor-cli" aria-hidden="true">
-        <pre id="visor-cli-out"></pre>
+        <svg id="visor-bend" viewBox="0 0 800 200" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="spec" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#1e90ff"/>
+                    <stop offset="50%" stop-color="#7CFF6B"/>
+                    <stop offset="100%" stop-color="#ff4d4d"/>
+                </linearGradient>
+            </defs>
+            <path id="visor-arc" d="M 20,140 Q 400,20 780,140"
+                  fill="none" stroke="url(#spec)" stroke-width="2"/>
+            <text font-size="16" fill="#7CFF6B" font-family="Courier New, monospace">
+                <textPath href="#visor-arc" startOffset="2%">
+                    visor ready  α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω  Γ Δ Θ Λ Ξ Π Σ Φ Ψ Ω  ∂ ∇ ∫ ∮ ∑ ∏ ∞ ≠ ≈
+                </textPath>
+            </text>
+        </svg>
     </div>
 
     <div class="main-container">
@@ -446,15 +458,9 @@
 
     (function initVisorCLI(root) {
         if (!root) return;
-        const out = root.querySelector('#visor-cli-out');
-        if (!out) return;
-
-        function write(line) {
-            out.textContent += line + '\n';
-            root.scrollTop = root.scrollHeight;
-        }
-
-        write('visor ready');
+        const path = root.querySelector('#visor-arc');
+        if (!path) return;
+        // later: change path.getAttribute('d') to retune the bend
     })(document.getElementById('visor-cli'));
 </script>
 </body>
