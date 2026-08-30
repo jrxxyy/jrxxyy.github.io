@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>.JR.</title>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
     <style>
         body {
             display: flex;
@@ -74,6 +80,23 @@
             border: 1px solid #fff;
         }
 
+        .container.math-box {
+            width: 220px;
+            height: auto;
+            min-height: 150px;
+            padding: 8px;
+            box-sizing: border-box;
+            overflow: visible;
+            color: #fff;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid #fff;
+        }
+
+        .container.math-box mjx-container {
+            margin: 0.4em 0 !important;
+        }
+
         .box {
             width: 25px;
             height: 25px;
@@ -123,7 +146,6 @@
             right: 10px;
         }
 
-        /* Perfect Yin-Yang */
         .yinyang {
             width: 33px;
             height: 33px;
@@ -167,7 +189,7 @@
             color: white;
             position: relative;
         }
-        
+
         .ai-box {
             margin-top: 15px;
             padding: 12px;
@@ -218,19 +240,26 @@
             For more details, please visit the <a href="visa.html">Visa Information</a> page.
         </p>
 
-        <div class="container"></div>
+        <div class="container math-box">
+            \[
+            \lim f(x) \neq \lim \frac{x}{x} = 1
+            \]
+            \[
+            \lim f(x) = \lim \frac{-x}{x} = -1
+            \]
+        </div>
 
         <div class="grey-box" id="jr-box">
             .jr.
         </div>
 
         <div class="box">
-            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1" 
+            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1"
                  alt="Image" class="transparent-image">
         </div>
 
         <canvas id="canvas" height="50" width="150"></canvas>
-        
+
         <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 100px 0 0 0;">
             TEXTEX
             <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
@@ -254,7 +283,7 @@
 
     <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
     <div id="output" style="margin: 20px 0;"></div>
-    
+
     <div class="input-box">
         <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
         <br>
