@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>.JR.</title>
-    <script>
-        window.MathJax = {
-            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
-        };
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
     <style>
         body {
             display: flex;
@@ -28,15 +22,38 @@
             height: 100%;
             background-size: cover;
             background-position: center;
-            z-index: -1;
+            z-index: 0;
             filter: brightness(1.2);
             transform: scale(1.1);
+        }
+
+        #visor-cli {
+            position: fixed;
+            top: 28%;
+            left: 32%;
+            width: 28%;
+            height: 22%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+            background: transparent;
+            color: #7CFF6B;
+            font: 12px/1.4 "Courier New", monospace;
+            text-shadow: 0 0 6px rgba(0, 255, 100, 0.4);
+        }
+
+        #visor-cli pre {
+            margin: 0;
+            padding: 6px;
+            white-space: pre-wrap;
         }
 
         .main-container {
             display: flex;
             align-items: center;
             flex-direction: column;
+            position: relative;
+            z-index: 2;
         }
 
         .grey-box {
@@ -80,23 +97,6 @@
             border: 1px solid #fff;
         }
 
-        .container.math-box {
-            width: 230px;
-            height: auto;
-            min-height: 150px;
-            padding: 8px;
-            box-sizing: border-box;
-            overflow: visible;
-            color: #fff;
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid #fff;
-        }
-
-        .container.math-box mjx-container {
-            margin: 0.3em 0 !important;
-        }
-
         .box {
             width: 25px;
             height: 25px;
@@ -128,6 +128,7 @@
             height: 100px;
             background: linear-gradient(to bottom, #00ff00, #ffffff);
             position: relative;
+            z-index: 2;
             margin: 20px 0;
         }
 
@@ -144,6 +145,7 @@
             position: absolute;
             bottom: 5px;
             right: 10px;
+            z-index: 2;
         }
 
         .yinyang {
@@ -188,6 +190,7 @@
             text-align: center;
             color: white;
             position: relative;
+            z-index: 2;
         }
 
         .ai-box {
@@ -209,6 +212,7 @@
             right: 20px;
             top: 20px;
             gap: 10px;
+            z-index: 2;
         }
 
         canvas {
@@ -235,36 +239,16 @@
 <body>
     <div class="background" id="background"></div>
 
+    <div id="visor-cli" aria-hidden="true">
+        <pre id="visor-cli-out"></pre>
+    </div>
+
     <div class="main-container">
         <p style="color: white; margin: 20px 0 20px 80px;">
             For more details, please visit the <a href="visa.html">Visa Information</a> page.
         </p>
 
-        <div class="container math-box">
-            <svg viewBox="-60 -70 160 140" width="200" height="150" aria-label="Cartesian plane y=1 and y=-1">
-                <line x1="-50" y1="0" x2="90" y2="0" stroke="#fff" stroke-width="1.2"/>
-                <line x1="0" y1="-60" x2="0" y2="60" stroke="#fff" stroke-width="1.2"/>
-                <polygon points="90,0 84,-3 84,3" fill="#fff"/>
-                <polygon points="0,-60 -3,-54 3,-54" fill="#fff"/>
-                <text x="84" y="14" fill="#fff" font-size="9">x</text>
-                <text x="5" y="-54" fill="#fff" font-size="9">y</text>
-                <text x="-10" y="12" fill="#fff" font-size="8">0</text>
-                <line x1="-45" y1="-30" x2="80" y2="-30" stroke="#7CFF6B" stroke-width="1.6"/>
-                <text x="18" y="-34" fill="#7CFF6B" font-size="8">y = 1</text>
-                <line x1="-45" y1="30" x2="80" y2="30" stroke="#FF6B6B" stroke-width="1.6"/>
-                <text x="14" y="42" fill="#FF6B6B" font-size="8">y = -1</text>
-                <line x1="-3" y1="-30" x2="3" y2="-30" stroke="#fff" stroke-width="1"/>
-                <line x1="-3" y1="30" x2="3" y2="30" stroke="#fff" stroke-width="1"/>
-                <text x="-14" y="-27" fill="#fff" font-size="8">1</text>
-                <text x="-18" y="33" fill="#fff" font-size="8">-1</text>
-            </svg>
-            \[
-            \lim f(x) \neq \lim \frac{x}{x} = 1
-            \]
-            \[
-            \lim f(x) = \lim \frac{-x}{x} = -1
-            \]
-        </div>
+        <div class="container"></div>
 
         <div class="grey-box" id="jr-box">
             .jr.
@@ -412,6 +396,19 @@
         if (aiBox) aiBox.innerText = "Redirecting...";
         window.location.href = "https://jrxxyy.github.io/beta.html";
     });
+
+    (function initVisorCLI(root) {
+        if (!root) return;
+        const out = root.querySelector('#visor-cli-out');
+        if (!out) return;
+
+        function write(line) {
+            out.textContent += line + '\n';
+            root.scrollTop = root.scrollHeight;
+        }
+
+        write('visor ready');
+    })(document.getElementById('visor-cli'));
 </script>
 </body>
 </html>
