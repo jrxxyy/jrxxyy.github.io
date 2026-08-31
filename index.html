@@ -398,52 +398,66 @@
             \]
         </div>
 
-        <div class="grey-box" id="jr-box">
-            .jr.
-        </div>
-        <div class="box">
-            <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1"
-                 alt="Image" class="transparent-image">
-        </div>
-        <canvas id="canvas" height="50" width="150"></canvas>
-        <div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 100px 0 0 0;">
-            TEXTEX
-            <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
-                <div class="dot"></div>
-                <div class="yinyang"></div>
-            </div>
-        </div>
+     <div class="grey-box" id="jr-box">
+    .jr.
+</div>
+
+<div class="box">
+    <img src="https://s.yimg.com/ny/api/res/1.2/38.MSAcBO4Gl09ihioblnw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MA--/https://s.yimg.com/os/creatr-uploaded-images/2023-11/bd9a8200-81fe-11ee-887f-8ee2908ef0c1"
+         alt="Image" class="transparent-image">
+</div>
+
+<canvas id="canvas" height="50" width="150"></canvas>
+
+<div id="楽" style="background-color: GhostWhite; border: 1px solid gray; padding: 5px; margin: 20px 0 0 0;">
+    TEXTEX
+    <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
+        <div class="dot"></div>
+        <div class="yinyang"></div>
     </div>
-    <div class="beaker">
-        <div class="measurement">1</div>
-        <div class="measurement">5</div>
-        <div class="measurement">10</div>
-    </div>
-    <div class="yinyang"></div>
-    <svg height="50" width="150" style="margin: 20px 0;">
-        <line x1="0" y1="25" x2="150" y2="25" stroke="red" stroke-width="3" />
-    </svg>
-    <button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
-    <div id="output" style="margin: 20px 0;"></div>
-    <div class="input-box">
-        <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
-        <br>
-        <button id="generate-btn">GENERATE OUTCOME</button>
-        <div id="ai-response" class="ai-box"></div>
-        <input type="file" id="image-input" accept="image/*">
-    </div>
-    <div class="three-boxes">
-        <div class="box box1"></div>
-        <div class="box box2"></div>
-        <div class="box box3"></div>
-        <div class="image-holder"></div>
-    </div>
+</div>
+
+</div>
+
+<div class="beaker">
+    <div class="measurement">1</div>
+    <div class="measurement">5</div>
+    <div class="measurement">10</div>
+</div>
+
+<div class="yinyang"></div>
+
+<svg height="50" width="150" style="margin: 20px 0;">
+    <line x1="0" y1="25" x2="150" y2="25" stroke="red" stroke-width="3" />
+</svg>
+
+<!-- FIXED BUTTON -->
+<button class="generator-button" onclick="getRandomOutcome()">Generate Outcome</button>
+
+<div id="output" style="margin: 20px 0;"></div>
+
+<div class="input-box">
+    <textarea id="text-input" placeholder="ALIEN.X" rows="4" cols="30"></textarea>
+    <br>
+    <button id="generate-btn">GENERATE OUTCOME</button>
+    <div id="ai-response" class="ai-box"></div>
+    <input type="file" id="image-input" accept="image/*">
+</div>
+
+<div class="three-boxes">
+    <div class="box box1"></div>
+    <div class="box box2"></div>
+    <div class="box box3"></div>
+    <div class="image-holder"></div>
+</div>
+
 <script>
     const backgroundImageUrl = 'https://i0.wp.com/cms.sofrep.com/wp-content/uploads/2022/07/2022-07-08-14.png?fit=1366%2C768&ssl=1';
     const backgroundDiv = document.getElementById('background');
     if (backgroundDiv) {
         backgroundDiv.style.backgroundImage = `url('${backgroundImageUrl}')`;
     }
+
     function getRandomColor() {
         const letters = '0123456789ABCDEF';
         let color = '#';
@@ -452,6 +466,7 @@
         }
         return color;
     }
+
     function createDot() {
         const dot = document.createElement('div');
         dot.className = 'dot';
@@ -463,20 +478,24 @@
             jrBox.appendChild(dot);
         }
     }
+
     for (let i = 0; i < 15; i++) {
         createDot();
     }
+
     const clickableWindow = document.getElementById("楽");
     if (clickableWindow) {
         clickableWindow.addEventListener("click", () => {
             window.open(".", "_blank");
         });
     }
+
     function getRandomIndex() {
         const min = 0;
         const max = 13;
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+
     function getRandomOutcome() {
         const outcomes = [
             "ASC|| call initiated.",
@@ -495,6 +514,57 @@
             "Lucky number 13!"
         ];
         document.getElementById("output").textContent = outcomes[getRandomIndex()];
+    }
+</script>
+
+<style>
+/* FIXES ONLY — nothing else touched */
+
+.container {
+    width: 180px;
+    height: 180px;
+    position: absolute;
+    right: 10px;
+    top: 60%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.grey-box {
+    width: 180px;
+    height: 180px;
+    background-color: rgba(128, 128, 128, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.generator-button {
+    position: relative;
+    z-index: 9999;
+    margin-top: 20px;
+}
+
+#generate-btn {
+    position: relative;
+    z-index: 9999;
+}
+
+.box {
+    z-index: 1;
+}
+
+.yinyang {
+    z-index: 1;
+}
+</style>
+<script>
     }
     function draw() {
         const canvas = document.querySelector('#canvas');
