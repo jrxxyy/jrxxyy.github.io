@@ -59,3 +59,12 @@ function initializeTypeProtocol(typeNumber) {
         output.textContent = "PAGE OK: " + result.reason;
     }
 }
+document.addEventListener("click", (e) => {
+    // Redirect JR.CLOUD button
+    if (e.target.matches("[data-action='go-search']")) {
+
+        // Redirect to your Firefox search engine page
+        window.location.href = "firefox-search.html"; 
+    }
+});
+
