@@ -10,10 +10,11 @@
 
 <script>
     // Automatically show caution message on load
-    document.addEventListener("DOMContentLoaded", () => {
-        const caution = document.getElementById("caution");
-        caution.textContent = "CAUTION: avoid squares";
-    });
+document.addEventListener("click", (e) => {
+    if (e.target.matches("[data-action='go-search']")) {
+        window.location.href = "https://www.mozilla.org/en-US/search/?q=avoid+squares";
+    }
+});
 </script>
 
 </body>
