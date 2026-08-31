@@ -1,3 +1,4 @@
+// TYPE INDEX UP — SELECT TYPE SET
 document.addEventListener("click", (e) => {
     if (e.target.matches("[data-action='select-type']")) {
 
@@ -10,10 +11,8 @@ document.addEventListener("click", (e) => {
     }
 });
 
+// SVG SHAPE ANALYZER
 function analyzeSVGShapes(shapeList) {
-    // shapeList = array of shape objects sent from Firefox backend
-    // Example: [{type: "square"}, {type: "circle"}, ...]
-
     let squareCount = 0;
 
     for (const shape of shapeList) {
@@ -35,6 +34,7 @@ function analyzeSVGShapes(shapeList) {
     };
 }
 
+// TYPE INDEX UP — PROTOCOL INITIALIZER
 function initializeTypeProtocol(typeNumber) {
     console.log("Protocol initialized for TYPE SET:", typeNumber);
 
@@ -50,7 +50,6 @@ function initializeTypeProtocol(typeNumber) {
     ];
 
     const result = analyzeSVGShapes(exampleShapeData);
-
     const output = document.getElementById("output");
 
     if (result.avoid) {
@@ -59,12 +58,10 @@ function initializeTypeProtocol(typeNumber) {
         output.textContent = "PAGE OK: " + result.reason;
     }
 }
-document.addEventListener("click", (e) => {
-    // Redirect JR.CLOUD button
-    if (e.target.matches("[data-action='go-search']")) {
 
-        // Redirect to your Firefox search engine page
-        window.location.href = "firefox-search.html"; 
+// JR.CLOUD BUTTON → REDIRECT TO FIREFOX SEARCH ENGINE
+document.addEventListener("click", (e) => {
+    if (e.target.matches("[data-action='go-search']")) {
+        window.location.href = "firefox-search.html";
     }
 });
-
