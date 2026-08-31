@@ -10,10 +10,52 @@ document.addEventListener("click", (e) => {
     }
 });
 
+function analyzeSVGShapes(shapeList) {
+    // shapeList = array of shape objects sent from Firefox backend
+    // Example: [{type: "square"}, {type: "circle"}, ...]
+
+    let squareCount = 0;
+
+    for (const shape of shapeList) {
+        if (shape.type === "square") {
+            squareCount++;
+        }
+    }
+
+    if (squareCount > 5) {
+        return {
+            avoid: true,
+            reason: "Page contains more than 5 squares."
+        };
+    }
+
+    return {
+        avoid: false,
+        reason: "Page is safe."
+    };
+}
+
 function initializeTypeProtocol(typeNumber) {
     console.log("Protocol initialized for TYPE SET:", typeNumber);
 
-    // Placeholder for next phases:
-    // B) SVG database structure
-    // C) Firefox shape search engine
+    // Placeholder: Firefox will send shape data here
+    const exampleShapeData = [
+        {type: "square"},
+        {type: "square"},
+        {type: "circle"},
+        {type: "square"},
+        {type: "square"},
+        {type: "square"},
+        {type: "square"}
+    ];
+
+    const result = analyzeSVGShapes(exampleShapeData);
+
+    const output = document.getElementById("output");
+
+    if (result.avoid) {
+        output.textContent = "AVOID PAGE: " + result.reason;
+    } else {
+        output.textContent = "PAGE OK: " + result.reason;
+    }
 }
