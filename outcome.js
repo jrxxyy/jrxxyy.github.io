@@ -1,3 +1,4 @@
+console.log("OUTCOME.JS LOADED");
 // TYPE INDEX UP — SELECT TYPE SET
 document.addEventListener("click", (e) => {
     if (e.target.matches("[data-action='select-type']")) {
