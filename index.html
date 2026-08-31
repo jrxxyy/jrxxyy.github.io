@@ -47,6 +47,19 @@
             height: 100%;
             display: block;
         }
+        .visor-sym {
+            pointer-events: auto;
+            cursor: pointer;
+            user-select: none;
+            fill: #7CFF6B;
+            font-family: "Courier New", monospace;
+            font-size: 16px;
+        }
+        .visor-sym:hover,
+        .visor-sym.is-on {
+            fill: #fff;
+            filter: drop-shadow(0 0 6px #7CFF6B);
+        }
         .main-container {
             display: flex;
             align-items: center;
@@ -337,11 +350,7 @@
             </defs>
             <path id="visor-arc" d="M 20,100 Q 400,20 780,80"
                   fill="none" stroke="url(#spec)" stroke-width="2"/>
-            <text font-size="16" fill="#7CFF6B" font-family="Courier New, monospace">
-                <textPath href="#visor-arc" startOffset="2%">
-                    visor ready  α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω  Γ Δ Θ Λ Ξ Π Σ Φ Ψ Ω  ∂ ∇ ∫ ∮ ∑ ∏ ∞ ≠ ≈
-                </textPath>
-            </text>
+            <g id="visor-syms"></g>
         </svg>
     </div>
     <div class="main-container">
@@ -500,14 +509,154 @@
         if (!root) return;
         const svg = root.querySelector('#visor-bend');
         const path = root.querySelector('#visor-arc');
+        const layer = root.querySelector('#visor-syms');
         const box = document.querySelector('.container.math-box') || document.querySelector('.container');
-        if (!svg || !path || !box) return;
+        const out = document.getElementById('output');
+        if (!svg || !path || !layer || !box) return;
+
+        const glyphs = [
+            { id: 'alpha',   ch: 'α', name: 'alpha' },
+            { id: 'beta',    ch: 'β', name: 'beta' },
+            { id: 'gamma',   ch: 'γ', name: 'gamma' },
+            { id: 'delta',   ch: 'δ', name: 'delta' },
+            { id: 'epsilon', ch: 'ε', name: 'epsilon' },
+            { id: 'zeta',    ch: 'ζ', name: 'zeta' },
+            { id: 'eta',     ch: 'η', name: 'eta' },
+            { id: 'theta',   ch: 'θ', name: 'theta' },
+            { id: 'iota',    ch: 'ι', name: 'iota' },
+            { id: 'kappa',   ch: 'κ', name: 'kappa' },
+            { id: 'lambda',  ch: 'λ', name: 'lambda' },
+            { id: 'mu',      ch: 'μ', name: 'mu' },
+            { id: 'nu',      ch: 'ν', name: 'nu' },
+            { id: 'xi',      ch: 'ξ', name: 'xi' },
+            { id: 'omicron', ch: 'ο', name: 'omicron' },
+            { id: 'pi',      ch: 'π', name: 'pi' },
+            { id: 'rho',     ch: 'ρ', name: 'rho' },
+            { id: 'sigma',   ch: 'σ', name: 'sigma' },
+            { id: 'tau',     ch: 'τ', name: 'tau' },
+            { id: 'upsilon', ch: 'υ', name: 'upsilon' },
+            { id: 'phi',     ch: 'φ', name: 'phi' },
+            { id: 'chi',     ch: 'χ', name: 'chi' },
+            { id: 'psi',     ch: 'ψ', name: 'psi' },
+            { id: 'omega',   ch: 'ω', name: 'omega' },
+            { id: 'Gamma',   ch: 'Γ', name: 'Gamma' },
+            { id: 'Delta',   ch: 'Δ', name: 'Delta' },
+            { id: 'Theta',   ch: 'Θ', name: 'Theta' },
+            { id: 'Lambda',  ch: 'Λ', name: 'Lambda' },
+            { id: 'Xi',      ch: 'Ξ', name: 'Xi' },
+            { id: 'Pi',      ch: 'Π', name: 'Pi' },
+            { id: 'Sigma',   ch: 'Σ', name: 'Sigma' },
+            { id: 'Phi',     ch: 'Φ', name: 'Phi' },
+            { id: 'Psi',     ch: 'Ψ', name: 'Psi' },
+            { id: 'Omega',   ch: 'Ω', name: 'Omega' },
+            { id: 'partial', ch: '∂', name: 'partial' },
+            { id: 'nabla',   ch: '∇', name: 'nabla' },
+            { id: 'int',     ch: '∫', name: 'integral' },
+            { id: 'oint',    ch: '∮', name: 'oint' },
+            { id: 'sum',     ch: '∑', name: 'sum' },
+            { id: 'prod',    ch: '∏', name: 'product' },
+            { id: 'inf',     ch: '∞', name: 'infinity' },
+            { id: 'neq',     ch: '≠', name: 'not-equal' },
+            { id: 'approx',  ch: '≈', name: 'approx' }
+        ];
+
+        function say(msg) {
+            if (out) out.textContent = msg;
+        }
+
+        const actions = {
+            alpha:   function () { say('α alpha — start sequence'); },
+            beta:    function () { say('β beta — secondary channel'); },
+            gamma:   function () { document.body.style.backgroundColor = '#001a00'; say('γ gamma — field tint'); },
+            delta:   function () { getRandomOutcome(); say('δ delta — index shift'); },
+            epsilon: function () { say('ε epsilon — continuity ε chosen'); },
+            zeta:    function () { say('ζ zeta — ripple'); },
+            eta:     function () { say('η eta — hold'); },
+            theta:   function () { say('θ theta — angle lock'); },
+            iota:    function () { say('ι iota — smallest step'); },
+            kappa:   function () { say('κ kappa — curvature'); },
+            lambda:  function () { say('λ lambda — wavelength'); },
+            mu:      function () { say('μ mu — mean'); },
+            nu:      function () { say('ν nu — frequency'); },
+            xi:      function () { say('ξ xi — hidden var'); },
+            omicron: function () { say('ο omicron — origin'); },
+            pi:      function () { say('π pi — ' + Math.PI.toFixed(8)); },
+            rho:     function () { say('ρ rho — density'); },
+            sigma:   function () {
+                const w = document.getElementById('reflex-wrap');
+                if (w) w.style.opacity = w.style.opacity === '0' ? '1' : '0';
+                say('σ sigma — reflex neighborhood toggle');
+            },
+            tau:     function () { say('τ tau — period'); },
+            upsilon: function () { say('υ upsilon — lift'); },
+            phi:     function () { say('φ phi — ' + ((1 + Math.sqrt(5)) / 2).toFixed(8)); },
+            chi:     function () { say('χ chi — mix'); },
+            psi:     function () { say('ψ psi — wavefn'); },
+            omega:   function () { say('ω omega — end / limit'); },
+            Gamma:   function () { say('Γ Gamma — gate'); },
+            Delta:   function () { say('Δ Delta — change'); },
+            Theta:   function () { say('Θ Theta — bound'); },
+            Lambda:  function () { say('Λ Lambda — eigenvalue'); },
+            Xi:      function () { say('Ξ Xi — cascade'); },
+            Pi:      function () { say('Π Pi — product form'); },
+            Sigma:   function () { say('Σ Sigma — sum form'); },
+            Phi:     function () { say('Φ Phi — potential'); },
+            Psi:     function () { say('Ψ Psi — state'); },
+            Omega:   function () { say('Ω Omega — sample space'); },
+            partial: function () { say('∂ partial — local rate'); },
+            nabla:   function () { say('∇ nabla — gradient'); },
+            int:     function () { say('∫ integral — accumulate'); },
+            oint:    function () { say('∮ oint — closed path'); },
+            sum:     function () { say('∑ sum — discrete total'); },
+            prod:    function () { say('∏ product — discrete product'); },
+            inf:     function () { say('∞ infinity — no bound'); },
+            neq:     function () { say('≠ not-equal — branch'); },
+            approx:  function () { say('≈ approx — near'); }
+        };
+
         function toSvg(x, y, svgRect) {
             return {
                 x: ((x - svgRect.left) / svgRect.width) * 800,
                 y: ((y - svgRect.top) / svgRect.height) * 200
             };
         }
+
+        function placeGlyphs() {
+            const len = path.getTotalLength();
+            if (!len) return;
+            const nodes = layer.querySelectorAll('.visor-sym');
+            const usable = len * 0.92;
+            const start = len * 0.04;
+            nodes.forEach(function (el, i) {
+                const t = start + (usable * i) / Math.max(nodes.length - 1, 1);
+                const p = path.getPointAtLength(t);
+                el.setAttribute('x', p.x);
+                el.setAttribute('y', p.y);
+            });
+        }
+
+        function buildGlyphs() {
+            layer.innerHTML = '';
+            glyphs.forEach(function (g) {
+                const el = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                el.setAttribute('class', 'visor-sym');
+                el.setAttribute('data-id', g.id);
+                el.setAttribute('text-anchor', 'middle');
+                el.setAttribute('dominant-baseline', 'middle');
+                el.textContent = g.ch;
+                el.addEventListener('click', function (ev) {
+                    ev.stopPropagation();
+                    layer.querySelectorAll('.visor-sym').forEach(function (n) {
+                        n.classList.remove('is-on');
+                    });
+                    el.classList.add('is-on');
+                    const fn = actions[g.id];
+                    if (fn) fn();
+                });
+                layer.appendChild(el);
+            });
+        }
+
         function fitVisorArc() {
             const svgRect = svg.getBoundingClientRect();
             const boxRect = box.getBoundingClientRect();
@@ -515,7 +664,10 @@
             const ctrl  = toSvg(window.innerWidth * 0.56, window.innerHeight * 0.06, svgRect);
             const end   = toSvg(window.innerWidth * 0.88, window.innerHeight * 0.38, svgRect);
             path.setAttribute('d', 'M ' + start.x + ',' + start.y + ' Q ' + ctrl.x + ',' + ctrl.y + ' ' + end.x + ',' + end.y);
+            placeGlyphs();
         }
+
+        buildGlyphs();
         window.addEventListener('resize', fitVisorArc);
         if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
             MathJax.startup.promise.then(fitVisorArc).catch(fitVisorArc);
