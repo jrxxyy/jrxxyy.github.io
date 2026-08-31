@@ -5,7 +5,7 @@ document.addEventListener("click", (e) => {
         const output = document.getElementById("output");
 
         output.textContent = "TYPE SET " + selectedType + " selected. Initializing protocol...";
-        
+
         initializeTypeProtocol(selectedType);
     }
 });
@@ -13,8 +13,7 @@ document.addEventListener("click", (e) => {
 function initializeTypeProtocol(typeNumber) {
     console.log("Protocol initialized for TYPE SET:", typeNumber);
 
-    // Future expansion:
-    // - Query Firefox SVG database
-    // - Match shape signatures
-    // - Return actionable results
+    // Placeholder for next phases:
+    // B) SVG database structure
+    // C) Firefox shape search engine
 }
