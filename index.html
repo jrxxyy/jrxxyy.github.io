@@ -60,6 +60,20 @@
             fill: #fff;
             filter: drop-shadow(0 0 6px #7CFF6B);
         }
+        #visor-tip {
+            position: fixed;
+            z-index: 20;
+            display: none;
+            pointer-events: none;
+            background: #fff;
+            color: #111;
+            font: 9px/1.15 "Courier New", ui-monospace, monospace;
+            letter-spacing: 0.04em;
+            padding: 2px 5px;
+            border-radius: 2px;
+            white-space: nowrap;
+            box-shadow: 0 0 6px rgba(255,255,255,0.35);
+        }
         .main-container {
             display: flex;
             align-items: center;
@@ -339,6 +353,7 @@
       </div>
     </div>
 
+    <div id="visor-tip"></div>
     <div id="visor-cli" aria-hidden="true">
         <svg id="visor-bend" viewBox="0 0 800 200" preserveAspectRatio="none">
             <defs>
@@ -515,49 +530,49 @@
         if (!svg || !path || !layer || !box) return;
 
         const glyphs = [
-            { id: 'alpha',   ch: 'α', name: 'alpha' },
-            { id: 'beta',    ch: 'β', name: 'beta' },
-            { id: 'gamma',   ch: 'γ', name: 'gamma' },
-            { id: 'delta',   ch: 'δ', name: 'delta' },
-            { id: 'epsilon', ch: 'ε', name: 'epsilon' },
-            { id: 'zeta',    ch: 'ζ', name: 'zeta' },
-            { id: 'eta',     ch: 'η', name: 'eta' },
-            { id: 'theta',   ch: 'θ', name: 'theta' },
-            { id: 'iota',    ch: 'ι', name: 'iota' },
-            { id: 'kappa',   ch: 'κ', name: 'kappa' },
-            { id: 'lambda',  ch: 'λ', name: 'lambda' },
-            { id: 'mu',      ch: 'μ', name: 'mu' },
-            { id: 'nu',      ch: 'ν', name: 'nu' },
-            { id: 'xi',      ch: 'ξ', name: 'xi' },
-            { id: 'omicron', ch: 'ο', name: 'omicron' },
-            { id: 'pi',      ch: 'π', name: 'pi' },
-            { id: 'rho',     ch: 'ρ', name: 'rho' },
-            { id: 'sigma',   ch: 'σ', name: 'sigma' },
-            { id: 'tau',     ch: 'τ', name: 'tau' },
-            { id: 'upsilon', ch: 'υ', name: 'upsilon' },
-            { id: 'phi',     ch: 'φ', name: 'phi' },
-            { id: 'chi',     ch: 'χ', name: 'chi' },
-            { id: 'psi',     ch: 'ψ', name: 'psi' },
-            { id: 'omega',   ch: 'ω', name: 'omega' },
-            { id: 'Gamma',   ch: 'Γ', name: 'Gamma' },
-            { id: 'Delta',   ch: 'Δ', name: 'Delta' },
-            { id: 'Theta',   ch: 'Θ', name: 'Theta' },
-            { id: 'Lambda',  ch: 'Λ', name: 'Lambda' },
-            { id: 'Xi',      ch: 'Ξ', name: 'Xi' },
-            { id: 'Pi',      ch: 'Π', name: 'Pi' },
-            { id: 'Sigma',   ch: 'Σ', name: 'Sigma' },
-            { id: 'Phi',     ch: 'Φ', name: 'Phi' },
-            { id: 'Psi',     ch: 'Ψ', name: 'Psi' },
-            { id: 'Omega',   ch: 'Ω', name: 'Omega' },
-            { id: 'partial', ch: '∂', name: 'partial' },
-            { id: 'nabla',   ch: '∇', name: 'nabla' },
-            { id: 'int',     ch: '∫', name: 'integral' },
-            { id: 'oint',    ch: '∮', name: 'oint' },
-            { id: 'sum',     ch: '∑', name: 'sum' },
-            { id: 'prod',    ch: '∏', name: 'product' },
-            { id: 'inf',     ch: '∞', name: 'infinity' },
-            { id: 'neq',     ch: '≠', name: 'not-equal' },
-            { id: 'approx',  ch: '≈', name: 'approx' }
+            { id: 'alpha',   ch: 'α', word: 'alpha' },
+            { id: 'beta',    ch: 'β', word: 'beta' },
+            { id: 'gamma',   ch: 'γ', word: 'gamma' },
+            { id: 'delta',   ch: 'δ', word: 'delta' },
+            { id: 'epsilon', ch: 'ε', word: 'epsilon' },
+            { id: 'zeta',    ch: 'ζ', word: 'zeta' },
+            { id: 'eta',     ch: 'η', word: 'eta' },
+            { id: 'theta',   ch: 'θ', word: 'theta' },
+            { id: 'iota',    ch: 'ι', word: 'iota' },
+            { id: 'kappa',   ch: 'κ', word: 'kappa' },
+            { id: 'lambda',  ch: 'λ', word: 'lambda' },
+            { id: 'mu',      ch: 'μ', word: 'mu' },
+            { id: 'nu',      ch: 'ν', word: 'nu' },
+            { id: 'xi',      ch: 'ξ', word: 'xi' },
+            { id: 'omicron', ch: 'ο', word: 'omicron' },
+            { id: 'pi',      ch: 'π', word: 'pi' },
+            { id: 'rho',     ch: 'ρ', word: 'rho' },
+            { id: 'sigma',   ch: 'σ', word: 'sigma' },
+            { id: 'tau',     ch: 'τ', word: 'tau' },
+            { id: 'upsilon', ch: 'υ', word: 'upsilon' },
+            { id: 'phi',     ch: 'φ', word: 'phi' },
+            { id: 'chi',     ch: 'χ', word: 'chi' },
+            { id: 'psi',     ch: 'ψ', word: 'psi' },
+            { id: 'omega',   ch: 'ω', word: 'omega' },
+            { id: 'Gamma',   ch: 'Γ', word: 'gamma' },
+            { id: 'Delta',   ch: 'Δ', word: 'delta' },
+            { id: 'Theta',   ch: 'Θ', word: 'theta' },
+            { id: 'Lambda',  ch: 'Λ', word: 'lambda' },
+            { id: 'Xi',      ch: 'Ξ', word: 'xi' },
+            { id: 'Pi',      ch: 'Π', word: 'pi' },
+            { id: 'Sigma',   ch: 'Σ', word: 'sigma' },
+            { id: 'Phi',     ch: 'Φ', word: 'phi' },
+            { id: 'Psi',     ch: 'Ψ', word: 'psi' },
+            { id: 'Omega',   ch: 'Ω', word: 'omega' },
+            { id: 'partial', ch: '∂', word: 'partial' },
+            { id: 'nabla',   ch: '∇', word: 'gradient' },
+            { id: 'int',     ch: '∫', word: 'integral' },
+            { id: 'oint',    ch: '∮', word: 'circulation' },
+            { id: 'sum',     ch: '∑', word: 'sum' },
+            { id: 'prod',    ch: '∏', word: 'product' },
+            { id: 'inf',     ch: '∞', word: 'infinity' },
+            { id: 'neq',     ch: '≠', word: 'unequal' },
+            { id: 'approx',  ch: '≈', word: 'approximately' }
         ];
 
         function say(msg) {
@@ -635,15 +650,32 @@
             });
         }
 
+        const tip = document.getElementById('visor-tip');
+        function showTip(el, word) {
+            if (!tip) return;
+            const r = el.getBoundingClientRect();
+            tip.textContent = word;
+            tip.style.display = 'block';
+            tip.style.left = (r.left + r.width / 2 - tip.offsetWidth / 2) + 'px';
+            tip.style.top = (r.top - tip.offsetHeight - 4) + 'px';
+        }
+        function hideTip() {
+            if (tip) tip.style.display = 'none';
+        }
+
         function buildGlyphs() {
             layer.innerHTML = '';
             glyphs.forEach(function (g) {
                 const el = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 el.setAttribute('class', 'visor-sym');
                 el.setAttribute('data-id', g.id);
+                el.setAttribute('data-word', g.word);
                 el.setAttribute('text-anchor', 'middle');
                 el.setAttribute('dominant-baseline', 'middle');
                 el.textContent = g.ch;
+                el.addEventListener('mouseenter', function () { showTip(el, g.word); });
+                el.addEventListener('mousemove', function () { showTip(el, g.word); });
+                el.addEventListener('mouseleave', hideTip);
                 el.addEventListener('click', function (ev) {
                     ev.stopPropagation();
                     layer.querySelectorAll('.visor-sym').forEach(function (n) {
