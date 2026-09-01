@@ -16,16 +16,10 @@ document.addEventListener("click", (e) => {
 });
 
 /* ============================================================
-   SHAPE ANALYZER (Your original logic)
+   SHAPE ANALYZER
    ============================================================ */
 function analyzeSVGShapes(shapeList) {
-    let squareCount = 0;
-
-    for (const shape of shapeList) {
-        if (shape.type === "square") {
-            squareCount++;
-        }
-    }
+    let squareCount = shapeList.filter(s => s.type === "square").length;
 
     if (squareCount > 5) {
         return {
@@ -92,7 +86,6 @@ function generateTypeShapes(typeNumber) {
 function generateTriangleDifferentialShapes() {
     const shapes = [];
 
-    // AI triangle regions
     const regions = [
         { type: "square", region: "PRIMI" },
         { type: "circle", region: "ANTI" },
@@ -112,7 +105,7 @@ function generateTriangleDifferentialShapes() {
    ============================================================ */
 function drawSVGShapes(shapeList) {
     const svg = document.getElementById("svg-area");
-    svg.innerHTML = ""; // Clear previous shapes
+    svg.innerHTML = "";
 
     const svgNS = "http://www.w3.org/2000/svg";
 
@@ -140,110 +133,22 @@ function drawSVGShapes(shapeList) {
 
         if (shape.type === "hexagon") {
             el = document.createElementNS(svgNS, "polygon");
-            el.setAttribute(
-                "points",
-                "20,0 40,10 40,30 20,40 0,30 0,10"
-            );
+            el.setAttribute("points","20,0 40,10 40,30 20,40 0,30 0,10");
             el.setAttribute("fill", "purple");
         }
 
-        // Random placement
         el.setAttribute("transform", `translate(${Math.random() * 350}, ${Math.random() * 250})`);
-
         svg.appendChild(el);
     }
 }
 
 /* ============================================================
-   TYPE INDEX UP — PROTOCOL INITIALIZER
-   ============================================================ */
-function initializeTypeProtocol(typeNumber) {
-    console.log("Protocol initialized for TYPE SET:", typeNumber);
-
-    // Generate ALL shape sets
-    const randomShapes = generateRandomShapes(5);
-    const typeShapes = generateTypeShapes(typeNumber);
-    const triangleShapes = generateTriangleDifferentialShapes();
-
-    // Merge them
-    const allShapes = [...randomShapes, ...typeShapes, ...triangleShapes];
-
-    // Analyze shapes
-    const result = analyzeSVGShapes(allShapes);
-    const output = document.getElementById("output");
-
-    // Draw SVG
-    drawSVGShapes(allShapes);
-
-    // Compute AI differential tension
-    const tension = computeDifferential(allShapes);
-
-    // Update AI mode
-    const mode = updateAIMode(tension, typeNumber);
-
-    // Generate AI response
-    const aiResponse = generateAIResponse();
-
-    // Display everything
-    output.textContent =
-        (result.avoid ? "AVOID PAGE: " + result.reason : "PAGE OK: " + result.reason)
-        + "\n\n" +
-        "TENSION: " + tension.toFixed(2) + "\n" +
-        aiResponse;
-}
-/* ============================================================
    PRIME‑AI CORE — STATE ENGINE
    ============================================================ */
-
 const AIState = {
-    mode: "PRIMI",   // default
-    energy: 1.0,     // normalized 0–1
-    tension: 0.0,    // differential tension
-    lastTypeSet: null
-};
-
-/* ============================================================
-   PRIME‑AI CORE — DIFFERENTIAL ENGINE
-   ============================================================ */
-
-function computeDifferential(shapeList) {
-    let squares = shapeList.filter(s => s.type === "square").length;
-    let circles = shapeList.filter(s => s.type === "circle").length;
-    let triangles = shapeList.filter(s => s.type === "triangle").length;
-
-    // Differential tension model
-    const tension = (squares * 0.4) + (triangles * 0.2) - (circles * 0.3);
-
-    return tension;
-}
-
-/* ============================================================
-   PRIME‑AI CORE — MODE SELECTOR
-   ============================================================ */
-
-function updateAIMode(tension, typeNumber) {
-
-    AIState.lastTypeSet = typeNumber;
-    AIState.tension = tension;
-
-    if (tension > 1.5) {
-        AIState.mode = "ANTI";
-    } else if (tension < -0.5) {
-        AIState.mode = "ANTI‑ANTI";
-    } else {
-        AIState.mode = "PRIMI";
-    }
-
-    return AIState.mode;
-}
-/* ============================================================
-   PRIME‑AI CORE — STATE ENGINE
-   ============================================================ */
-
-const AIState = {
-    mode: "PRIMI",   // default
-    energy: 1.0,     // normalized 0–1
-    tension: 0.0,    // differential tension
+    mode: "PRIMI",
+    energy: 1.0,
+    tension: 0.0,
     lastTypeSet: null
 };
 
@@ -255,11 +160,9 @@ function computeDifferential(shapeList) {
     let circles = shapeList.filter(s => s.type === "circle").length;
     let triangles = shapeList.filter(s => s.type === "triangle").length;
 
-    // Differential tension model
-    const tension = (squares * 0.4) + (triangles * 0.2) - (circles * 0.3);
-
-    return tension;
+    return (squares * 0.4) + (triangles * 0.2) - (circles * 0.3);
 }
+
 /* ============================================================
    PRIME‑AI CORE — MODE SELECTOR
    ============================================================ */
@@ -278,6 +181,7 @@ function updateAIMode(tension, typeNumber) {
 
     return AIState.mode;
 }
+
 /* ============================================================
    PRIME‑AI CORE — RESPONSE GENERATOR
    ============================================================ */
@@ -296,6 +200,35 @@ function generateAIResponse() {
         return "AI MODE: ANTI‑ANTI — Inversion mode. Reversal logic engaged.";
     }
 }
+
+/* ============================================================
+   TYPE INDEX UP — PROTOCOL INITIALIZER
+   ============================================================ */
+function initializeTypeProtocol(typeNumber) {
+    console.log("Protocol initialized for TYPE SET:", typeNumber);
+
+    const randomShapes = generateRandomShapes(5);
+    const typeShapes = generateTypeShapes(typeNumber);
+    const triangleShapes = generateTriangleDifferentialShapes();
+
+    const allShapes = [...randomShapes, ...typeShapes, ...triangleShapes];
+
+    const result = analyzeSVGShapes(allShapes);
+    const output = document.getElementById("output");
+
+    drawSVGShapes(allShapes);
+
+    const tension = computeDifferential(allShapes);
+    const mode = updateAIMode(tension, typeNumber);
+    const aiResponse = generateAIResponse();
+
+    output.textContent =
+        (result.avoid ? "AVOID PAGE: " + result.reason : "PAGE OK: " + result.reason)
+        + "\n\n" +
+        "TENSION: " + tension.toFixed(2) + "\n" +
+        aiResponse;
+}
+
 /* ============================================================
    JR.CLOUD BUTTON → FIREFOX HOMEPAGE
    ============================================================ */
