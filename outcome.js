@@ -60,11 +60,11 @@ function initializeTypeProtocol(typeNumber) {
     }
 }
 
-// JR.CLOUD BUTTON → REDIRECT TO FIREFOX SEARCH ENGINE WITH QUERY
+// JR.CLOUD BUTTON → OPEN FIREFOX HOMEPAGE
 document.addEventListener("click", (e) => {
     if (e.target.matches("[data-action='go-search']")) {
 
-        // Opens Firefox's search engine with the query already filled in
-        window.location.href = "https://www.mozilla.org/en-US/search/?q=avoid+squares";
+        // Opens Firefox's homepage
+        window.location.href = "https://www.mozilla.org/en-US/firefox/new/";
     }
 });
