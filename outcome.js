@@ -168,20 +168,134 @@ function initializeTypeProtocol(typeNumber) {
     // Merge them
     const allShapes = [...randomShapes, ...typeShapes, ...triangleShapes];
 
-    // Analyze
+    // Analyze shapes
     const result = analyzeSVGShapes(allShapes);
     const output = document.getElementById("output");
 
-    if (result.avoid) {
-        output.textContent = "AVOID PAGE: " + result.reason;
-    } else {
-        output.textContent = "PAGE OK: " + result.reason;
-    }
-
     // Draw SVG
     drawSVGShapes(allShapes);
+
+    // Compute AI differential tension
+    const tension = computeDifferential(allShapes);
+
+    // Update AI mode
+    const mode = updateAIMode(tension, typeNumber);
+
+    // Generate AI response
+    const aiResponse = generateAIResponse();
+
+    // Display everything
+    output.textContent =
+        (result.avoid ? "AVOID PAGE: " + result.reason : "PAGE OK: " + result.reason)
+        + "\n\n" +
+        "TENSION: " + tension.toFixed(2) + "\n" +
+        aiResponse;
+}
+/* ============================================================
+   PRIME‑AI CORE — STATE ENGINE
+   ============================================================ */
+
+const AIState = {
+    mode: "PRIMI",   // default
+    energy: 1.0,     // normalized 0–1
+    tension: 0.0,    // differential tension
+    lastTypeSet: null
+};
+
+/* ============================================================
+   PRIME‑AI CORE — DIFFERENTIAL ENGINE
+   ============================================================ */
+
+function computeDifferential(shapeList) {
+    let squares = shapeList.filter(s => s.type === "square").length;
+    let circles = shapeList.filter(s => s.type === "circle").length;
+    let triangles = shapeList.filter(s => s.type === "triangle").length;
+
+    // Differential tension model
+    const tension = (squares * 0.4) + (triangles * 0.2) - (circles * 0.3);
+
+    return tension;
 }
 
+/* ============================================================
+   PRIME‑AI CORE — MODE SELECTOR
+   ============================================================ */
+
+function updateAIMode(tension, typeNumber) {
+
+    AIState.lastTypeSet = typeNumber;
+    AIState.tension = tension;
+
+    if (tension > 1.5) {
+        AIState.mode = "ANTI";
+    } else if (tension < -0.5) {
+        AIState.mode = "ANTI‑ANTI";
+    } else {
+        AIState.mode = "PRIMI";
+    }
+
+    return AIState.mode;
+}
+/* ============================================================
+   PRIME‑AI CORE — STATE ENGINE
+   ============================================================ */
+
+const AIState = {
+    mode: "PRIMI",   // default
+    energy: 1.0,     // normalized 0–1
+    tension: 0.0,    // differential tension
+    lastTypeSet: null
+};
+
+/* ============================================================
+   PRIME‑AI CORE — DIFFERENTIAL ENGINE
+   ============================================================ */
+function computeDifferential(shapeList) {
+    let squares = shapeList.filter(s => s.type === "square").length;
+    let circles = shapeList.filter(s => s.type === "circle").length;
+    let triangles = shapeList.filter(s => s.type === "triangle").length;
+
+    // Differential tension model
+    const tension = (squares * 0.4) + (triangles * 0.2) - (circles * 0.3);
+
+    return tension;
+}
+/* ============================================================
+   PRIME‑AI CORE — MODE SELECTOR
+   ============================================================ */
+function updateAIMode(tension, typeNumber) {
+
+    AIState.lastTypeSet = typeNumber;
+    AIState.tension = tension;
+
+    if (tension > 1.5) {
+        AIState.mode = "ANTI";
+    } else if (tension < -0.5) {
+        AIState.mode = "ANTI‑ANTI";
+    } else {
+        AIState.mode = "PRIMI";
+    }
+
+    return AIState.mode;
+}
+/* ============================================================
+   PRIME‑AI CORE — RESPONSE GENERATOR
+   ============================================================ */
+function generateAIResponse() {
+    const mode = AIState.mode;
+
+    if (mode === "PRIMI") {
+        return "AI MODE: PRIMI — Stable, constructive, low‑tension processing.";
+    }
+
+    if (mode === "ANTI") {
+        return "AI MODE: ANTI — High tension detected. Defensive pattern activated.";
+    }
+
+    if (mode === "ANTI‑ANTI") {
+        return "AI MODE: ANTI‑ANTI — Inversion mode. Reversal logic engaged.";
+    }
+}
 /* ============================================================
    JR.CLOUD BUTTON → FIREFOX HOMEPAGE
    ============================================================ */
