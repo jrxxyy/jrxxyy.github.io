@@ -64,29 +64,24 @@ function generateTypeShapes(typeNumber) {
     const theta = radianMap[typeNumber] || Math.PI / 6;
     const cosTheta = Math.cos(theta);
 
-    // Shape selection based on cos(theta)
     let shapes = [];
 
     if (cosTheta > 0.5) {
-        // Circle-dominant region
         shapes.push({ type: "circle" });
         shapes.push({ type: "circle" });
         shapes.push({ type: "square" });
     }
     else if (cosTheta < -0.5) {
-        // Square-dominant region
         shapes.push({ type: "square" });
         shapes.push({ type: "square" });
         shapes.push({ type: "triangle" });
     }
     else {
-        // Triangle-dominant region
         shapes.push({ type: "triangle" });
         shapes.push({ type: "triangle" });
         shapes.push({ type: "circle" });
     }
 
-    // Attach radian metadata for AI layer
     return shapes.map(s => ({
         ...s,
         theta,
@@ -155,22 +150,21 @@ function drawSVGShapes(shapeList) {
         svg.appendChild(el);
     }
 }
-<div id="radian-circle" style="
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    border: 3px solid black;
-    position: absolute;
-    right: 20px;
-    top: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    font-weight: bold;
-">
-    θ = ?
-</div>
+
+/* ============================================================
+   RADIAN CIRCLE PULSE DISPLAY
+   ============================================================ */
+function updateRadianCircle(theta) {
+    const rc = document.getElementById("radian-circle");
+
+    rc.textContent = "θ = " + theta.toFixed(2);
+
+    rc.style.transform = "scale(1.15)";
+    setTimeout(() => {
+        rc.style.transform = "scale(1)";
+    }, 150);
+}
+
 /* ============================================================
    PRIME‑AI CORE — STATE ENGINE
    ============================================================ */
@@ -251,6 +245,10 @@ function initializeTypeProtocol(typeNumber) {
     const mode = updateAIMode(tension, typeNumber);
     const aiResponse = generateAIResponse();
 
+    // Update radian circle
+    const theta = typeShapes[0].theta;
+    updateRadianCircle(theta);
+
     output.textContent =
         (result.avoid ? "AVOID PAGE: " + result.reason : "PAGE OK: " + result.reason)
         + "\n\n" +
@@ -266,20 +264,3 @@ document.addEventListener("click", (e) => {
         window.location.href = "https://www.mozilla.org/en-US/firefox/new/";
     }
 });
-/* ============================================================
-   RADIAN CIRCLE PULSE DISPLAY
-   ============================================================ */
-function updateRadianCircle(theta) {
-    const rc = document.getElementById("radian-circle");
-
-    rc.textContent = "θ = " + theta.toFixed(2);
-   updateRadianCircle(theta);
-
-
-    // Pulse effect
-    rc.style.transform = "scale(1.15)";
-    setTimeout(() => {
-        rc.style.transform = "scale(1)";
-    }, 150);
-}
-
