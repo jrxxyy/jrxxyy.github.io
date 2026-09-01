@@ -64,7 +64,7 @@ function initializeTypeProtocol(typeNumber) {
 document.addEventListener("click", (e) => {
     if (e.target.matches("[data-action='go-search']")) {
 
-        // This opens Firefox's search engine with the query already filled in
+        // Opens Firefox's search engine with the query already filled in
         window.location.href = "https://www.mozilla.org/en-US/search/?q=avoid+squares";
     }
 });
