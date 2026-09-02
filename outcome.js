@@ -4,10 +4,26 @@ const FIELD = { width: 400, height: 300, limitY: 250, curveTop: 28, padX: 28 };
 const curveSquareState = { t: 0.42, raf: null };
 
 const SECTORS = {
-  Q1: { fill: "#60a5fa88", solid: "#60a5fa", div: "sector-q1", x: 1, y: 1 },
-  Q2: { fill: "#34d39988", solid: "#34d399", div: "sector-q2", x: -1, y: 1 },
-  Q3: { fill: "#f472b688", solid: "#f472b6", div: "sector-q3", x: -1, y: -1 },
-  Q4: { fill: "#fbbf2488", solid: "#fbbf24", div: "sector-q4", x: 1, y: -1 }
+  Q1: {
+    fill: "#60a5fa88", solid: "#60a5fa", div: "sector-q1", x: 1, y: 1,
+    word: "amplitude",
+    prompt: "Would you like to replace one line of code with \"amplitude\"?"
+  },
+  Q2: {
+    fill: "#34d39988", solid: "#34d399", div: "sector-q2", x: -1, y: 1,
+    word: "angular momentum",
+    prompt: "Would you like to replace one line of code with \"angular momentum\"?"
+  },
+  Q3: {
+    fill: "#f472b688", solid: "#f472b6", div: "sector-q3", x: -1, y: -1,
+    word: "atom",
+    prompt: "Would you like to replace one line of code with \"atom\"?"
+  },
+  Q4: {
+    fill: "#fbbf2488", solid: "#fbbf24", div: "sector-q4", x: 1, y: -1,
+    word: "acceleration",
+    prompt: "Would you like to replace one line of code with \"acceleration\"?"
+  }
 };
 const sectorState = { active: null, counts: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 } };
 
@@ -415,21 +431,40 @@ function drawSectorChart() {
   }
 }
 
+function applyWordToRandomLine(source, word) {
+  const lines = source.split("\n");
+  const idxs = [];
+  for (var i = 0; i < lines.length; i++) {
+    if (lines[i].trim()) idxs.push(i);
+  }
+  if (!idxs.length) return source;
+  const pick = idxs[Math.floor(Math.random() * idxs.length)];
+  lines[pick] = word;
+  return lines.join("\n");
+}
+
 function selectSector(id) {
+  const m = SECTORS[id];
+  const accepted = window.confirm(m.prompt);
   sectorState.active = id;
   sectorState.counts[id] += 1;
   drawFigureEight();
   drawSectorChart();
-  const m = SECTORS[id];
+
+  let snippet = snippetFor(id);
+  if (accepted) snippet = applyWordToRandomLine(snippet, m.word);
+
   const output = document.getElementById("output");
   if (output) {
     output.textContent =
       "SECTOR " + id + " selected\n" +
       "host div: #" + m.div + "\n" +
-      "enclosed area: 1/3   (full figure-eight = 4/3)";
+      "enclosed area: 1/3   (full figure-eight = 4/3)\n" +
+      "prompt word: " + m.word + "\n" +
+      "replace line: " + (accepted ? "YES — one random line swapped for \"" + m.word + "\"" : "NO — snippet unchanged");
   }
   const codeOut = document.getElementById("code-out");
-  if (codeOut) codeOut.textContent = snippetFor(id);
+  if (codeOut) codeOut.textContent = snippet;
 }
 
 function boot() {
