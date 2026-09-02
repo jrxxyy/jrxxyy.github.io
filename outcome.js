@@ -72,8 +72,27 @@ function ensureHostNodes() {
   if (!document.getElementById("code-out")) {
     const pre = document.createElement("pre");
     pre.id = "code-out";
-    pre.textContent = "Click Q1–Q4 on the figure-eight for a copyable <div> + <script> block.";
+    pre.style.whiteSpace = "pre-wrap";
+    pre.style.border = "1px solid #333";
+    pre.style.padding = "10px";
+    pre.textContent = "Click Q1–Q4 on the figure-eight or the Q bars for a copyable block.";
     document.body.appendChild(pre);
+  }
+
+  if (!document.getElementById("sector-modal")) {
+    const modal = document.createElement("div");
+    modal.id = "sector-modal";
+    modal.style.cssText = "display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999;align-items:center;justify-content:center;";
+    modal.innerHTML =
+      '<div style="background:#fff;color:#111;max-width:420px;width:90%;padding:20px;border-radius:10px;font-family:sans-serif;">' +
+      '<p id="sector-modal-text" style="margin:0 0 16px;font-size:16px;"></p>' +
+      '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+      '<button type="button" id="sector-modal-no">No</button>' +
+      '<button type="button" id="sector-modal-yes">Yes</button>' +
+      "</div></div>";
+    document.body.appendChild(modal);
+    document.getElementById("sector-modal-yes").onclick = function () { finishSectorPrompt(true); };
+    document.getElementById("sector-modal-no").onclick = function () { finishSectorPrompt(false); };
   }
 }
 
@@ -420,6 +439,10 @@ function drawSectorChart() {
     bar.setAttribute("height", String(Math.max(h, 2)));
     bar.setAttribute("fill", sectorState.active === k ? meta.solid : meta.fill);
     bar.setAttribute("stroke", meta.solid);
+    bar.style.cursor = "pointer";
+    bar.addEventListener("click", (function (sectorId) {
+      return function () { selectSector(sectorId); };
+    })(k));
     svg.appendChild(bar);
     const lab = document.createElementNS(NS, "text");
     lab.setAttribute("x", String(x + 24));
@@ -443,9 +466,15 @@ function applyWordToRandomLine(source, word) {
   return lines.join("\n");
 }
 
-function selectSector(id) {
+var pendingSector = null;
+
+function finishSectorPrompt(accepted) {
+  const modal = document.getElementById("sector-modal");
+  if (modal) modal.style.display = "none";
+  const id = pendingSector;
+  pendingSector = null;
+  if (!id) return;
   const m = SECTORS[id];
-  const accepted = window.confirm(m.prompt);
   sectorState.active = id;
   sectorState.counts[id] += 1;
   drawFigureEight();
@@ -461,10 +490,23 @@ function selectSector(id) {
       "host div: #" + m.div + "\n" +
       "enclosed area: 1/3   (full figure-eight = 4/3)\n" +
       "prompt word: " + m.word + "\n" +
-      "replace line: " + (accepted ? "YES — one random line swapped for \"" + m.word + "\"" : "NO — snippet unchanged");
+      "replace line: " + (accepted ? "YES - one random line swapped for \"" + m.word + "\"" : "NO - snippet unchanged");
   }
   const codeOut = document.getElementById("code-out");
   if (codeOut) codeOut.textContent = snippet;
+}
+
+function selectSector(id) {
+  const m = SECTORS[id];
+  pendingSector = id;
+  const text = document.getElementById("sector-modal-text");
+  const modal = document.getElementById("sector-modal");
+  if (!modal || !text) {
+    finishSectorPrompt(window.confirm(m.prompt));
+    return;
+  }
+  text.textContent = m.prompt;
+  modal.style.display = "flex";
 }
 
 function boot() {
