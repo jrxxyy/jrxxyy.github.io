@@ -27,6 +27,12 @@ const SECTORS = {
 };
 const sectorState = { active: null, counts: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 } };
 
+const TYPE_SETS = {
+  "1": { id: "type-set-1", label: "TYPE SET 1", href: "https://jrxxyy.github.io/index.html" },
+  "2": { id: "type-set-2", label: "TYPE SET 2", href: "https://jrxxyy.github.io/beta.html" },
+  "3": { id: "type-set-3", label: "TYPE SET 3", href: "https://jrxxyy.github.io/visa.html" }
+};
+
 function ensureHostNodes() {
   const svgArea = document.getElementById("svg-area");
   const theta = document.getElementById("radian-circle");
@@ -77,6 +83,20 @@ function ensureHostNodes() {
     pre.style.padding = "10px";
     pre.textContent = "Click Q1–Q4 on the figure-eight or the Q bars for a copyable block.";
     document.body.appendChild(pre);
+  }
+
+  if (!document.getElementById("call-box")) {
+    const box = document.createElement("div");
+    box.id = "call-box";
+    box.style.cssText = "position:absolute;right:20px;top:340px;width:200px;min-height:90px;border:1px solid #000;padding:10px;background:#fff;font-family:sans-serif;font-size:13px;z-index:20;";
+    box.innerHTML =
+      "<strong>CALL BOX</strong>" +
+      "<div id=\"call-box-line\">waiting for type set…</div>" +
+      "<div id=\"call-box-id\"></div>" +
+      "<div id=\"type-set-1\" data-type-set=\"1\" data-call=\"idle\" data-href=\"https://jrxxyy.github.io/index.html\" style=\"margin-top:8px;padding:4px;border:1px dashed #999;cursor:pointer;\">#type-set-1</div>" +
+      "<div id=\"type-set-2\" data-type-set=\"2\" data-call=\"idle\" data-href=\"https://jrxxyy.github.io/beta.html\" style=\"margin-top:4px;padding:4px;border:1px dashed #999;cursor:pointer;\">#type-set-2</div>" +
+      "<div id=\"type-set-3\" data-type-set=\"3\" data-call=\"idle\" data-href=\"https://jrxxyy.github.io/visa.html\" style=\"margin-top:4px;padding:4px;border:1px dashed #999;cursor:pointer;\">#type-set-3</div>";
+    document.body.appendChild(box);
   }
 
   if (!document.getElementById("sector-modal")) {
@@ -167,6 +187,14 @@ document.addEventListener("click", function (e) {
   const cloudBtn = e.target.closest("[data-action='go-search']");
   if (cloudBtn) {
     window.open("https://www.mozilla.org/en-US/firefox/new/", "_blank", "noopener");
+    return;
+  }
+  const pane = e.target.closest("[data-type-set]");
+  if (pane && pane.id && pane.id.indexOf("type-set-") === 0) {
+    const key = pane.getAttribute("data-type-set");
+    const meta = TYPE_SETS[key];
+    const url = (meta && meta.href) || pane.getAttribute("data-href");
+    if (url) window.location.href = url;
   }
 });
 
@@ -307,8 +335,26 @@ function updateRadianCircle(theta) {
   rc.textContent = "θ = " + theta.toFixed(2) + "  (" + Math.cos(theta).toFixed(2) + ", " + Math.sin(theta).toFixed(2) + ")";
 }
 
+function updateCallBox(typeNumber) {
+  const meta = TYPE_SETS[String(typeNumber)] || TYPE_SETS["1"];
+  const line = document.getElementById("call-box-line");
+  const idLine = document.getElementById("call-box-id");
+  if (line) line.textContent = "calling " + meta.label;
+  if (idLine) idLine.textContent = "div id = " + meta.id + " → " + meta.href;
+  for (var n = 1; n <= 3; n++) {
+    const slot = document.getElementById("type-set-" + n);
+    if (!slot) continue;
+    const on = String(n) === String(typeNumber);
+    slot.setAttribute("data-call", on ? "active" : "idle");
+    slot.style.borderStyle = on ? "solid" : "dashed";
+    slot.style.background = on ? "#e8f0ff" : "#fff";
+    slot.style.fontWeight = on ? "700" : "400";
+  }
+}
+
 function initializeTypeProtocol(typeNumber) {
   console.log("Protocol initialized for TYPE SET:", typeNumber);
+  updateCallBox(typeNumber);
   const randomShapes = generateRandomShapes(5);
   const typeShapes = generateTypeShapes(typeNumber);
   const triangleShapes = generateTriangleDifferentialShapes();
