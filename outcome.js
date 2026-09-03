@@ -259,6 +259,7 @@ function drawSVGShapes(shapeList) {
   var firstSquareEl = null;
   var firstSquareSeen = false;
   var circleIndex = 0;
+  var circleRecords = [];
 
   for (var i = 0; i < shapeList.length; i++) {
     const shape = shapeList[i];
@@ -282,7 +283,15 @@ function drawSVGShapes(shapeList) {
       el.setAttribute("data-area", String(area));
       circleIndex += 1;
       shape._circleIndex = circleIndex;
-      shape._log2e = Math.log(area) * Math.LOG2E;
+      shape._area = area;
+      with (Math) {
+        shape._log2e = log(area) * LOG2E;
+        shape._aboveLog10e = shape._log2e > LOG10E;
+        shape._primes = shape._aboveLog10e ? [2, 3, 5, 7, 11] : [];
+        shape._primesCorrect = shape._aboveLog10e;
+      }
+      el.setAttribute("data-primes", shape._primes.join(","));
+      el.setAttribute("data-correct", shape._primesCorrect ? "this is correct" : "");
     } else if (shape.type === "triangle") {
       el = document.createElementNS(svgNS, "polygon");
       el.setAttribute("points", "0,32 16,0 32,32");
@@ -305,9 +314,21 @@ function drawSVGShapes(shapeList) {
       placements.push({ x: x, y: y });
     }
     svg.appendChild(el);
+    if (shape.type === "circle") {
+      const tr = el.getAttribute("transform") || "translate(0,0)";
+      const mm = /translate\(([^,]+),([^)]+)\)/.exec(tr);
+      circleRecords.push({
+        el: el,
+        x: mm ? parseFloat(mm[1]) : 0,
+        y: mm ? parseFloat(mm[2]) : 0,
+        above: !!shape._aboveLog10e,
+        index: shape._circleIndex
+      });
+    }
     if (shape.type === "circle" && shape._circleIndex % 3 === 0) {
       const mark = document.createElementNS(svgNS, "text");
-      mark.setAttribute("transform", el.getAttribute("transform") || "translate(0,0)");
+      const t = el.getAttribute("transform") || "translate(0,0)";
+      mark.setAttribute("transform", t);
       mark.setAttribute("text-anchor", "middle");
       mark.setAttribute("dominant-baseline", "middle");
       mark.setAttribute("font-size", "5");
@@ -315,6 +336,42 @@ function drawSVGShapes(shapeList) {
       mark.setAttribute("pointer-events", "none");
       mark.textContent = shape._log2e.toFixed(3);
       svg.appendChild(mark);
+    }
+  }
+
+  var seed = null;
+  var n;
+  for (n = 0; n < circleRecords.length; n++) {
+    if (circleRecords[n].above) { seed = circleRecords[n]; break; }
+  }
+  if (seed && circleRecords.length > 1) {
+    var near = null;
+    var best = 1e9;
+    for (n = 0; n < circleRecords.length; n++) {
+      const other = circleRecords[n];
+      if (other.el === seed.el) continue;
+      const dx = other.x - seed.x;
+      const dy = other.y - seed.y;
+      const d = dx * dx + dy * dy;
+      if (d < best) { best = d; near = other; }
+    }
+    if (near && Math.random() < 0.5 && circleRecords.length > 2) {
+      const pick = circleRecords[1 + Math.floor(Math.random() * (circleRecords.length - 1))];
+      if (pick.el !== seed.el) near = pick;
+    }
+    if (near) {
+      if (near.el.parentNode) near.el.parentNode.removeChild(near.el);
+      const cx = near.x;
+      const cy = near.y;
+      for (n = 0; n < 5; n++) {
+        const black = document.createElementNS(svgNS, "circle");
+        const ang = (n / 5) * Math.PI * 2;
+        black.setAttribute("r", "5");
+        black.setAttribute("fill", "black");
+        black.setAttribute("transform", "translate(" + (cx + Math.cos(ang) * 12) + "," + (cy + Math.sin(ang) * 12) + ")");
+        black.setAttribute("data-regulated", "5");
+        svg.appendChild(black);
+      }
     }
   }
   if (firstSquareEl) slideSquareAlongCurve(firstSquareEl, curveSquareState.t, targetTFromPlacements(placements));
