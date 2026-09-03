@@ -258,6 +258,7 @@ function drawSVGShapes(shapeList) {
   const placements = [];
   var firstSquareEl = null;
   var firstSquareSeen = false;
+  var circleIndex = 0;
 
   for (var i = 0; i < shapeList.length; i++) {
     const shape = shapeList[i];
@@ -274,8 +275,14 @@ function drawSVGShapes(shapeList) {
       }
     } else if (shape.type === "circle") {
       el = document.createElementNS(svgNS, "circle");
-      el.setAttribute("r", "16");
+      const radius = 16;
+      el.setAttribute("r", String(radius));
       el.setAttribute("fill", "blue");
+      var area = Math.PI * radius * radius;
+      el.setAttribute("data-area", String(area));
+      circleIndex += 1;
+      shape._circleIndex = circleIndex;
+      shape._log2e = Math.log(area) * Math.LOG2E;
     } else if (shape.type === "triangle") {
       el = document.createElementNS(svgNS, "polygon");
       el.setAttribute("points", "0,32 16,0 32,32");
@@ -298,6 +305,17 @@ function drawSVGShapes(shapeList) {
       placements.push({ x: x, y: y });
     }
     svg.appendChild(el);
+    if (shape.type === "circle" && shape._circleIndex % 3 === 0) {
+      const mark = document.createElementNS(svgNS, "text");
+      mark.setAttribute("transform", el.getAttribute("transform") || "translate(0,0)");
+      mark.setAttribute("text-anchor", "middle");
+      mark.setAttribute("dominant-baseline", "middle");
+      mark.setAttribute("font-size", "5");
+      mark.setAttribute("fill", "#fff");
+      mark.setAttribute("pointer-events", "none");
+      mark.textContent = shape._log2e.toFixed(3);
+      svg.appendChild(mark);
+    }
   }
   if (firstSquareEl) slideSquareAlongCurve(firstSquareEl, curveSquareState.t, targetTFromPlacements(placements));
 }
