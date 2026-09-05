@@ -38,8 +38,8 @@ const ServerTypes = {
     dataType: "options",
     typeSet: "options",
     side: "server",
-    items: [],
-    onClick: "pending"
+    items: ["toExponential-time"],
+    onClick: "toExponential-time"
   },
   triangle: {
     dataType: "commands",
@@ -216,9 +216,41 @@ document.addEventListener("click", function (e) {
   }
 });
 
+function writeTrLine(text) {
+  const output = document.getElementById("output");
+  if (!output) return;
+  const lines = output.textContent.split("\n");
+  var i;
+  var placed = false;
+  for (i = 0; i < lines.length; i++) {
+    if (lines[i].indexOf("AI MODE:") === 0) {
+      if (i + 1 < lines.length && lines[i + 1].indexOf("tr:") === 0) {
+        lines[i + 1] = "tr: " + text;
+      } else {
+        lines.splice(i + 1, 0, "tr: " + text);
+      }
+      placed = true;
+      break;
+    }
+  }
+  if (!placed) lines.push("tr: " + text);
+  output.textContent = lines.join("\n");
+}
+
+function circleTimeExponential() {
+  const d = new Date();
+  const hour = d.getHours();
+  const n = Number(hour);
+  n.toExponential();
+  return n.toFixed(1) + "^1";
+}
+
 function handleServerTypeClick(kind, el) {
   const spec = ServerTypes[kind];
   if (!spec) return;
+  if (kind === "circle") {
+    writeTrLine(circleTimeExponential());
+  }
 }
 
 function analyzeSVGShapes(shapeList) {
