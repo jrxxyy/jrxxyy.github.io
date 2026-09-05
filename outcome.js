@@ -1,3 +1,4 @@
+
 console.log("OUTCOME.JS LOADED");
 
 const FIELD = { width: 400, height: 300, limitY: 250, curveTop: 28, padX: 28 };
@@ -50,6 +51,9 @@ const ServerTypes = {
   }
 };
 window.__SERVER_TYPES__ = ServerTypes;
+
+const SquareLiterals = [];
+window.__SQUARE_LITERALS__ = SquareLiterals;
 
 function ensureHostNodes() {
   const svgArea = document.getElementById("svg-area");
@@ -245,6 +249,20 @@ function circleTimeExponential() {
   return n.toFixed(1) + "^1";
 }
 
+function handleSquareLiteralClick(slot) {
+  const accepted = window.confirm(
+    "Would you like to enter an undefined/null instance for this square's empty string literal \"\" ?"
+  );
+  if (!accepted) return;
+  slot.value = null;
+  slot.literal = "";
+  slot.undefinedNull = true;
+  if (slot.el) {
+    slot.el.setAttribute("data-literal", "");
+    slot.el.setAttribute("data-instance", "undefined-null");
+  }
+}
+
 function handleServerTypeClick(kind, el) {
   const spec = ServerTypes[kind];
   if (!spec) return;
@@ -329,6 +347,17 @@ function drawSVGShapes(shapeList) {
         el.setAttribute("stroke", "#111");
         el.setAttribute("stroke-width", "2");
       }
+      el.setAttribute("data-literal", "");
+      el.setAttribute("data-literal-kind", "empty-string");
+      el.style.cursor = "pointer";
+      (function (squareEl) {
+        const slot = { el: squareEl, literal: "", value: "", forSectors: ["Q1", "Q2", "Q3", "Q4"] };
+        SquareLiterals.push(slot);
+        squareEl.addEventListener("click", function (ev) {
+          ev.stopPropagation();
+          handleSquareLiteralClick(slot);
+        });
+      })(el);
     } else if (shape.type === "circle") {
       el = document.createElementNS(svgNS, "circle");
       const radius = 16;
