@@ -1,4 +1,3 @@
-
 console.log("OUTCOME.JS LOADED");
 
 const FIELD = { width: 400, height: 300, limitY: 250, curveTop: 28, padX: 28 };
@@ -40,7 +39,13 @@ const ServerTypes = {
     typeSet: "options",
     side: "server",
     items: ["toExponential-time"],
-    onClick: "toExponential-time"
+    onClick: "toExponential-time",
+    negotiator: {
+      op: "N/C",
+      meaning: "not a circle",
+      side: "server",
+      apply: function (index) { return index % 2 === 0; }
+    }
   },
   triangle: {
     dataType: "commands",
@@ -362,7 +367,20 @@ function drawSVGShapes(shapeList) {
       el = document.createElementNS(svgNS, "circle");
       const radius = 16;
       el.setAttribute("r", String(radius));
-      el.setAttribute("fill", "blue");
+      circleIndex += 1;
+      shape._circleIndex = circleIndex;
+      const nc = ServerTypes.circle.negotiator && ServerTypes.circle.negotiator.apply(circleIndex);
+      shape._negotiated = !!nc;
+      if (nc) {
+        el.setAttribute("fill", "none");
+        el.setAttribute("stroke", "#000");
+        el.setAttribute("stroke-width", "2");
+        el.setAttribute("data-negotiator", "N/C");
+        el.setAttribute("data-negotiator-meaning", "not a circle");
+        el.setAttribute("data-side", "server");
+      } else {
+        el.setAttribute("fill", "blue");
+      }
       el.setAttribute("data-type", ServerTypes.circle.dataType);
       el.setAttribute("data-typeset", ServerTypes.circle.typeSet);
       el.setAttribute("data-side", "server");
@@ -373,8 +391,6 @@ function drawSVGShapes(shapeList) {
       });
       var area = Math.PI * radius * radius;
       el.setAttribute("data-area", String(area));
-      circleIndex += 1;
-      shape._circleIndex = circleIndex;
       shape._area = area;
       with (Math) {
         shape._log2e = log(area) * LOG2E;
@@ -425,7 +441,17 @@ function drawSVGShapes(shapeList) {
         index: shape._circleIndex
       });
     }
-    if (shape.type === "circle" && shape._circleIndex % 3 === 0) {
+    if (shape.type === "circle" && shape._negotiated) {
+      const ncMark = document.createElementNS(svgNS, "text");
+      ncMark.setAttribute("transform", el.getAttribute("transform") || "translate(0,0)");
+      ncMark.setAttribute("text-anchor", "middle");
+      ncMark.setAttribute("dominant-baseline", "middle");
+      ncMark.setAttribute("font-size", "7");
+      ncMark.setAttribute("fill", "#000");
+      ncMark.setAttribute("pointer-events", "none");
+      ncMark.textContent = "N/C";
+      svg.appendChild(ncMark);
+    } else if (shape.type === "circle" && shape._circleIndex % 3 === 0) {
       const mark = document.createElementNS(svgNS, "text");
       const t = el.getAttribute("transform") || "translate(0,0)";
       mark.setAttribute("transform", t);
