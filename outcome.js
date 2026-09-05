@@ -33,6 +33,24 @@ const TYPE_SETS = {
   "3": { id: "type-set-3", label: "TYPE SET 3", href: "https://jrxxyy.github.io/visa.html" }
 };
 
+const ServerTypes = {
+  circle: {
+    dataType: "options",
+    typeSet: "options",
+    side: "server",
+    items: [],
+    onClick: "pending"
+  },
+  triangle: {
+    dataType: "commands",
+    typeSet: "commands",
+    side: "server",
+    items: [],
+    onClick: "pending"
+  }
+};
+window.__SERVER_TYPES__ = ServerTypes;
+
 function ensureHostNodes() {
   const svgArea = document.getElementById("svg-area");
   const theta = document.getElementById("radian-circle");
@@ -198,6 +216,11 @@ document.addEventListener("click", function (e) {
   }
 });
 
+function handleServerTypeClick(kind, el) {
+  const spec = ServerTypes[kind];
+  if (!spec) return;
+}
+
 function analyzeSVGShapes(shapeList) {
   var squareCount = 0;
   for (var i = 0; i < shapeList.length; i++) if (shapeList[i].type === "square") squareCount++;
@@ -279,6 +302,14 @@ function drawSVGShapes(shapeList) {
       const radius = 16;
       el.setAttribute("r", String(radius));
       el.setAttribute("fill", "blue");
+      el.setAttribute("data-type", ServerTypes.circle.dataType);
+      el.setAttribute("data-typeset", ServerTypes.circle.typeSet);
+      el.setAttribute("data-side", "server");
+      el.style.cursor = "pointer";
+      el.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        handleServerTypeClick("circle", this);
+      });
       var area = Math.PI * radius * radius;
       el.setAttribute("data-area", String(area));
       circleIndex += 1;
@@ -296,6 +327,14 @@ function drawSVGShapes(shapeList) {
       el = document.createElementNS(svgNS, "polygon");
       el.setAttribute("points", "0,32 16,0 32,32");
       el.setAttribute("fill", "green");
+      el.setAttribute("data-type", ServerTypes.triangle.dataType);
+      el.setAttribute("data-typeset", ServerTypes.triangle.typeSet);
+      el.setAttribute("data-side", "server");
+      el.style.cursor = "pointer";
+      el.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        handleServerTypeClick("triangle", this);
+      });
     } else if (shape.type === "hexagon") {
       el = document.createElementNS(svgNS, "polygon");
       el.setAttribute("points", "16,0 32,8 32,24 16,32 0,24 0,8");
@@ -338,7 +377,6 @@ function drawSVGShapes(shapeList) {
       svg.appendChild(mark);
     }
   }
-
   var seed = null;
   var n;
   for (n = 0; n < circleRecords.length; n++) {
