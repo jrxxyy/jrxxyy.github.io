@@ -146,6 +146,11 @@ export function outcomeSvgLine() {
     />
   `;
 }
+
+/* ---------------------------------------------------------
+   HOST NODES + CURVE SYSTEM
+--------------------------------------------------------- */
+
 function ensureHostNodes() {
   const svgArea = document.getElementById("svg-area");
   const theta = document.getElementById("radian-circle");
@@ -288,6 +293,10 @@ function slideSquareAlongCurve(el, fromT, toT) {
   curveSquareState.raf = requestAnimationFrame(frame);
 }
 
+/* ---------------------------------------------------------
+   CLICK HANDLERS + TEXT OUTPUT
+--------------------------------------------------------- */
+
 document.addEventListener("click", function (e) {
   const typeBtn = e.target.closest("[data-action='select-type']");
   if (typeBtn) {
@@ -362,6 +371,10 @@ function handleServerTypeClick(kind, el) {
   }
 }
 
+/* ---------------------------------------------------------
+   SHAPE GENERATION + ANALYSIS
+--------------------------------------------------------- */
+
 function analyzeSVGShapes(shapeList) {
   var squareCount = 0;
   for (var i = 0; i < shapeList.length; i++) if (shapeList[i].type === "square") squareCount++;
@@ -397,9 +410,17 @@ function generateTriangleDifferentialShapes() {
   return shapes;
 }
 
+/* ---------------------------------------------------------
+   SVG RENDERER (WITH SHAPE-LINK INTEGRATED)
+--------------------------------------------------------- */
+
 function drawSVGShapes(shapeList) {
   const svg = document.getElementById("svg-area");
   if (!svg) return;
+
+  // reset shapes for link system
+  __OUTCOME_SHAPES__.length = 0;
+
   svg.innerHTML = "";
   const svgNS = "http://www.w3.org/2000/svg";
 
@@ -475,6 +496,7 @@ function drawSVGShapes(shapeList) {
         ev.stopPropagation();
         handleServerTypeClick("circle", this);
       });
+
       var area = Math.PI * radius * radius;
       el.setAttribute("data-area", String(area));
       shape._area = area;
@@ -514,18 +536,25 @@ function drawSVGShapes(shapeList) {
       const y = constrainedY(shape.type, 32);
       el.setAttribute("transform", "translate(" + x + "," + y + ")");
       placements.push({ x: x, y: y });
+
+      // register in shape-link system
+      addOutcomeShape(shape.type, x, y);
     }
     svg.appendChild(el);
     if (shape.type === "circle") {
       const tr = el.getAttribute("transform") || "translate(0,0)";
       const mm = /translate\(([^,]+),([^)]+)\)/.exec(tr);
+      const cx = mm ? parseFloat(mm[1]) : 0;
+      const cy = mm ? parseFloat(mm[2]) : 0;
       circleRecords.push({
         el: el,
-        x: mm ? parseFloat(mm[1]) : 0,
-        y: mm ? parseFloat(mm[2]) : 0,
+        x: cx,
+        y: cy,
         above: !!shape._aboveLog10e,
         index: shape._circleIndex
       });
+      // ensure circle positions are in link system too
+      addOutcomeShape("circle", cx, cy);
     }
     if (shape.type === "circle" && shape._negotiated) {
       const ncMark = document.createElementNS(svgNS, "text");
@@ -585,8 +614,22 @@ function drawSVGShapes(shapeList) {
       }
     }
   }
+
+  // render minimal link line between circles via outcomeSvgLine()
+  const linkMarkup = outcomeSvgLine();
+  if (linkMarkup) {
+    const temp = document.createElementNS(svgNS, "svg");
+    temp.innerHTML = linkMarkup;
+    const linkEl = temp.querySelector("line");
+    if (linkEl) svg.appendChild(linkEl);
+  }
+
   if (firstSquareEl) slideSquareAlongCurve(firstSquareEl, curveSquareState.t, targetTFromPlacements(placements));
 }
+
+/* ---------------------------------------------------------
+   AI STATE ENGINE
+--------------------------------------------------------- */
 
 const AIState = { mode: "PRIMI", energy: 1.0, tension: 0.0, lastTypeSet: null };
 
@@ -614,6 +657,10 @@ function generateAIResponse() {
   if (AIState.mode === "ANTI-ANTI") return "AI MODE: ANTI-ANTI — Inversion mode. Reversal logic engaged.";
   return "AI MODE: PRIMI — Stable, constructive, low-tension processing.";
 }
+
+/* ---------------------------------------------------------
+   TYPE PROTOCOL + RADIAN CIRCLE
+--------------------------------------------------------- */
 
 function updateRadianCircle(theta) {
   const rc = document.getElementById("radian-circle");
@@ -658,6 +705,10 @@ function initializeTypeProtocol(typeNumber) {
       (sectorState.active ? "\nACTIVE SECTOR: " + sectorState.active : "");
   }
 }
+
+/* ---------------------------------------------------------
+   FIGURE-EIGHT + SECTOR SYSTEM
+--------------------------------------------------------- */
 
 function eightY(x) {
   const v = x * x * (1 - x * x);
@@ -786,6 +837,10 @@ function drawSectorChart() {
   }
 }
 
+/* ---------------------------------------------------------
+   SECTOR MODAL + SNIPPET
+--------------------------------------------------------- */
+
 function applyWordToRandomLine(source, word) {
   const lines = source.split("\n");
   const idxs = [];
@@ -840,6 +895,10 @@ function selectSector(id) {
   text.textContent = m.prompt;
   modal.style.display = "flex";
 }
+
+/* ---------------------------------------------------------
+   BOOTSTRAP
+--------------------------------------------------------- */
 
 function boot() {
   ensureHostNodes();
