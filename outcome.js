@@ -60,93 +60,6 @@ window.__SERVER_TYPES__ = ServerTypes;
 const SquareLiterals = [];
 window.__SQUARE_LITERALS__ = SquareLiterals;
 
-/* ---------------------------------------------------------
-   SHAPE LINK SYSTEM — INTEGRATED
---------------------------------------------------------- */
-
-const __OUTCOME_SHAPES__ = [];
-
-/** Add shapes from anywhere in your protocol */
-export function addOutcomeShape(type, x, y) {
-  __OUTCOME_SHAPES__.push({
-    id: __OUTCOME_SHAPES__.length,
-    type,
-    x,
-    y
-  });
-}
-
-/** lastIndexOf for shape types */
-function lastIndexOfType(shapes, typeName) {
-  return shapes.map(s => s.type).lastIndexOf(typeName);
-}
-
-/** Find closest circle to a given circle */
-function closestCircleTo(index, shapes) {
-  const origin = shapes[index];
-  let best = null;
-  let bestDist = Infinity;
-
-  shapes.forEach((s, i) => {
-    if (i === index || s.type !== "circle") return;
-
-    const dx = s.x - origin.x;
-    const dy = s.y - origin.y;
-    const d = Math.sqrt(dx * dx + dy * dy);
-
-    if (d < bestDist) {
-      bestDist = d;
-      best = { index: i, dist: d };
-    }
-  });
-
-  return best;
-}
-
-/** Minimal functional line (straight line) */
-function minimalLineBetween(p1, p2) {
-  return {
-    x1: p1.x,
-    y1: p1.y,
-    x2: p2.x,
-    y2: p2.y,
-    length: Math.sqrt((p2.x - p1.x)**2 + (p2.y - p1.y)**2)
-  };
-}
-
-/** Full pipeline: last circle → closest circle → minimal line */
-export function computeCircleLink() {
-  const shapes = __OUTCOME_SHAPES__;
-  const idx = lastIndexOfType(shapes, "circle");
-  if (idx === -1) return null;
-
-  const next = closestCircleTo(idx, shapes);
-  if (!next) return null;
-
-  return minimalLineBetween(shapes[idx], shapes[next.index]);
-}
-
-/** SVG line renderer (string) */
-export function outcomeSvgLine() {
-  const link = computeCircleLink();
-  if (!link) return "";
-
-  return `
-    <line 
-      x1="${link.x1}" 
-      y1="${link.y1}" 
-      x2="${link.x2}" 
-      y2="${link.y2}" 
-      stroke="white" 
-      stroke-width="2"
-    />
-  `;
-}
-
-/* ---------------------------------------------------------
-   ORIGINAL FILE CONTINUES
---------------------------------------------------------- */
-
 function ensureHostNodes() {
   const svgArea = document.getElementById("svg-area");
   const theta = document.getElementById("radian-circle");
@@ -404,9 +317,6 @@ function drawSVGShapes(shapeList) {
   svg.innerHTML = "";
   const svgNS = "http://www.w3.org/2000/svg";
 
-  // reset tracked shapes for this draw
-  __OUTCOME_SHAPES__.length = 0;
-
   const limit = document.createElementNS(svgNS, "line");
   limit.setAttribute("x1", "16");
   limit.setAttribute("x2", "384");
@@ -513,15 +423,11 @@ function drawSVGShapes(shapeList) {
       firstSquareEl = el;
       const s = curvePointAtT(curveSquareState.t);
       el.setAttribute("transform", "translate(" + s.x + "," + s.y + ")");
-      // track square position if desired later
-      addOutcomeShape("square", s.x, s.y);
     } else {
       const x = 20 + Math.random() * 340;
       const y = constrainedY(shape.type, 32);
       el.setAttribute("transform", "translate(" + x + "," + y + ")");
       placements.push({ x: x, y: y });
-      // track all shapes, especially circles
-      addOutcomeShape(shape.type, x, y);
     }
     svg.appendChild(el);
     if (shape.type === "circle") {
@@ -558,8 +464,6 @@ function drawSVGShapes(shapeList) {
       svg.appendChild(mark);
     }
   }
-
-  // existing circle regulation logic
   var seed = null;
   var n;
   for (n = 0; n < circleRecords.length; n++) {
@@ -595,21 +499,6 @@ function drawSVGShapes(shapeList) {
       }
     }
   }
-
-  // NEW: draw minimal functional line between circles
-  const link = computeCircleLink();
-  if (link) {
-    const lineEl = document.createElementNS(svgNS, "line");
-    lineEl.setAttribute("x1", String(link.x1));
-    lineEl.setAttribute("y1", String(link.y1));
-    lineEl.setAttribute("x2", String(link.x2));
-    lineEl.setAttribute("y2", String(link.y2));
-    lineEl.setAttribute("stroke", "white");
-    lineEl.setAttribute("stroke-width", "2");
-    lineEl.setAttribute("data-link", "circle-minimal");
-    svg.appendChild(lineEl);
-  }
-
   if (firstSquareEl) slideSquareAlongCurve(firstSquareEl, curveSquareState.t, targetTFromPlacements(placements));
 }
 
