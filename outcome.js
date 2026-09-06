@@ -150,10 +150,28 @@ export function outcomeSvgLine() {
 /* ---------------------------------------------------------
    HOST NODES + CURVE SYSTEM
 --------------------------------------------------------- */
-
 function ensureHostNodes() {
-  const svgArea = document.getElementById("svg-area");
-  const theta = document.getElementById("radian-circle");
+  // All nodes already exist in your HTML, so we do NOT recreate them.
+  // We only verify they exist.
+
+  const requiredIds = [
+    "svg-area",
+    "radian-circle",
+    "eight-area",
+    "sector-chart",
+    "code-out",
+    "call-box",
+    "output"
+  ];
+
+  requiredIds.forEach(id => {
+    if (!document.getElementById(id)) {
+      console.warn("Missing required DOM node:", id);
+    }
+  });
+
+  // No DOM creation here — your HTML already provides everything.
+}
 
   if (!document.getElementById("eight-area")) {
     const wrap = document.createElement("div");
