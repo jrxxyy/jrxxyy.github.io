@@ -51,6 +51,11 @@ const ServerTypes = {
     onClick: "pending"
   }
 };
+el.addEventListener("click", function (ev) {
+  ev.stopPropagation();
+  handleServerTypeClick("triangle", this);
+  updateRadianCircle(shape.theta);
+});
 window.__SERVER_TYPES__ = ServerTypes;
 const SquareLiterals = [];
 window.__SQUARE_LITERALS__ = SquareLiterals;
