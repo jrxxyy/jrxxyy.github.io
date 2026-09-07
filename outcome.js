@@ -51,11 +51,6 @@ const ServerTypes = {
     onClick: "pending"
   }
 };
-el.addEventListener("click", function (ev) {
-  ev.stopPropagation();
-  handleServerTypeClick("triangle", this);
-  updateRadianCircle(shape.theta);
-});
 window.__SERVER_TYPES__ = ServerTypes;
 const SquareLiterals = [];
 window.__SQUARE_LITERALS__ = SquareLiterals;
@@ -665,607 +660,63 @@ document.addEventListener("click", function (e) {
       window.location.href = url;
   }
 });
-
-function writeTrLine(text) {
-  const output =
-    document.getElementById("output");
-
-  if (!output) return;
-
-  const lines =
-    output.textContent.split("\n");
-
-  var i;
-  var placed = false;
-
-  for (i = 0; i < lines.length; i++) {
-    if (lines[i].indexOf("AI MODE:") === 0) {
-      if (
-        i + 1 < lines.length &&
-        lines[i + 1].indexOf("tr:") === 0
-      ) {
-        lines[i + 1] =
-          "tr: " + text;
-      } else {
-        lines.splice(
-          i + 1,
-          0,
-          "tr: " + text
-        );
-      }
-
-      placed = true;
-      break;
-    }
-  }
-
-  if (!placed)
-    lines.push("tr: " + text);
-
-  output.textContent =
-    lines.join("\n");
-}
-
-function circleTimeExponential() {
-  const d = new Date();
-  const hour = d.getHours();
-  const n = Number(hour);
-
-  n.toExponential();
-
-  return n.toFixed(1) + "^1";
-}
-
-function handleSquareLiteralClick(slot) {
-  const accepted =
-    window.confirm(
-      "Would you like to enter an undefined/null instance for this square's empty string literal \"\" ?"
-    );
-
-  if (!accepted) return;
-
-  slot.value = null;
-  slot.literal = "";
-  slot.undefinedNull = true;
-
-  if (slot.el) {
-    slot.el.setAttribute(
-      "data-literal",
-      ""
-    );
-
-    slot.el.setAttribute(
-      "data-instance",
-      "undefined-null"
-    );
-  }
-}
-
-function handleServerTypeClick(kind, el) {
-  const spec = ServerTypes[kind];
-
-  if (!spec) return;
-
-  if (kind === "circle") {
-    writeTrLine(
-      circleTimeExponential()
-    );
-  }
-}
-
-function analyzeSVGShapes(shapeList) {
-  var squareCount = 0;
-
-  for (var i = 0; i < shapeList.length; i++)
-    if (shapeList[i].type === "square")
-      squareCount++;
-
-  if (squareCount > 5)
-    return {
-      avoid: true,
-      reason: "Page contains more than 5 squares."
-    };
-
-  return {
-    avoid: false,
-    reason: "Page is safe."
-  };
-}
-
-function generateRandomShapes(count) {
-  if (count == null) count = 5;
-
-  const types = [
-    "square",
-    "circle",
-    "triangle",
-    "hexagon"
-  ];
-
-  const shapes = [];
-
-  for (var i = 0; i < count; i++) {
-    shapes.push({
-      type:
-        types[
-          Math.floor(
-            Math.random() * types.length
-          )
-        ]
-    });
-  }
-
-  return shapes;
-}
-
-function generateTypeShapes(typeNumber) {
-  const radianMap = {
-    "1": Math.PI / 6,
-    "2": Math.PI,
-    "3": 3 * Math.PI / 2
-  };
-
-  const theta =
-    radianMap[String(typeNumber)] ||
-    Math.PI / 6;
-
-  const cosTheta =
-    Math.cos(theta);
-
-  var shapes;
-
-  if (cosTheta > 0.5)
-    shapes = [
-      { type: "circle" },
-      { type: "circle" },
-      { type: "square" }
-    ];
-  else if (cosTheta < -0.5)
-    shapes = [
-      { type: "square" },
-      { type: "square" },
-      { type: "triangle" }
-    ];
-  else
-    shapes = [
-      { type: "triangle" },
-      { type: "triangle" },
-      { type: "circle" }
-    ];
-
-  return shapes.map(function (s) {
-    return {
-      type: s.type,
-      theta: theta,
-      cosTheta: cosTheta
-    };
-  });
-}
-
-function generateTriangleDifferentialShapes() {
-  const regions = [
-    "square",
-    "circle",
-    "triangle"
-  ];
-
-  const shapes = [];
-
-  for (var i = 0; i < 8; i++) {
-    shapes.push({
-      type:
-        regions[
-          Math.floor(
-            Math.random() * regions.length
-          )
-        ]
-    });
-  }
-
-  return shapes;
-}
-
-function drawSVGShapes(shapeList) {
-  resetThetaZeroCycle();
-
-  const svg =
-    document.getElementById("svg-area");
-
-  if (!svg) return;
-
-  svg.innerHTML = "";
-
-  const svgNS =
-    "http://www.w3.org/2000/svg";
-
-  const limit =
-    document.createElementNS(
-      svgNS,
-      "line"
-    );
-
-  limit.setAttribute("x1", "16");
-  limit.setAttribute("x2", "384");
-  limit.setAttribute(
-    "y1",
-    String(FIELD.limitY)
-  );
-  limit.setAttribute(
-    "y2",
-    String(FIELD.limitY)
-  );
-  limit.setAttribute(
-    "stroke",
-    "#c9a227"
-  );
-  limit.setAttribute(
-    "stroke-dasharray",
-    "6 4"
-  );
-
-  svg.appendChild(limit);
-
-  const curve =
-    document.createElementNS(
-      svgNS,
-      "path"
-    );
-
-  curve.setAttribute(
-    "d",
-    curvePathD()
-  );
-  curve.setAttribute(
-    "fill",
-    "none"
-  );
-  curve.setAttribute(
-    "stroke",
-    "#2563eb"
-  );
-  curve.setAttribute(
-    "stroke-width",
-    "2"
-  );
-
-  svg.appendChild(curve);
-
-  const placements = [];
-
-  var firstSquareEl = null;
-  var firstSquareSeen = false;
-  var circleIndex = 0;
-  var circleRecords = [];
-
-  for (
-    var i = 0;
-    i < shapeList.length;
-    i++
-  ) {
-    const shape = shapeList[i];
-    var el = null;
-
-    const isLead =
-      shape.type === "square" &&
-      !firstSquareSeen;
-
-    if (shape.type === "square") {
-      el =
-        document.createElementNS(
-          svgNS,
-          "rect"
-        );
-
-      el.setAttribute(
-        "width",
-        "32"
-      );
-      el.setAttribute(
-        "height",
-        "32"
+        "translate(0,0)"
       );
 
-      el.setAttribute(
+      ncMark.setAttribute(
+        "font-size",
+        "10"
+      );
+
+      ncMark.setAttribute(
         "fill",
-        isLead ? "#fb7185" : "red"
+        "#111"
       );
 
-      if (isLead) {
-        el.setAttribute(
-          "stroke",
-          "#111"
-        );
-        el.setAttribute(
-          "stroke-width",
-          "2"
-        );
-      }
-
-      el.setAttribute(
-        "data-literal",
-        ""
+      ncMark.setAttribute(
+        "pointer-events",
+        "none"
       );
 
-      el.setAttribute(
-        "data-literal-kind",
-        "empty-string"
-      );
+      ncMark.textContent = "N/C";
 
-      el.style.cursor =
-        "pointer";
-
-      (function(squareEl) {
-        const slot = {
-          el: squareEl,
-          literal: "",
-          value: "",
-          forSectors: [
-            "Q1",
-            "Q2",
-            "Q3",
-            "Q4"
-          ]
-        };
-
-        SquareLiterals.push(slot);
-
-        squareEl.addEventListener(
-          "click",
-          function(ev) {
-            ev.stopPropagation();
-            handleSquareLiteralClick(slot);
-          }
-        );
-      })(el);
-
-    } else if (shape.type === "circle") {
-      el =
-        document.createElementNS(
-          svgNS,
-          "circle"
-        );
-
-      const radius = 16;
-
-      el.setAttribute(
-        "r",
-        String(radius)
-      );
-
-      circleIndex += 1;
-
-      shape._circleIndex =
-        circleIndex;
-
-      const nc =
-        ServerTypes.circle.negotiator &&
-        ServerTypes.circle.negotiator.apply(
-          circleIndex
-        );
-
-      shape._negotiated =
-        !!nc;
-
-      if (nc) {
-        el.setAttribute(
-          "fill",
-          "none"
-        );
-
-        el.setAttribute(
-          "stroke",
-          "#000"
-        );
-
-        el.setAttribute(
-          "stroke-width",
-          "2"
-        );
-
-        el.setAttribute(
-          "data-negotiator",
-          "N/C"
-        );
-
-        el.setAttribute(
-          "data-negotiator-meaning",
-          "not a circle"
-        );
-
-        el.setAttribute(
-          "data-side",
-          "server"
-        );
-      } else {
-        el.setAttribute(
-          "fill",
-          "blue"
-        );
-      }
-
-      el.setAttribute(
-        "data-type",
-        ServerTypes.circle.dataType
-      );
-
-      el.setAttribute(
-        "data-typeset",
-        ServerTypes.circle.typeSet
-      );
-
-      el.setAttribute(
-        "data-side",
-        "server"
-      );
-
-      el.style.cursor =
-        "pointer";
-
-      el.addEventListener(
-        "click",
-        function(ev) {
-          ev.stopPropagation();
-          handleServerTypeClick(
-            "circle",
-            this
-          );
-        }
-      );
-
-      var area =
-        Math.PI *
-        radius *
-        radius;
-
-      el.setAttribute(
-        "data-area",
-        String(area)
-      );
-
-      shape._area =
-        area;
-
-      with (Math) {
-        shape._log2e =
-          log(area) * LOG2E;
-
-        shape._aboveLog10e =
-          shape._log2e > LOG10E;
-
-        shape._primes =
-          shape._aboveLog10e
-            ? [2, 3, 5, 7, 11]
-            : [];
-
-        shape._primesCorrect =
-          shape._aboveLog10e;
-      }
-
-      el.setAttribute(
-        "data-primes",
-        shape._primes.join(",")
-      );
-
-      el.setAttribute(
-        "data-correct",
-        shape._primesCorrect
-          ? "this is correct"
-          : ""
-      );
-
-    } else if (shape.type === "triangle") {
-      el =
-        document.createElementNS(
-          svgNS,
-          "polygon"
-        );
-
-      el.setAttribute(
-        "points",
-        "0,32 16,0 32,32"
-      );
-
-      el.setAttribute(
-        "fill",
-        "green"
-      );
-
-      el.setAttribute(
-        "data-type",
-        ServerTypes.triangle.dataType
-      );
-
-      el.setAttribute(
-        "data-typeset",
-        ServerTypes.triangle.typeSet
-      );
-
-      el.setAttribute(
-        "data-side",
-        "server"
-      );
-
-      el.style.cursor =
-        "pointer";
-
-      el.addEventListener(
-        "click",
-        function(ev) {
-          ev.stopPropagation();
-          handleServerTypeClick(
-            "triangle",
-            this
-          );
-        }
-      );
-
-    } else if (shape.type === "hexagon") {
-      el =
-        document.createElementNS(
-          svgNS,
-          "polygon"
-        );
-
-      el.setAttribute(
-        "points",
-        "16,0 32,8 32,24 16,32 0,24 0,8"
-      );
-
-      el.setAttribute(
-        "fill",
-        "purple"
-      );
+      svg.appendChild(ncMark);
     }
 
-    if (!el) continue;
-
-    if (isLead) {
-      firstSquareSeen = true;
-      firstSquareEl = el;
-
-      const s =
-        curvePointAtT(
-          curveSquareState.t
+    if (
+      shape.type === "circle"
+    ) {
+      const thetaText =
+        document.createElementNS(
+          svgNS,
+          "text"
         );
 
-      el.setAttribute(
-        "transform",
-        "translate(" +
-        s.x +
-        "," +
-        s.y +
-        ")"
-      );
-    } else {
-      const x =
-        20 +
-        Math.random() *
-        340;
-
-      const y =
-        constrainedY(
-          shape.type,
-          32
-        );
-
-      el.setAttribute(
-        "transform",
-        "translate(" +
-        x +
-        "," +
-        y +
-        ")"
+      thetaText.setAttribute(
+        "font-size",
+        "10"
       );
 
-      placements.push({
-        x: x,
-        y: y
-      });
-    }
+      thetaText.setAttribute(
+        "fill",
+        "#111"
+      );
 
-    svg.appendChild(el);
+      thetaText.setAttribute(
+        "pointer-events",
+        "none"
+      );
 
-    if (shape.type === "circle") {
+      thetaText.setAttribute(
+        "data-theta-zero-index",
+        String(shape._circleIndex)
+      );
+
+      thetaText.textContent =
+        shape.theta === 0
+          ? "0"
+          : shape.theta.toFixed(2);
+
       const tr =
         el.getAttribute(
           "transform"
@@ -1276,560 +727,501 @@ function drawSVGShapes(shapeList) {
         /translate\(([^,]+),([^)]+)\)/
         .exec(tr);
 
-      circleRecords.push({
-        el: el,
-        x: mm
+      const tx =
+        mm
           ? parseFloat(mm[1])
-          : 0,
-        y: mm
+          : 0;
+
+      const ty =
+        mm
           ? parseFloat(mm[2])
-          : 0,
-        above:
-          !!shape._aboveLog10e,
-        index:
-          shape._circleIndex
-      });
-    }
+          : 0;
 
-    if (
-      shape.type === "circle" &&
-      shape._negotiated
-    ) {
-      const ncMark =
-        document.createElementNS(
-          svgNS,
-          "text"
-        );
-
-      ncMark.setAttribute(
-        "transform",
-        el.getAttribute(
-          "transform"
-        ) ||
-        "translate(0,0)"
+      thetaText.setAttribute(
+        "x",
+        String(tx + 20)
       );
 
-      ncMark.setAttribute(
-        "text-anchor",
-        "middle"
+      thetaText.setAttribute(
+        "y",
+        String(ty - 4)
       );
-
-      ncMark.setAttribute(
-        "dominant-baseline",
-        "middle"
-      );
-
-      ncMark.setAttribute(
-        "font-size",
-        "7"
-      );
-
-      ncMark.setAttribute(
-        "fill",
-        "#000"
-      );
-
-      ncMark.setAttribute(
-        "pointer-events",
-        "none"
-      );
-
-      ncMark.textContent =
-        "N/C";
 
       svg.appendChild(
-        ncMark
+        thetaText
       );
 
-    } else if (
-      shape.type === "circle" &&
-      shape._circleIndex % 3 === 0
-    ) {
-      const mark =
-        document.createElementNS(
-          svgNS,
-          "text"
-        );
-
-      const t =
-        el.getAttribute(
-          "transform"
-        ) ||
-        "translate(0,0)";
-
-      mark.setAttribute(
-        "transform",
-        t
+      checkThetaZero(
+        shape._circleIndex,
+        thetaText.textContent
       );
-
-      mark.setAttribute(
-        "text-anchor",
-        "middle"
-      );
-
-      mark.setAttribute(
-        "dominant-baseline",
-        "middle"
-      );
-
-      mark.setAttribute(
-        "font-size",
-        "5"
-      );
-
-      mark.setAttribute(
-        "fill",
-        "#fff"
-      );
-
-      mark.setAttribute(
-        "pointer-events",
-        "none"
-      );
-
-      mark.setAttribute(
-        "data-theta-zero-index",
-        String(shape._circleIndex)
-      );
-
-      mark.textContent =
-        shape._log2e.toFixed(3);
-
-      svg.appendChild(
-        mark
-      );
-
-      if (
-        String(mark.textContent)
-          .indexOf("0") !== -1
-      ) {
-        mark.style.fontStyle =
-          "italic";
-
-        mark.style.fontWeight =
-          "700";
-
-        checkThetaZero(
-          shape._circleIndex,
-          mark.textContent
-        );
-      }
     }
   }
 
   SubstrState.lastCircles =
-    circleRecords.slice();
+    circleRecords;
 
-  var seed = null;
-  var n;
+  if (firstSquareEl) {
+    const target =
+      targetTFromPlacements(
+        placements
+      );
 
-  for (
-    n = 0;
-    n < circleRecords.length;
-    n++
-  ) {
-    if (
-      circleRecords[n].above
-    ) {
-      seed =
-        circleRecords[n];
-      break;
-    }
-  }
-
-  if (
-    seed &&
-    circleRecords.length > 1
-  ) {
-    var near = null;
-    var best = 1e9;
-
-    for (
-      n = 0;
-      n < circleRecords.length;
-      n++
-    ) {
-      const other =
-        circleRecords[n];
-
-      if (
-        other.el === seed.el
-      ) continue;
-
-      const dx =
-        other.x - seed.x;
-
-      const dy =
-        other.y - seed.y;
-
-      const d =
-        dx * dx +
-        dy * dy;
-
-      if (d < best) {
-        best = d;
-        near = other;
-      }
-    }
-
-    if (
-      near &&
-      Math.random() < 0.5 &&
-      circleRecords.length > 2
-    ) {
-      const pick =
-        circleRecords[
-          1 +
-          Math.floor(
-            Math.random() *
-            (circleRecords.length - 1)
-          )
-        ];
-
-      if (
-        pick.el !== seed.el
-      )
-        near = pick;
-    }
-
-    if (near) {
-      if (near.el.parentNode)
-        near.el.parentNode.removeChild(
-          near.el
-        );
-
-      const cx =
-        near.x;
-
-      const cy =
-        near.y;
-
-      for (
-        n = 0;
-        n < 5;
-        n++
-      ) {
-        const black =
-          document.createElementNS(
-            svgNS,
-            "circle"
-          );
-
-        const ang =
-          (n / 5) *
-          Math.PI *
-          2;
-
-        black.setAttribute(
-          "r",
-          "5"
-        );
-
-        black.setAttribute(
-          "fill",
-          "black"
-        );
-
-        black.setAttribute(
-          "transform",
-          "translate(" +
-          (cx +
-            Math.cos(ang) *
-            12) +
-          "," +
-          (cy +
-            Math.sin(ang) *
-            12) +
-          ")"
-        );
-
-        black.setAttribute(
-          "data-regulated",
-          "5"
-        );
-
-        svg.appendChild(
-          black
-        );
-      }
-
-      SubstrState.lastCircles =
-        SubstrState.lastCircles.filter(
-          function(c) {
-            return c.el !== near.el;
-          }
-        );
-    }
-  }
-
-  if (firstSquareEl)
     slideSquareAlongCurve(
       firstSquareEl,
       curveSquareState.t,
-      targetTFromPlacements(
-        placements
-      )
+      target
     );
+  }
 
   if (SubstrState.generated)
     drawClosestCircleLine();
 }
 
-const AIState = {
-  mode: "PRIMI",
-  energy: 1.0,
-  tension: 0.0,
-  lastTypeSet: null
-};
-
-function countType(shapeList, type) {
-  var n = 0;
-
-  for (
-    var i = 0;
-    i < shapeList.length;
-    i++
-  )
-    if (
-      shapeList[i].type === type
-    )
-      n++;
-
-  return n;
-}
-
-function computeDifferential(shapeList) {
-  return (
-    countType(
-      shapeList,
-      "square"
-    ) * 0.4 +
-    countType(
-      shapeList,
-      "triangle"
-    ) * 0.2 -
-    countType(
-      shapeList,
-      "circle"
-    ) * 0.3
-  );
-}
-
-function updateAIMode(
-  tension,
-  typeNumber
-) {
-  AIState.lastTypeSet =
-    typeNumber;
-
-  AIState.tension =
-    tension;
-
-  if (tension > 1.5)
-    AIState.mode = "ANTI";
-  else if (tension < -0.5)
-    AIState.mode = "ANTI-ANTI";
-  else
-    AIState.mode = "PRIMI";
-
-  return AIState.mode;
-}
-
-function generateAIResponse() {
-  if (
-    AIState.mode === "ANTI"
-  )
-    return "AI MODE: ANTI — High tension detected. Defensive pattern activated.";
-
-  if (
-    AIState.mode === "ANTI-ANTI"
-  )
-    return "AI MODE: ANTI-ANTI — Inversion mode. Reversal logic engaged.";
-
-  return "AI MODE: PRIMI — Stable, constructive, low-tension processing.";
-}
-
-function updateRadianCircle(theta) {
-  const rc =
+function drawFigureEight() {
+  const svg =
     document.getElementById(
-      "radian-circle"
+      "eight-area"
     );
 
-  if (!rc) return;
+  if (!svg) return;
 
-  const thetaValue =
-    theta.toFixed(2);
+  svg.innerHTML = "";
 
-  const thetaText =
-    "θ = " +
-    thetaValue +
-    "  (" +
-    Math.cos(theta).toFixed(2) +
-    ", " +
-    Math.sin(theta).toFixed(2) +
-    ")";
+  const NS =
+    "http://www.w3.org/2000/svg";
 
-  rc.textContent = "";
+  const cx = 220;
+  const cy = 170;
+  const scale = 130;
+
+  const axes =
+    document.createElementNS(
+      NS,
+      "g"
+    );
+
+  const xAxis =
+    document.createElementNS(
+      NS,
+      "line"
+    );
+
+  xAxis.setAttribute(
+    "x1",
+    "30"
+  );
+
+  xAxis.setAttribute(
+    "y1",
+    String(cy)
+  );
+
+  xAxis.setAttribute(
+    "x2",
+    "410"
+  );
+
+  xAxis.setAttribute(
+    "y2",
+    String(cy)
+  );
+
+  xAxis.setAttribute(
+    "stroke",
+    "#999"
+  );
+
+  axes.appendChild(
+    xAxis
+  );
+
+  const yAxis =
+    document.createElementNS(
+      NS,
+      "line"
+    );
+
+  yAxis.setAttribute(
+    "x1",
+    String(cx)
+  );
+
+  yAxis.setAttribute(
+    "y1",
+    "20"
+  );
+
+  yAxis.setAttribute(
+    "x2",
+    String(cx)
+  );
+
+  yAxis.setAttribute(
+    "y2",
+    "320"
+  );
+
+  yAxis.setAttribute(
+    "stroke",
+    "#999"
+  );
+
+  axes.appendChild(
+    yAxis
+  );
+
+  svg.appendChild(
+    axes
+  );
+
+  const path =
+    document.createElementNS(
+      NS,
+      "path"
+    );
+
+  let d = "";
 
   for (
     let i = 0;
-    i < thetaText.length;
+    i <= 160;
     i++
   ) {
-    const character =
-      thetaText.charAt(i);
+    const t =
+      -1 +
+      2 * (i / 160);
 
-    if (
-      character === "0"
-    ) {
-      const zero =
-        document.createElement(
-          "span"
-        );
+    const y =
+      eightY(t);
 
-      zero.className =
-        "theta-zero-display";
+    const px =
+      cx +
+      t * scale;
 
-      zero.textContent =
-        "0";
+    const py =
+      cy -
+      y * scale;
 
-      rc.appendChild(
-        zero
-      );
-    } else {
-      rc.appendChild(
-        document.createTextNode(
-          character
-        )
-      );
-    }
+    d +=
+      (i === 0
+        ? "M "
+        : " L ") +
+      px +
+      " " +
+      py;
   }
-
-  if (
-    thetaValue.indexOf("0") !== -1
-  ) {
-    resetThetaZeroCycle();
-
-    checkThetaZero(
-      "radian-circle",
-      thetaValue
-    );
-  } else {
-    resetThetaZeroCycle();
-  }
-}
-
-function updateCallBox(typeNumber) {
-  const meta =
-    TYPE_SETS[
-      String(typeNumber)
-    ] ||
-    TYPE_SETS["1"];
-
-  const line =
-    document.getElementById(
-      "call-box-line"
-    );
-
-  const idLine =
-    document.getElementById(
-      "call-box-id"
-    );
-
-  if (line)
-    line.textContent =
-      "calling " +
-      meta.label;
-
-  if (idLine)
-    idLine.textContent =
-      "div id = " +
-      meta.id +
-      " → " +
-      meta.href;
 
   for (
-    var n = 1;
-    n <= 3;
-    n++
+    let i = 160;
+    i >= 0;
+    i--
   ) {
-    const slot =
-      document.getElementById(
-        "type-set-" + n
+    const t =
+      -1 +
+      2 * (i / 160);
+
+    const y =
+      -eightY(t);
+
+    const px =
+      cx +
+      t * scale;
+
+    const py =
+      cy -
+      y * scale;
+
+    d +=
+      " L " +
+      px +
+      " " +
+      py;
+  }
+
+  d += " Z";
+
+  path.setAttribute(
+    "d",
+    d
+  );
+
+  path.setAttribute(
+    "fill",
+    "none"
+  );
+
+  path.setAttribute(
+    "stroke",
+    "#111"
+  );
+
+  path.setAttribute(
+    "stroke-width",
+    "2"
+  );
+
+  svg.appendChild(
+    path
+  );
+
+  const sectorNames = [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ];
+
+  for (
+    let i = 0;
+    i < sectorNames.length;
+    i++
+  ) {
+    const id =
+      sectorNames[i];
+
+    const spec =
+      SECTORS[id];
+
+    const polygon =
+      document.createElementNS(
+        NS,
+        "path"
       );
 
-    if (!slot) continue;
+    const start =
+      i * Math.PI / 2;
 
-    const on =
-      String(n) ===
-      String(typeNumber);
+    const end =
+      (i + 1) * Math.PI / 2;
 
-    slot.setAttribute(
-      "data-call",
-      on ? "active" : "idle"
+    const points = [];
+
+    points.push(
+      [cx, cy]
     );
 
-    slot.style.borderStyle =
-      on ? "solid" : "dashed";
+    for (
+      let j = 0;
+      j <= 20;
+      j++
+    ) {
+      const a =
+        start +
+        (end - start) *
+        (j / 20);
 
-    slot.style.background =
-      on ? "#e8f0ff" : "#fff";
+      const x =
+        Math.cos(a);
 
-    slot.style.fontWeight =
-      on ? "700" : "400";
+      const y =
+        Math.sin(a);
+
+      const px =
+        cx +
+        x * 150;
+
+      const py =
+        cy +
+        y * 150;
+
+      points.push(
+        [px, py]
+      );
+    }
+
+    let pd = "";
+
+    for (
+      let j = 0;
+      j < points.length;
+      j++
+    ) {
+      pd +=
+        (j === 0
+          ? "M "
+          : " L ") +
+        points[j][0] +
+        " " +
+        points[j][1];
+    }
+
+    pd += " Z";
+
+    polygon.setAttribute(
+      "d",
+      pd
+    );
+
+    polygon.setAttribute(
+      "fill",
+      spec.fill
+    );
+
+    polygon.setAttribute(
+      "stroke",
+      spec.solid
+    );
+
+    polygon.setAttribute(
+      "stroke-width",
+      "1"
+    );
+
+    polygon.setAttribute(
+      "data-sector",
+      id
+    );
+
+    polygon.style.cursor =
+      "pointer";
+
+    polygon.addEventListener(
+      "click",
+      function(ev) {
+        ev.stopPropagation();
+        selectSector(id);
+      }
+    );
+
+    svg.appendChild(
+      polygon
+    );
+
+    const label =
+      document.createElementNS(
+        NS,
+        "text"
+      );
+
+    const angle =
+      start +
+      Math.PI / 4;
+
+    label.setAttribute(
+      "x",
+      String(
+        cx +
+        Math.cos(angle) *
+        90
+      )
+    );
+
+    label.setAttribute(
+      "y",
+      String(
+        cy +
+        Math.sin(angle) *
+        90
+      )
+    );
+
+    label.setAttribute(
+      "text-anchor",
+      "middle"
+    );
+
+    label.setAttribute(
+      "font-size",
+      "16"
+    );
+
+    label.setAttribute(
+      "font-weight",
+      "700"
+    );
+
+    label.setAttribute(
+      "fill",
+      "#111"
+    );
+
+    label.setAttribute(
+      "pointer-events",
+      "none"
+    );
+
+    label.textContent =
+      id;
+
+    svg.appendChild(
+      label
+    );
   }
 }
 
-function initializeTypeProtocol(
-  typeNumber
+function selectSector(id) {
+  const spec =
+    SECTORS[id];
+
+  if (!spec) return;
+
+  sectorState.active =
+    id;
+
+  const modal =
+    document.getElementById(
+      "sector-modal"
+    );
+
+  const text =
+    document.getElementById(
+      "sector-modal-text"
+    );
+
+  if (text)
+    text.textContent =
+      spec.prompt;
+
+  if (modal)
+    modal.style.display =
+      "flex";
+
+  const output =
+    document.getElementById(
+      "output"
+    );
+
+  if (output) {
+    output.textContent +=
+      "\nSECTOR: " +
+      id +
+      "\nWORD: " +
+      spec.word;
+  }
+}
+
+function finishSectorPrompt(
+  accepted
 ) {
-  console.log(
-    "Protocol initialized for TYPE SET:",
-    typeNumber
-  );
+  const id =
+    sectorState.active;
 
-  updateCallBox(
-    typeNumber
-  );
+  const spec =
+    SECTORS[id];
 
-  const randomShapes =
-    generateRandomShapes(5);
-
-  const typeShapes =
-    generateTypeShapes(
-      typeNumber
+  const modal =
+    document.getElementById(
+      "sector-modal"
     );
 
-  const triangleShapes =
-    generateTriangleDifferentialShapes();
+  if (modal)
+    modal.style.display =
+      "none";
 
-  const allShapes =
-    randomShapes.concat(
-      typeShapes,
-      triangleShapes
-    );
+  if (!spec) return;
 
-  const result =
-    analyzeSVGShapes(
-      allShapes
-    );
+  if (!accepted) {
+    sectorState.active =
+      null;
 
-  drawSVGShapes(
-    allShapes
-  );
+    return;
+  }
 
-  const tension =
-    computeDifferential(
-      allShapes
-    );
+  sectorState.counts[id] += 1;
 
-  updateAIMode(
-    tension,
-    typeNumber
-  );
-
-  updateRadianCircle(
-    typeShapes[0].theta
+  applyWordToRandomLine(
+    spec.word
   );
 
   const output =
@@ -1838,121 +1230,1364 @@ function initializeTypeProtocol(
     );
 
   if (output) {
-    output.textContent =
-      (result.avoid
-        ? "AVOID PAGE: "
-        : "PAGE OK: ") +
-      result.reason +
-      "\n\nTENSION: " +
-      tension.toFixed(2) +
+    output.textContent +=
       "\n" +
-      generateAIResponse() +
-      (
-        sectorState.active
-          ? "\nACTIVE SECTOR: " +
-            sectorState.active
-          : ""
-      ) +
-      (
-        SubstrState.generated
-          ? "\nsubstr(): \"" +
-            SubstrState.result +
-            "\""
-          : ""
+      id +
+      " ACCEPTED: " +
+      spec.word;
+  }
+
+  sectorState.active =
+    null;
+}
+
+function applyWordToRandomLine(
+  word
+) {
+  const output =
+    document.getElementById(
+      "output"
+    );
+
+  if (!output || !word)
+    return;
+
+  const lines =
+    output.textContent
+      .split("\n");
+
+  const usable = [];
+
+  for (
+    let i = 0;
+    i < lines.length;
+    i++
+  ) {
+    const line =
+      lines[i].trim();
+
+    if (
+      line &&
+      line.indexOf("SECTOR:") !== 0 &&
+      line.indexOf("WORD:") !== 0
+    ) {
+      usable.push(i);
+    }
+  }
+
+  if (!usable.length) {
+    lines.push(word);
+  } else {
+    const index =
+      usable[
+        Math.floor(
+          Math.random() *
+          usable.length
+        )
+      ];
+
+    lines[index] =
+      word;
+  }
+
+  output.textContent =
+    lines.join("\n");
+}
+
+function drawSectorChart() {
+  const svg =
+    document.getElementById(
+      "sector-chart"
+    );
+
+  if (!svg) return;
+
+  svg.innerHTML = "";
+
+  const NS =
+    "http://www.w3.org/2000/svg";
+
+  const labels = [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ];
+
+  const barWidth = 70;
+  const gap = 20;
+  const baseY = 130;
+
+  for (
+    let i = 0;
+    i < labels.length;
+    i++
+  ) {
+    const id =
+      labels[i];
+
+    const spec =
+      SECTORS[id];
+
+    const count =
+      sectorState.counts[id];
+
+    const height =
+      Math.min(
+        100,
+        20 +
+        count * 12
       );
+
+    const x =
+      20 +
+      i *
+      (barWidth + gap);
+
+    const rect =
+      document.createElementNS(
+        NS,
+        "rect"
+      );
+
+    rect.setAttribute(
+      "x",
+      String(x)
+    );
+
+    rect.setAttribute(
+      "y",
+      String(baseY - height)
+    );
+
+    rect.setAttribute(
+      "width",
+      String(barWidth)
+    );
+
+    rect.setAttribute(
+      "height",
+      String(height)
+    );
+
+    rect.setAttribute(
+      "fill",
+      spec.solid
+    );
+
+    rect.setAttribute(
+      "data-sector",
+      id
+    );
+
+    rect.style.cursor =
+      "pointer";
+
+    rect.addEventListener(
+      "click",
+      function(ev) {
+        ev.stopPropagation();
+        selectSector(id);
+      }
+    );
+
+    svg.appendChild(
+      rect
+    );
+
+    const text =
+      document.createElementNS(
+        NS,
+        "text"
+      );
+
+    text.setAttribute(
+      "x",
+      String(
+        x + barWidth / 2
+      )
+    );
+
+    text.setAttribute(
+      "y",
+      String(baseY + 18)
+    );
+
+    text.setAttribute(
+      "text-anchor",
+      "middle"
+    );
+
+    text.setAttribute(
+      "font-size",
+      "14"
+    );
+
+    text.textContent =
+      id;
+
+    svg.appendChild(
+      text
+    );
+
+    const countText =
+      document.createElementNS(
+        NS,
+        "text"
+      );
+
+    countText.setAttribute(
+      "x",
+      String(
+        x + barWidth / 2
+      )
+    );
+
+    countText.setAttribute(
+      "y",
+      String(
+        baseY -
+        height -
+        6
+      )
+    );
+
+    countText.setAttribute(
+      "text-anchor",
+      "middle"
+    );
+
+    countText.setAttribute(
+      "font-size",
+      "12"
+    );
+
+    countText.textContent =
+      String(count);
+
+    svg.appendChild(
+      countText
+    );
   }
 }
 
-function sectorPath(
-  sx,
-  sy,
-  ox,
-  oy,
-  scale
+function updateRadianCircle(
+  theta
 ) {
-  const n = 40;
-  var d =
-    "M " +
-    ox +
-    " " +
-    oy;
+  const circle =
+    document.getElementById(
+      "radian-circle"
+    );
 
-  var i, x, y;
+  if (!circle) return;
 
-  if (sy > 0) {
-    for (
-      i = 0;
-      i <= n;
-      i++
+  const angle =
+    Number(theta);
+
+  if (!isFinite(angle))
+    return;
+
+  const cx = 100;
+  const cy = 100;
+  const r = 70;
+
+  const x =
+    cx +
+    Math.cos(angle) * r;
+
+  const y =
+    cy -
+    Math.sin(angle) * r;
+
+  const line =
+    circle.querySelector(
+      "[data-radian-line]"
+    );
+
+  if (line) {
+    line.setAttribute(
+      "x1",
+      String(cx)
+    );
+
+    line.setAttribute(
+      "y1",
+      String(cy)
+    );
+
+    line.setAttribute(
+      "x2",
+      String(x)
+    );
+
+    line.setAttribute(
+      "y2",
+      String(y)
+    );
+  }
+}
+
+function initializeTypeProtocol(
+  typeNumber
+) {
+  const key =
+    String(typeNumber);
+
+  const typeSet =
+    TYPE_SETS[key];
+
+  if (!typeSet)
+    return;
+
+  const output =
+    document.getElementById(
+      "output"
+    );
+
+  if (output) {
+    output.textContent =
+      typeSet.label +
+      " selected.";
+  }
+
+  const callLine =
+    document.getElementById(
+      "call-box-line"
+    );
+
+  if (callLine)
+    callLine.textContent =
+      typeSet.label;
+
+  const callId =
+    document.getElementById(
+      "call-box-id"
+    );
+
+  if (callId)
+    callId.textContent =
+      typeSet.id;
+
+  const shapes =
+    generateTypeShapes(
+      key
+    );
+
+  drawSVGShapes(
+    shapes
+  );
+
+  drawSectorChart();
+
+  const theta =
+    shapes.length
+      ? shapes[0].theta
+      : Math.PI / 6;
+
+  updateRadianCircle(
+    theta
+  );
+}
+
+function createRadianCircle() {
+  const old =
+    document.getElementById(
+      "radian-circle"
+    );
+
+  if (old) return old;
+
+  const svg =
+    document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
+
+  svg.id =
+    "radian-circle";
+
+  svg.setAttribute(
+    "viewBox",
+    "0 0 200 200"
+  );
+
+  svg.setAttribute(
+    "width",
+    "200"
+  );
+
+  svg.setAttribute(
+    "height",
+    "200"
+  );
+
+  svg.style.display =
+    "block";
+
+  svg.style.border =
+    "1px solid #333";
+
+  const NS =
+    "http://www.w3.org/2000/svg";
+
+  const circle =
+    document.createElementNS(
+      NS,
+      "circle"
+    );
+
+  circle.setAttribute(
+    "cx",
+    "100"
+  );
+
+  circle.setAttribute(
+    "cy",
+    "100"
+  );
+
+  circle.setAttribute(
+    "r",
+    "70"
+  );
+
+  circle.setAttribute(
+    "fill",
+    "none"
+  );
+
+  circle.setAttribute(
+    "stroke",
+    "#111"
+  );
+
+  svg.appendChild(
+    circle
+  );
+
+  const line =
+    document.createElementNS(
+      NS,
+      "line"
+    );
+
+  line.setAttribute(
+    "data-radian-line",
+    "1"
+  );
+
+  line.setAttribute(
+    "stroke",
+    "#d00"
+  );
+
+  line.setAttribute(
+    "stroke-width",
+    "2"
+  );
+
+  svg.appendChild(
+    line
+  );
+
+  const parent =
+    document.getElementById(
+      "svg-area"
+    );
+
+  if (parent)
+    parent.parentNode.insertBefore(
+      svg,
+      parent
+    );
+  else
+    document.body.appendChild(
+      svg
+    );
+
+  return svg;
+}
+function generateTypeShapes(
+  typeNumber
+) {
+  const key =
+    String(typeNumber);
+
+  const shapes = [];
+
+  if (key === "1") {
+    shapes.push(
+      {
+        type: "circle",
+        cx: 70,
+        cy: 80,
+        r: 18,
+        theta: 0
+      },
+      {
+        type: "circle",
+        cx: 150,
+        cy: 60,
+        r: 22,
+        theta: Math.PI / 4
+      },
+      {
+        type: "circle",
+        cx: 240,
+        cy: 100,
+        r: 16,
+        theta: Math.PI / 2
+      },
+      {
+        type: "square",
+        x: 60,
+        y: 170,
+        size: 32
+      }
+    );
+  } else if (key === "2") {
+    shapes.push(
+      {
+        type: "circle",
+        cx: 80,
+        cy: 90,
+        r: 20,
+        theta: Math.PI / 6
+      },
+      {
+        type: "circle",
+        cx: 170,
+        cy: 70,
+        r: 18,
+        theta: Math.PI / 3
+      },
+      {
+        type: "circle",
+        cx: 260,
+        cy: 120,
+        r: 24,
+        theta: Math.PI
+      },
+      {
+        type: "square",
+        x: 100,
+        y: 180,
+        size: 30
+      }
+    );
+  } else {
+    shapes.push(
+      {
+        type: "circle",
+        cx: 70,
+        cy: 70,
+        r: 16,
+        theta: Math.PI / 8
+      },
+      {
+        type: "circle",
+        cx: 160,
+        cy: 110,
+        r: 21,
+        theta: Math.PI / 2
+      },
+      {
+        type: "circle",
+        cx: 250,
+        cy: 80,
+        r: 19,
+        theta: Math.PI * 1.5
+      },
+      {
+        type: "square",
+        x: 150,
+        y: 180,
+        size: 34
+      }
+    );
+  }
+
+  for (
+    let i = 0;
+    i < shapes.length;
+    i++
+  ) {
+    shapes[i]._circleIndex =
+      i;
+  }
+
+  return shapes;
+}
+
+function drawSVGShapes(
+  shapes
+) {
+  const svg =
+    document.getElementById(
+      "svg-area"
+    );
+
+  if (!svg) return;
+
+  svg.innerHTML = "";
+
+  const NS =
+    "http://www.w3.org/2000/svg";
+
+  const placements = [];
+  const circleRecords = [];
+
+  let firstSquareEl = null;
+
+  for (
+    let i = 0;
+    i < shapes.length;
+    i++
+  ) {
+    const shape =
+      shapes[i];
+
+    if (
+      shape.type ===
+      "circle"
     ) {
-      x =
-        sx *
-        (i / n);
-
-      y =
-        sy *
-        eightY(x);
-
-      d +=
-        " L " +
-        (
-          ox +
-          x *
-          scale
-        ) +
-        " " +
-        (
-          oy -
-          y *
-          scale
+      const el =
+        document.createElementNS(
+          NS,
+          "circle"
         );
+
+      el.setAttribute(
+        "cx",
+        String(shape.cx)
+      );
+
+      el.setAttribute(
+        "cy",
+        String(shape.cy)
+      );
+
+      el.setAttribute(
+        "r",
+        String(shape.r)
+      );
+
+      el.setAttribute(
+        "fill",
+        "none"
+      );
+
+      el.setAttribute(
+        "stroke",
+        "#111"
+      );
+
+      el.setAttribute(
+        "stroke-width",
+        "2"
+      );
+
+      el.setAttribute(
+        "data-shape",
+        "circle"
+      );
+
+      el.setAttribute(
+        "data-index",
+        String(i)
+      );
+
+      el.style.cursor =
+        "pointer";
+
+      el.addEventListener(
+        "click",
+        function(ev) {
+          ev.stopPropagation();
+
+          handleServerTypeClick(
+            "circle",
+            this
+          );
+
+          updateRadianCircle(
+            shape.theta
+          );
+
+          if (
+            shape.theta === 0
+          ) {
+            openThetaZeroTB(
+              String(
+                shape._circleIndex
+              )
+            );
+          }
+        }
+      );
+
+      svg.appendChild(
+        el
+      );
+
+      circleRecords.push({
+        index: i,
+        x: shape.cx,
+        y: shape.cy
+      });
+
+      placements.push({
+        type: "circle",
+        x: shape.cx - 16,
+        y: shape.cy - 16
+      });
     }
 
-    d +=
-      " L " +
-      (
-        ox +
-        sx *
-        scale
-      ) +
-      " " +
-      oy +
-      " Z";
-
-  } else {
-    d +=
-      " L " +
-      (
-        ox +
-        sx *
-        scale
-      ) +
-      " " +
-      oy;
-
-    for (
-      i = n;
-      i >= 0;
-      i--
+    if (
+      shape.type ===
+      "square"
     ) {
-      x =
-        sx *
-        (i / n);
+      const el =
+        document.createElementNS(
+          NS,
+          "rect"
+        );
 
-      y =
-        sy *
-        eightY(x);
+      el.setAttribute(
+        "x",
+        "0"
+      );
 
-      d +=
-        " L " +
-        (
-          ox +
-          x *
-          scale
-        ) +
-        " " +
-        (
-          oy -
+      el.setAttribute(
+        "y",
+        "0"
+      );
+
+      el.setAttribute(
+        "width",
+        String(shape.size)
+      );
+
+      el.setAttribute(
+        "height",
+        String(shape.size)
+      );
+
+      el.setAttribute(
+        "fill",
+        "none"
+      );
+
+      el.setAttribute(
+        "stroke",
+        "#111"
+      );
+
+      el.setAttribute(
+        "stroke-width",
+        "2"
+      );
+
+      el.setAttribute(
+        "data-shape",
+        "square"
+      );
+
+      el.setAttribute(
+        "data-index",
+        String(i)
+      );
+
+      el.style.cursor =
+        "pointer";
+
+      const p =
+        curvePointAtT(
+          curveSquareState.t
+        );
+
+      el.setAttribute(
+        "transform",
+        "translate(" +
+        p.x +
+        "," +
+        p.y +
+        ")"
+      );
+
+      el.addEventListener(
+        "click",
+        function(ev) {
+          ev.stopPropagation();
+
+          const nextT =
+            Math.min(
+              0.94,
+              curveSquareState.t +
+              0.08
+            );
+
+          slideSquareAlongCurve(
+            this,
+            curveSquareState.t,
+            nextT
+          );
+        }
+      );
+
+      svg.appendChild(
+        el
+      );
+
+      firstSquareEl =
+        firstSquareEl ||
+        el;
+
+      placements.push({
+        type: "square",
+        x: p.x,
+        y: p.y
+      });
+
+      SquareLiterals.push({
+        x: p.x,
+        y: p.y,
+        size: shape.size
+      });
+    }
+  }
+
+  const curve =
+    document.createElementNS(
+      NS,
+      "path"
+    );
+
+  curve.setAttribute(
+    "d",
+    curvePathD()
+  );
+
+  curve.setAttribute(
+    "fill",
+    "none"
+  );
+
+  curve.setAttribute(
+    "stroke",
+    "#555"
+  );
+
+  curve.setAttribute(
+    "stroke-width",
+    "1.5"
+  );
+
+  curve.setAttribute(
+    "stroke-dasharray",
+    "4 4"
+  );
+
+  curve.setAttribute(
+    "data-curve",
+    "1"
+  );
+
+  svg.appendChild(
+    curve
+  );
+
+  const title =
+    document.createElementNS(
+      NS,
+      "text"
+    );
+
+  title.setAttribute(
+    "x",
+    "20"
+  );
+
+  title.setAttribute(
+    "y",
+    "20"
+  );
+
+  title.setAttribute(
+    "font-size",
+    "12"
+  );
+
+  title.setAttribute(
+    "fill",
+    "#111"
+  );
+
+  title.textContent =
+    "TYPE SET SHAPES";
+
+  svg.appendChild(
+    title
+  );
+
+  const ncMark =
+    document.createElementNS(
+      NS,
+      "text"
+    );
+
+  ncMark.setAttribute(
+    "x",
+    "340"
+  );
+
+  ncMark.setAttribute(
+    "y",
+    "28"
+  );
+
+  ncMark.setAttribute(
+    "font-size",
+    "11"
+  );
+
+  ncMark.setAttribute(
+    "fill",
+    "#111"
+  );
+
+  ncMark.setAttribute(
+    "data-nc-mark",
+    "1"
+  );
+
+  ncMark.textContent =
+    "N/C";
+
+  svg.appendChild(
+    ncMark
+  );
+
+  for (
+    let i = 0;
+    i < shapes.length;
+    i++
+  ) {
+    const shape =
+      shapes[i];
+
+    if (
+      shape.type ===
+      "circle"
+    ) {
+      const thetaText =
+        document.createElementNS(
+          NS,
+          "text"
+        );
+
+      thetaText.setAttribute(
+        "font-size",
+        "10"
+      );
+
+      thetaText.setAttribute(
+        "fill",
+        "#111"
+      );
+
+      thetaText.setAttribute(
+        "pointer-events",
+        "none"
+      );
+
+      thetaText.setAttribute(
+        "data-theta-zero-index",
+        String(
+          shape._circleIndex
+        )
+      );
+
+      thetaText.textContent =
+        shape.theta === 0
+          ? "0"
+          : shape.theta.toFixed(2);
+
+      thetaText.setAttribute(
+        "x",
+        String(shape.cx + shape.r + 4)
+      );
+
+      thetaText.setAttribute(
+        "y",
+        String(shape.cy - shape.r - 4)
+      );
+
+      svg.appendChild(
+        thetaText
+      );
+
+      checkThetaZero(
+        shape._circleIndex,
+        thetaText.textContent
+      );
+    }
+  }
+
+  SubstrState.lastCircles =
+    circleRecords;
+
+  if (firstSquareEl) {
+    const target =
+      targetTFromPlacements(
+        placements
+      );
+
+    slideSquareAlongCurve(
+      firstSquareEl,
+      curveSquareState.t,
+      target
+    );
+  }
+
+  if (
+    SubstrState.generated
+  ) {
+    drawClosestCircleLine();
+  }
+}
+
+function handleServerTypeClick(
+  kind,
+  el
+) {
+  const spec =
+    ServerTypes[kind];
+
+  if (!spec) return;
+
+  if (
+    kind === "circle"
+  ) {
+    writeTrLine(
+      circleTimeExponential()
+    );
+  }
+}
+
+function circleTimeExponential() {
+  const n =
+    Math.max(
+      1,
+      SubstrState.result
+        ? SubstrState.result.length
+        : 1
+    );
+
+  n.toExponential();
+
+  return (
+    n.toFixed(1) +
+    "^1"
+  );
+}
+
+function writeTrLine(
+  text
+) {
+  const output =
+    document.getElementById(
+      "output"
+    );
+
+  if (!output) return;
+
+  output.textContent +=
+    "\n" +
+    String(text);
+}
+
+function updateCallBox(
+  typeNumber
+) {
+  const key =
+    String(typeNumber);
+
+  const meta =
+    TYPE_SETS[key];
+
+  const line =
+    document.getElementById(
+      "call-box-line"
+    );
+
+  const id =
+    document.getElementById(
+      "call-box-id"
+    );
+
+  if (line) {
+    line.textContent =
+      meta
+        ? meta.label
+        : "unknown type";
+  }
+
+  if (id) {
+    id.textContent =
+      meta
+        ? meta.id
+        : "";
+  }
+}
+
+function bindTypeButtons() {
+  const buttons =
+    document.querySelectorAll(
+      "[data-action='select-type']"
+    );
+
+  for (
+    let i = 0;
+    i < buttons.length;
+    i++
+  ) {
+    const btn =
+      buttons[i];
+
+    if (
+      btn.getAttribute(
+        "data-bound"
+      )
+    ) {
+      continue;
+    }
+
+    btn.setAttribute(
+      "data-bound",
+      "1"
+    );
+
+    btn.addEventListener(
+      "click",
+      function(ev) {
+        ev.stopPropagation();
+
+        const type =
+          this.getAttribute(
+            "data-type"
+          );
+
+        initializeTypeProtocol(
+          type
+        );
+      }
+    );
+  }
+}
+
+function bindServerTypeButtons() {
+  const buttons =
+    document.querySelectorAll(
+      "[data-server-type]"
+    );
+
+  for (
+    let i = 0;
+    i < buttons.length;
+    i++
+  ) {
+    const btn =
+      buttons[i];
+
+    if (
+      btn.getAttribute(
+        "data-bound"
+      )
+    ) {
+      continue;
+    }
+
+    btn.setAttribute(
+      "data-bound",
+      "1"
+    );
+
+    btn.addEventListener(
+      "click",
+      function(ev) {
+        ev.stopPropagation();
+
+        const kind =
+          this.getAttribute(
+            "data-server-type"
+          );
+
+        handleServerTypeClick(
+          kind,
+          this
+        );
+      }
+    );
+  }
+}
+
+function refreshProtocolUI(
+  typeNumber
+) {
+  updateCallBox(
+    typeNumber
+  );
+
+  bindTypeButtons();
+  bindServerTypeButtons();
+
+  const output =
+    document.getElementById(
+      "output"
+    );
+
+  if (
+    output &&
+    !output.textContent
+  ) {
+    output.textContent =
+      "Protocol ready.";
+  }
+}
+
+function protocolTick() {
+  const output =
+    document.getElementById(
+      "output"
+    );
+
+  if (!output) return;
+
+  const now =
+    new Date();
+
+  const stamp =
+    now.toLocaleTimeString();
+
+  const line =
+    "tick " +
+    stamp;
+
+  if (
+    output.textContent.length >
+    4000
+  ) {
+    output.textContent =
+      output.textContent.slice(
+        -3000
+      );
+  }
+
+  output.textContent +=
+    "\n" +
+    line;
+}
+
+function startProtocolTicker() {
+  if (
+    window.__PROTOCOL_TICKER__
+  ) {
+    return;
+  }
+
+  window.__PROTOCOL_TICKER__ =
+    setInterval(
+      protocolTick,
+      30000
+    );
+}
+
+function stopProtocolTicker() {
+  if (
+    window.__PROTOCOL_TICKER__
+  ) {
+    clearInterval(
+      window.__PROTOCOL_TICKER__
+    );
+
+    window.__PROTOCOL_TICKER__ =
+      null;
+  }
+}
+
+function exposeProtocolAPI() {
+  window.OutcomeProtocol = {
+    initialize:
+      initializeTypeProtocol,
+
+    selectSector:
+      selectSector,
+
+    generateSubstr:
+      generateUserSubstr,
+
+    resetTheta:
+      resetThetaZeroCycle,
+
+    getState:
+      function() {
+        return {
+          sector:
+            Object.assign(
+              {},
+              sectorState
+            ),
+
+          substr:
+            Object.assign(
+              {},
+              SubstrState
+            ),
+
+          curveT:
+            curveSquareState.t
+        };
+      }
+  };
+}
+
+function initializeProtocol() {
+  ensureHostNodes();
+  createRadianCircle();
+
+  const current =
+    document.body.getAttribute(
+      "data-type"
+    ) ||
+    "1";
+
+  refreshProtocolUI(
+    current
+  );
+
+  exposeProtocolAPI();
+  startProtocolTicker();
+}
+
+function boot() {
+  ensureHostNodes();
+  drawFigureEight();
+  drawSectorChart();
+  initializeTypeProtocol("1");
+}
+
+if (
+  document.readyState ===
+  "loading"
+) {
+  document.addEventListener(
+    "DOMContentLoaded",
+    boot
+  );
+} else {
+  boot();
+}
           y *
           scale
         );
@@ -2308,9 +2943,7 @@ function drawSectorChart() {
       })(k)
     );
 
-    svg.appendChild(
-      bar
-    );
+    svg.appendChild(bar);
 
     const lab =
       document.createElementNS(
@@ -2341,9 +2974,7 @@ function drawSectorChart() {
     lab.textContent =
       k;
 
-    svg.appendChild(
-      lab
-    );
+    svg.appendChild(lab);
   }
 }
 
