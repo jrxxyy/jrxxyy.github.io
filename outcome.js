@@ -1,8 +1,6 @@
 console.log("OUTCOME.JS LOADED + substr()");
-
 const FIELD = { width: 400, height: 300, limitY: 250, curveTop: 28, padX: 28 };
 const curveSquareState = { t: 0.42, raf: null };
-
 const SECTORS = {
   Q1: {
     fill: "#60a5fa88", solid: "#60a5fa", div: "sector-q1", x: 1, y: 1,
@@ -25,30 +23,12 @@ const SECTORS = {
     prompt: "Would you like to replace one line of code with \"acceleration\"?"
   }
 };
-
-const sectorState = {
-  active: null,
-  counts: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 }
-};
-
+const sectorState = { active: null, counts: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 } };
 const TYPE_SETS = {
-  "1": {
-    id: "type-set-1",
-    label: "TYPE SET 1",
-    href: "https://jrxxyy.github.io/index.html"
-  },
-  "2": {
-    id: "type-set-2",
-    label: "TYPE SET 2",
-    href: "https://jrxxyy.github.io/beta.html"
-  },
-  "3": {
-    id: "type-set-3",
-    label: "TYPE SET 3",
-    href: "https://jrxxyy.github.io/visa.html"
-  }
+  "1": { id: "type-set-1", label: "TYPE SET 1", href: "https://jrxxyy.github.io/index.html" },
+  "2": { id: "type-set-2", label: "TYPE SET 2", href: "https://jrxxyy.github.io/beta.html" },
+  "3": { id: "type-set-3", label: "TYPE SET 3", href: "https://jrxxyy.github.io/visa.html" }
 };
-
 const ServerTypes = {
   circle: {
     dataType: "options",
@@ -60,12 +40,9 @@ const ServerTypes = {
       op: "N/C",
       meaning: "not a circle",
       side: "server",
-      apply: function (index) {
-        return index % 2 === 0;
-      }
+      apply: function (index) { return index % 2 === 0; }
     }
   },
-
   triangle: {
     dataType: "commands",
     typeSet: "commands",
@@ -74,16 +51,9 @@ const ServerTypes = {
     onClick: "pending"
   }
 };
-
 window.__SERVER_TYPES__ = ServerTypes;
-
 const SquareLiterals = [];
 window.__SQUARE_LITERALS__ = SquareLiterals;
-
-
-/* =========================================================
-   SUBSTR STATE
-   ========================================================= */
 
 const SubstrState = {
   source: "y2=x2-x4",
@@ -91,304 +61,343 @@ const SubstrState = {
   length: 4,
   result: "",
   generated: false,
-  tbChoice: null,
-  lastCircles: []
+  lastCircles: [],
+  thetaZeroChoice: null,
+  zeroTbShown: false,
+  spamScore: 0
 };
-
-
-/* =========================================================
-   SUBSTR()
-   ========================================================= */
 
 function modelSourceString() {
   const el = document.getElementById("substr-source");
-
-  if (el && el.value) {
-    return String(el.value);
-  }
-
+  if (el && el.value) return String(el.value);
   return SubstrState.source || "y2=x2-x4";
 }
 
-
 function substr(source, start, length) {
   const s = source == null ? "" : String(source);
-
   var a = Number(start);
   var n = Number(length);
-
-  if (!isFinite(a)) {
-    a = 0;
-  }
-
-  if (a < 0) {
-    a = 0;
-  }
-
-  if (!isFinite(n) || n < 0) {
-    n = s.length - a;
-  }
-
+  if (!isFinite(a)) a = 0;
+  if (a < 0) a = 0;
+  if (!isFinite(n) || n < 0) n = s.length - a;
   return s.substr(a, n);
 }
-
 
 function generateUserSubstr() {
   const srcEl = document.getElementById("substr-source");
   const stEl = document.getElementById("substr-start");
   const lnEl = document.getElementById("substr-len");
-
   const source = srcEl ? srcEl.value : "y2=x2-x4";
   const start = stEl ? Number(stEl.value) : 0;
   const length = lnEl ? Number(lnEl.value) : 4;
-
   const result = substr(source, start, length);
-
   SubstrState.source = source;
   SubstrState.start = start;
   SubstrState.length = length;
   SubstrState.result = result;
   SubstrState.generated = true;
-
   const out = document.getElementById("substr-result");
-
   if (out) {
-    out.textContent =
-      "substr(\"" +
-      source +
-      "\", " +
-      start +
-      ", " +
-      length +
-      ") → \"" +
-      result +
-      "\"";
+    out.textContent = "substr(\"" + source + "\", " + start + ", " + length + ") → \"" + result + "\"";
   }
-
   drawClosestCircleLine();
-
   return result;
 }
 
-
-/* =========================================================
-   FIGURE-EIGHT / CIRCLE LOGIC
-   ========================================================= */
-
 function eightY(x) {
   const v = x * x * (1 - x * x);
-
   return v > 0 ? Math.sqrt(v) : 0;
 }
 
-
 function substrBias(result) {
-  if (!result) {
-    return 0;
-  }
-
+  if (!result) return 0;
   var sum = 0;
-
-  for (var i = 0; i < result.length; i++) {
-    sum += result.charCodeAt(i);
-  }
-
+  for (var i = 0; i < result.length; i++) sum += result.charCodeAt(i);
   return sum;
 }
 
-
 function closestCirclePair(records, bias) {
-  if (!records || records.length < 2) {
-    return null;
-  }
-
+  if (!records || records.length < 2) return null;
   var best = null;
   var bestD = Infinity;
-
-  var i;
-  var j;
-
+  var i, j;
   for (i = 0; i < records.length; i++) {
     for (j = i + 1; j < records.length; j++) {
-
       const dx = records[i].x - records[j].x;
       const dy = records[i].y - records[j].y;
-
       var d = dx * dx + dy * dy;
-
-      if (bias) {
-        d =
-          d +
-          ((records[i].index + records[j].index + bias) % 7) * 0.01;
-      }
-
+      if (bias) d = d + ((records[i].index + records[j].index + bias) % 7) * 0.01;
       if (d < bestD) {
         bestD = d;
-
-        best = [
-          records[i],
-          records[j],
-          Math.sqrt(Math.max(0, dx * dx + dy * dy))
-        ];
+        best = [records[i], records[j], Math.sqrt(Math.max(0, dx * dx + dy * dy))];
       }
     }
   }
-
   return best;
 }
 
-
 function drawClosestCircleLine() {
-
   const svg = document.getElementById("svg-area");
-
-  if (!svg) {
-    return;
-  }
-
+  if (!svg) return;
   const old = svg.querySelectorAll("[data-substr-link='1']");
-
   for (var k = 0; k < old.length; k++) {
-    if (old[k].parentNode) {
-      old[k].parentNode.removeChild(old[k]);
-    }
+    if (old[k].parentNode) old[k].parentNode.removeChild(old[k]);
   }
-
-  if (!SubstrState.generated) {
-    return;
-  }
-
-  const pair = closestCirclePair(
-    SubstrState.lastCircles,
-    substrBias(SubstrState.result)
-  );
-
-  if (!pair) {
-    return;
-  }
-
+  if (!SubstrState.generated) return;
+  const pair = closestCirclePair(SubstrState.lastCircles, substrBias(SubstrState.result));
+  if (!pair) return;
   const a = pair[0];
   const b = pair[1];
   const dist = pair[2];
-
   const NS = "http://www.w3.org/2000/svg";
-
   const line = document.createElementNS(NS, "line");
-
   line.setAttribute("x1", String(a.x));
   line.setAttribute("y1", String(a.y));
   line.setAttribute("x2", String(b.x));
   line.setAttribute("y2", String(b.y));
-
   line.setAttribute("stroke", "#111");
   line.setAttribute("stroke-width", "1.6");
-
   line.setAttribute("data-substr-link", "1");
   line.setAttribute("data-substr", SubstrState.result);
   line.setAttribute("data-dist", String(dist.toFixed(2)));
-
   svg.appendChild(line);
-
   const midX = (a.x + b.x) / 2;
   const midY = (a.y + b.y) / 2;
-
   const lab = document.createElementNS(NS, "text");
-
   lab.setAttribute("x", String(midX));
   lab.setAttribute("y", String(midY - 6));
   lab.setAttribute("text-anchor", "middle");
   lab.setAttribute("font-size", "10");
   lab.setAttribute("fill", "#111");
-
   lab.setAttribute("data-substr-link", "1");
   lab.setAttribute("pointer-events", "none");
-
   lab.textContent = SubstrState.result || "substr";
-
   svg.appendChild(lab);
-
-  writeTrLine(
-    "substr:" +
-    SubstrState.result +
-    " d=" +
-    dist.toFixed(1)
-  );
+  writeTrLine("substr:" + SubstrState.result + " d=" + dist.toFixed(1));
 }
 
+const SpamState = { hits: [], windowMs: 5000, maxHits: 4 };
 
-/* =========================================================
-   HOST NODES
-   ========================================================= */
+function simpleSpamDetection(eventName) {
+  const now = Date.now();
+  SpamState.hits = SpamState.hits.filter(function(t){
+    return now - t < SpamState.windowMs;
+  });
+  SpamState.hits.push(now);
+  SubstrState.spamScore = SpamState.hits.length;
+  if (SpamState.hits.length > SpamState.maxHits) {
+    console.warn("Spam detection blocked:", eventName);
+    return false;
+  }
+  return true;
+}
+
+function serverSideSpamCheck(eventName) {
+  return simpleSpamDetection(eventName);
+}
+
+function installThetaZeroStyles() {
+  if (document.getElementById("theta-zero-styles")) return;
+
+  const style = document.createElement("style");
+  style.id = "theta-zero-styles";
+
+  style.textContent =
+    "@keyframes thetaTbLetterForm{" +
+    "0%{opacity:0;transform:translateY(8px) scale(.85);letter-spacing:-8px}" +
+    "55%{opacity:1;transform:translateY(-2px) scale(1.05);letter-spacing:2px}" +
+    "100%{opacity:1;transform:translateY(0) scale(1);letter-spacing:0}" +
+    "}" +
+    "@keyframes thetaZeroPulse{" +
+    "0%,100%{transform:scale(1)}" +
+    "50%{transform:scale(1.12)}" +
+    "}" +
+    "#theta-zero-tb .theta-tb-title{" +
+    "font-style:italic;font-weight:700;display:inline-block;" +
+    "animation:thetaTbLetterForm 900ms ease-out both" +
+    "}" +
+    "#theta-zero-tb .theta-zero-display{" +
+    "font-style:italic;font-size:30px;font-weight:700;" +
+    "display:inline-block;" +
+    "animation:thetaZeroPulse 1100ms ease-in-out infinite" +
+    "}" +
+    "#theta-zero-tb .theta-double-string{" +
+    "display:inline-block;margin-left:6px;font-style:italic;" +
+    "font-weight:700;" +
+    "animation:thetaTbLetterForm 1100ms ease-out 150ms both" +
+    "}";
+
+  document.head.appendChild(style);
+}
+
+function ensureThetaZeroTB() {
+  installThetaZeroStyles();
+
+  if (document.getElementById("theta-zero-tb")) return;
+
+  const modal = document.createElement("div");
+  modal.id = "theta-zero-tb";
+  modal.style.cssText =
+    "display:none;position:fixed;inset:0;" +
+    "background:rgba(0,0,0,.45);z-index:100001;" +
+    "align-items:center;justify-content:center;";
+
+  modal.innerHTML =
+    '<div style="background:#fff;color:#111;max-width:420px;width:90%;padding:20px;border:2px solid #111;border-radius:12px;box-shadow:0 10px 35px rgba(0,0,0,.3);font-family:sans-serif;text-align:center;">' +
+    '<div class="theta-tb-title" style="font-size:18px;">Double String TB</div>' +
+    '<div style="margin:12px 0;">' +
+    '<span class="theta-zero-display">0</span>' +
+    '<span class="theta-double-string">→ double string tb</span>' +
+    '</div>' +
+    '<div style="margin:12px 0 16px;font-size:15px;">' +
+    'Would you like to change this zero to a 1-5?' +
+    '</div>' +
+    '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">' +
+    '<button type="button" id="theta-zero-no">Keep 0</button>' +
+    '<button type="button" id="theta-zero-1">1</button>' +
+    '<button type="button" id="theta-zero-2">2</button>' +
+    '<button type="button" id="theta-zero-3">3</button>' +
+    '<button type="button" id="theta-zero-4">4</button>' +
+    '<button type="button" id="theta-zero-5">5</button>' +
+    '</div>' +
+    '<div id="theta-zero-status" style="margin-top:14px;min-height:20px;font-size:13px;"></div>' +
+    '</div>';
+
+  document.body.appendChild(modal);
+
+  document.getElementById("theta-zero-no").onclick =
+    function(){ finishThetaZeroTB("0"); };
+
+  for (var i = 1; i <= 5; i++) {
+    (function(v) {
+      document.getElementById("theta-zero-" + v).onclick =
+        function(){ finishThetaZeroTB(String(v)); };
+    })(i);
+  }
+}
+
+function openThetaZeroTB(sourceCircle) {
+  if (!serverSideSpamCheck("theta-zero")) return;
+
+  ensureThetaZeroTB();
+
+  const m = document.getElementById("theta-zero-tb");
+  const st = document.getElementById("theta-zero-status");
+
+  if (st) st.textContent = "Waiting for a choice…";
+  if (sourceCircle) m.setAttribute("data-source-circle", sourceCircle);
+
+  m.style.display = "flex";
+}
+
+function finishThetaZeroTB(choice) {
+  const m = document.getElementById("theta-zero-tb");
+  const st = document.getElementById("theta-zero-status");
+
+  SubstrState.thetaZeroChoice = choice;
+
+  if (st) {
+    st.textContent =
+      choice === "0"
+        ? "Zero kept."
+        : "Zero changed to " + choice + ".";
+  }
+
+  const idx = m ? m.getAttribute("data-source-circle") : null;
+
+  if (idx) {
+    const t = document.querySelector(
+      '[data-theta-zero-index="' + idx + '"]'
+    );
+    if (t) t.textContent = choice;
+  }
+
+  const out = document.getElementById("output");
+
+  if (out) {
+    out.textContent +=
+      "\nTHETA ZERO TB: 0 → " +
+      choice +
+      "\nDOUBLE STRING TB: active";
+  }
+
+  setTimeout(function(){
+    if (m) m.style.display = "none";
+  }, 500);
+}
+
+function checkThetaZero(circleIndex, displayedValue) {
+  if (
+    String(displayedValue).indexOf("0") === -1 ||
+    SubstrState.zeroTbShown
+  ) return;
+
+  SubstrState.zeroTbShown = true;
+
+  setTimeout(function(){
+    openThetaZeroTB(String(circleIndex));
+  }, 120);
+}
+
+function resetThetaZeroCycle() {
+  SubstrState.zeroTbShown = false;
+}
 
 function ensureHostNodes() {
+  installThetaZeroStyles();
+  ensureThetaZeroTB();
 
   const svgArea = document.getElementById("svg-area");
   const theta = document.getElementById("radian-circle");
 
   if (!document.getElementById("eight-area")) {
-
     const wrap = document.createElement("div");
-
     wrap.style.margin = "16px 0";
 
     const label = document.createElement("p");
-
     label.textContent =
       "Cartesian field under θ — four interactive sectors  y² = x² − x⁴";
 
-    const eight =
-      document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "svg"
-      );
+    const eight = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
 
     eight.setAttribute("id", "eight-area");
     eight.setAttribute("viewBox", "0 0 440 340");
     eight.setAttribute("width", "440");
     eight.setAttribute("height", "340");
-
     eight.style.border = "1px solid black";
     eight.style.display = "block";
 
     wrap.appendChild(label);
     wrap.appendChild(eight);
 
-    if (theta && theta.parentNode) {
+    if (theta && theta.parentNode)
       theta.parentNode.insertBefore(wrap, theta.nextSibling);
-    }
-
-    else if (svgArea && svgArea.parentNode) {
+    else if (svgArea && svgArea.parentNode)
       svgArea.parentNode.insertBefore(wrap, svgArea);
-    }
-
-    else {
+    else
       document.body.appendChild(wrap);
-    }
   }
 
-
   if (!document.getElementById("sector-chart")) {
-
     const wrap = document.createElement("div");
-
     wrap.style.margin = "16px 0";
 
     const label = document.createElement("p");
-
     label.textContent =
       "Sector chart under type-set square (each lobe = 1/3)";
 
-    const chart =
-      document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "svg"
-      );
+    const chart = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
 
     chart.setAttribute("id", "sector-chart");
     chart.setAttribute("viewBox", "0 0 400 160");
     chart.setAttribute("width", "400");
     chart.setAttribute("height", "160");
-
     chart.style.border = "1px solid black";
     chart.style.display = "block";
 
@@ -397,392 +406,120 @@ function ensureHostNodes() {
 
     const svg = document.getElementById("svg-area");
 
-    if (svg && svg.parentNode) {
+    if (svg && svg.parentNode)
       svg.parentNode.insertBefore(wrap, svg.nextSibling);
-    }
-
-    else {
+    else
       document.body.appendChild(wrap);
-    }
   }
 
-
   if (!document.getElementById("code-out")) {
-
     const pre = document.createElement("pre");
-
     pre.id = "code-out";
-
     pre.style.whiteSpace = "pre-wrap";
     pre.style.border = "1px solid #333";
     pre.style.padding = "10px";
-
     pre.textContent =
       "Click Q1–Q4 on the figure-eight or the Q bars for a copyable block.";
-
     document.body.appendChild(pre);
   }
 
-
   if (!document.getElementById("call-box")) {
-
     const box = document.createElement("div");
-
     box.id = "call-box";
-
     box.style.cssText =
       "position:absolute;right:20px;top:340px;width:200px;" +
       "min-height:90px;border:1px solid #000;padding:10px;" +
-      "background:#fff;font-family:sans-serif;font-size:13px;" +
-      "z-index:20;";
+      "background:#fff;font-family:sans-serif;font-size:13px;z-index:20;";
 
     box.innerHTML =
       "<strong>CALL BOX</strong>" +
       "<div id=\"call-box-line\">waiting for type set…</div>" +
       "<div id=\"call-box-id\"></div>" +
-
-      "<div id=\"type-set-1\" data-type-set=\"1\" " +
-      "data-call=\"idle\" " +
-      "data-href=\"https://jrxxyy.github.io/index.html\" " +
-      "style=\"margin-top:8px;padding:4px;border:1px dashed #999;cursor:pointer;\">" +
-      "#type-set-1</div>" +
-
-      "<div id=\"type-set-2\" data-type-set=\"2\" " +
-      "data-call=\"idle\" " +
-      "data-href=\"https://jrxxyy.github.io/beta.html\" " +
-      "style=\"margin-top:4px;padding:4px;border:1px dashed #999;cursor:pointer;\">" +
-      "#type-set-2</div>" +
-
-      "<div id=\"type-set-3\" data-type-set=\"3\" " +
-      "data-call=\"idle\" " +
-      "data-href=\"https://jrxxyy.github.io/visa.html\" " +
-      "style=\"margin-top:4px;padding:4px;border:1px dashed #999;cursor:pointer;\">" +
-      "#type-set-3</div>";
+      "<div id=\"type-set-1\" data-type-set=\"1\" data-call=\"idle\" data-href=\"https://jrxxyy.github.io/index.html\" style=\"margin-top:8px;padding:4px;border:1px dashed #999;cursor:pointer;\">#type-set-1</div>" +
+      "<div id=\"type-set-2\" data-type-set=\"2\" data-call=\"idle\" data-href=\"https://jrxxyy.github.io/beta.html\" style=\"margin-top:4px;padding:4px;border:1px dashed #999;cursor:pointer;\">#type-set-2</div>" +
+      "<div id=\"type-set-3\" data-type-set=\"3\" data-call=\"idle\" data-href=\"https://jrxxyy.github.io/visa.html\" style=\"margin-top:4px;padding:4px;border:1px dashed #999;cursor:pointer;\">#type-set-3</div>";
 
     document.body.appendChild(box);
   }
 
-
   if (!document.getElementById("sector-modal")) {
-
     const modal = document.createElement("div");
-
     modal.id = "sector-modal";
-
     modal.style.cssText =
       "display:none;position:fixed;inset:0;" +
       "background:rgba(0,0,0,.45);z-index:99999;" +
       "align-items:center;justify-content:center;";
 
     modal.innerHTML =
-      '<div style="background:#fff;color:#111;max-width:420px;width:90%;' +
-      'padding:20px;border-radius:10px;font-family:sans-serif;">' +
-
+      '<div style="background:#fff;color:#111;max-width:420px;width:90%;padding:20px;border-radius:10px;font-family:sans-serif;">' +
       '<p id="sector-modal-text" style="margin:0 0 16px;font-size:16px;"></p>' +
-
       '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
-
       '<button type="button" id="sector-modal-no">No</button>' +
-
       '<button type="button" id="sector-modal-yes">Yes</button>' +
-
       "</div></div>";
 
     document.body.appendChild(modal);
 
     document.getElementById("sector-modal-yes").onclick =
-      function () {
-        finishSectorPrompt(true);
-      };
+      function () { finishSectorPrompt(true); };
 
     document.getElementById("sector-modal-no").onclick =
-      function () {
-        finishSectorPrompt(false);
-      };
+      function () { finishSectorPrompt(false); };
   }
-
 
   const go = document.getElementById("substr-go");
 
   if (go && !go.getAttribute("data-bound")) {
-
     go.setAttribute("data-bound", "1");
-
-    go.addEventListener(
-      "click",
-      function () {
-        generateUserSubstr();
-      }
-    );
+    go.addEventListener("click", function () {
+      generateUserSubstr();
+    });
   }
 }
-
-
-/* =========================================================
-   NEW: SUBSTR() TB
-   ========================================================= */
-
-function ensureSubstrTB() {
-
-  if (document.getElementById("substr-tb")) {
-    return;
-  }
-
-  const tb = document.createElement("div");
-
-  tb.id = "substr-tb";
-
-  tb.style.cssText =
-    "display:none;" +
-    "position:fixed;" +
-    "left:50%;" +
-    "top:50%;" +
-    "transform:translate(-50%,-50%);" +
-    "width:280px;" +
-    "background:#fff;" +
-    "color:#111;" +
-    "border:2px solid #111;" +
-    "border-radius:10px;" +
-    "padding:16px;" +
-    "box-shadow:0 8px 30px rgba(0,0,0,.25);" +
-    "font-family:sans-serif;" +
-    "font-size:14px;" +
-    "z-index:100000;";
-
-  tb.innerHTML =
-    "<strong style='display:block;font-size:16px;margin-bottom:8px;'>" +
-    "substr() TB" +
-    "</strong>" +
-
-    "<div style='margin-bottom:12px;'>" +
-    "Choose how to continue:" +
-    "</div>" +
-
-    "<div style='display:flex;gap:8px;justify-content:flex-end;'>" +
-
-    "<button type='button' id='substr-ud'>" +
-    "UD" +
-    "</button>" +
-
-    "<button type='button' id='substr-sd'>" +
-    "SD" +
-    "</button>" +
-
-    "<button type='button' id='substr-tb-close'>" +
-    "Close" +
-    "</button>" +
-
-    "</div>" +
-
-    "<div id='substr-tb-status' " +
-    "style='margin-top:12px;padding-top:8px;border-top:1px solid #ccc;'>" +
-    "</div>";
-
-  document.body.appendChild(tb);
-
-
-  document.getElementById("substr-ud").onclick =
-    function () {
-      finishSubstrTB("UD");
-    };
-
-
-  document.getElementById("substr-sd").onclick =
-    function () {
-      finishSubstrTB("SD");
-    };
-
-
-  document.getElementById("substr-tb-close").onclick =
-    function () {
-      closeSubstrTB();
-    };
-}
-
-
-/* =========================================================
-   OPEN SUBSTR TB
-   ========================================================= */
-
-function openSubstrTB() {
-
-  ensureSubstrTB();
-
-  const tb = document.getElementById("substr-tb");
-  const status = document.getElementById("substr-tb-status");
-
-  if (status) {
-    status.textContent =
-      "Waiting for UD or SD…";
-  }
-
-  if (tb) {
-    tb.style.display = "block";
-  }
-}
-
-
-/* =========================================================
-   CLOSE SUBSTR TB
-   ========================================================= */
-
-function closeSubstrTB() {
-
-  const tb = document.getElementById("substr-tb");
-
-  if (tb) {
-    tb.style.display = "none";
-  }
-}
-
-
-/* =========================================================
-   UD / SD SELECTION
-   ========================================================= */
-
-function finishSubstrTB(choice) {
-
-  const source = modelSourceString();
-
-  const start = Number(SubstrState.start);
-  const length = Number(SubstrState.length);
-
-  const result =
-    substr(
-      source,
-      start,
-      length
-    );
-
-  SubstrState.result = result;
-  SubstrState.generated = true;
-  SubstrState.tbChoice = choice;
-
-
-  const status =
-    document.getElementById("substr-tb-status");
-
-  if (status) {
-
-    status.textContent =
-      choice +
-      " selected → substr(\"" +
-      source +
-      "\", " +
-      start +
-      ", " +
-      length +
-      ") = \"" +
-      result +
-      "\"";
-  }
-
-
-  const output =
-    document.getElementById("output");
-
-  if (output) {
-
-    output.textContent =
-      "substr() TB\n" +
-      "choice: " +
-      choice +
-      "\nsource: " +
-      source +
-      "\nstart: " +
-      start +
-      "\nlength: " +
-      length +
-      "\nresult: \"" +
-      result +
-      "\"";
-  }
-
-
-  drawClosestCircleLine();
-
-
-  setTimeout(
-    closeSubstrTB,
-    650
-  );
-}
-
-
-/* =========================================================
-   CURVE
-   ========================================================= */
 
 function gSvgX(svgY) {
-
   const t =
     (FIELD.limitY - svgY) /
     (FIELD.limitY - FIELD.curveTop);
 
-  const clamped =
-    Math.max(0, Math.min(1, t));
+  const clamped = Math.max(0, Math.min(1, t));
+  const bend = clamped * clamped * (3 - 2 * clamped);
 
-  const bend =
-    clamped *
-    clamped *
-    (3 - 2 * clamped);
-
-  return (
-    FIELD.padX +
+  return FIELD.padX +
     30 +
     bend * 240 +
-    Math.sin(clamped * Math.PI) * 16
-  );
+    Math.sin(clamped * Math.PI) * 16;
 }
 
-
 function curvePathD() {
-
   let d = "";
 
   for (let i = 0; i <= 20; i++) {
-
     const svgY =
       FIELD.limitY -
       (i / 20) *
       (FIELD.limitY - FIELD.curveTop);
 
     d +=
-      (
-        i === 0
-          ? "M " + gSvgX(svgY) + " " + svgY
-          : " L " + gSvgX(svgY) + " " + svgY
-      );
+      (i === 0
+        ? "M " + gSvgX(svgY) + " " + svgY
+        : " L " + gSvgX(svgY) + " " + svgY);
   }
 
   return d;
 }
 
-
 function constrainedY(type, size) {
-
-  if (type === "circle") {
+  if (type === "circle")
     return 12 + Math.random() * 220;
-  }
 
-  return (
-    12 +
+  return 12 +
     Math.random() *
-    Math.max(
-      8,
-      FIELD.limitY - size - 16
-    )
-  );
+    Math.max(8, FIELD.limitY - size - 16);
 }
 
-
 function curvePointAtT(t) {
-
-  const clamped =
-    Math.max(
-      0.06,
-      Math.min(0.94, t)
-    );
+  const clamped = Math.max(0.06, Math.min(0.94, t));
 
   const svgY =
     FIELD.limitY -
@@ -796,232 +533,139 @@ function curvePointAtT(t) {
   };
 }
 
-
 function targetTFromPlacements(placements) {
+  if (!placements.length) return 0.42;
 
-  if (!placements.length) {
-    return 0.42;
-  }
-
-  const span =
-    FIELD.limitY -
-    FIELD.curveTop;
-
+  const span = FIELD.limitY - FIELD.curveTop;
   let heightBias = 0;
   let crowdBias = 0;
 
   for (let i = 0; i < placements.length; i++) {
-
     const p = placements[i];
+    const midY = p.y + 16;
 
-    const midY =
-      p.y + 16;
+    heightBias += Math.max(
+      0,
+      Math.min(1, (FIELD.limitY - midY) / span)
+    );
 
-    heightBias +=
+    const gx = gSvgX(
       Math.max(
-        0,
-        Math.min(
-          1,
-          (FIELD.limitY - midY) /
-          span
-        )
-      );
+        FIELD.curveTop,
+        Math.min(FIELD.limitY, midY)
+      )
+    );
 
-    const gx =
-      gSvgX(
-        Math.max(
-          FIELD.curveTop,
-          Math.min(
-            FIELD.limitY,
-            midY
-          )
-        )
-      );
+    const dx = (p.x + 16) - gx;
 
-    const dx =
-      (p.x + 16) - gx;
-
-    if (Math.abs(dx) < 70) {
-      crowdBias +=
-        dx >= 0
-          ? -0.04
-          : 0.04;
-    }
+    if (Math.abs(dx) < 70)
+      crowdBias += dx >= 0 ? -0.04 : 0.04;
   }
 
   return Math.max(
     0.08,
     Math.min(
       0.92,
-      heightBias /
-      placements.length *
-      0.75 +
+      heightBias / placements.length * 0.75 +
       0.12 +
       crowdBias
     )
   );
 }
 
-
 function slideSquareAlongCurve(el, fromT, toT) {
+  if (curveSquareState.raf)
+    cancelAnimationFrame(curveSquareState.raf);
 
-  if (curveSquareState.raf) {
-    cancelAnimationFrame(
-      curveSquareState.raf
-    );
-  }
-
-  const start =
-    performance.now();
-
+  const start = performance.now();
   const dur = 520;
 
   function frame(now) {
-
-    const u =
-      Math.min(
-        1,
-        (now - start) /
-        dur
-      );
-
-    const ease =
-      u * u * (3 - 2 * u);
+    const u = Math.min(1, (now - start) / dur);
+    const ease = u * u * (3 - 2 * u);
 
     const t =
       fromT +
-      (toT - fromT) *
-      ease;
+      (toT - fromT) * ease;
 
-    const p =
-      curvePointAtT(t);
+    const p = curvePointAtT(t);
 
     el.setAttribute(
       "transform",
-      "translate(" +
-      p.x +
-      "," +
-      p.y +
-      ")"
+      "translate(" + p.x + "," + p.y + ")"
     );
 
     curveSquareState.t = t;
 
-    if (u < 1) {
+    if (u < 1)
       curveSquareState.raf =
         requestAnimationFrame(frame);
-    }
   }
 
   curveSquareState.raf =
     requestAnimationFrame(frame);
 }
 
+document.addEventListener("click", function (e) {
+  const typeBtn =
+    e.target.closest("[data-action='select-type']");
 
-/* =========================================================
-   GLOBAL CLICK HANDLERS
-   ========================================================= */
+  if (typeBtn) {
+    const selectedType =
+      typeBtn.getAttribute("data-type");
 
-document.addEventListener(
-  "click",
-  function (e) {
+    const output =
+      document.getElementById("output");
 
-    const typeBtn =
-      e.target.closest(
-        "[data-action='select-type']"
-      );
+    if (output)
+      output.textContent =
+        "TYPE SET " +
+        selectedType +
+        " selected. Initializing protocol...";
 
-    if (typeBtn) {
-
-      const selectedType =
-        typeBtn.getAttribute(
-          "data-type"
-        );
-
-      const output =
-        document.getElementById("output");
-
-      if (output) {
-
-        output.textContent =
-          "TYPE SET " +
-          selectedType +
-          " selected. Initializing protocol...";
-      }
-
-      initializeTypeProtocol(
-        selectedType
-      );
-
-      return;
-    }
-
-
-    const cloudBtn =
-      e.target.closest(
-        "[data-action='go-search']"
-      );
-
-    if (cloudBtn) {
-
-      window.open(
-        "https://www.mozilla.org/en-US/firefox/new/",
-        "_blank",
-        "noopener"
-      );
-
-      return;
-    }
-
-
-    const pane =
-      e.target.closest(
-        "[data-type-set]"
-      );
-
-    if (
-      pane &&
-      pane.id &&
-      pane.id.indexOf(
-        "type-set-"
-      ) === 0
-    ) {
-
-      const key =
-        pane.getAttribute(
-          "data-type-set"
-        );
-
-      const meta =
-        TYPE_SETS[key];
-
-      const url =
-        (meta && meta.href) ||
-        pane.getAttribute(
-          "data-href"
-        );
-
-      if (url) {
-        window.location.href =
-          url;
-      }
-    }
+    initializeTypeProtocol(selectedType);
+    return;
   }
-);
 
+  const cloudBtn =
+    e.target.closest("[data-action='go-search']");
 
-/* =========================================================
-   OUTPUT
-   ========================================================= */
+  if (cloudBtn) {
+    window.open(
+      "https://www.mozilla.org/en-US/firefox/new/",
+      "_blank",
+      "noopener"
+    );
+    return;
+  }
+
+  const pane =
+    e.target.closest("[data-type-set]");
+
+  if (
+    pane &&
+    pane.id &&
+    pane.id.indexOf("type-set-") === 0
+  ) {
+    const key =
+      pane.getAttribute("data-type-set");
+
+    const meta = TYPE_SETS[key];
+
+    const url =
+      (meta && meta.href) ||
+      pane.getAttribute("data-href");
+
+    if (url)
+      window.location.href = url;
+  }
+});
 
 function writeTrLine(text) {
-
   const output =
     document.getElementById("output");
 
-  if (!output) {
-    return;
-  }
+  if (!output) return;
 
   const lines =
     output.textContent.split("\n");
@@ -1030,26 +674,14 @@ function writeTrLine(text) {
   var placed = false;
 
   for (i = 0; i < lines.length; i++) {
-
-    if (
-      lines[i].indexOf(
-        "AI MODE:"
-      ) === 0
-    ) {
-
+    if (lines[i].indexOf("AI MODE:") === 0) {
       if (
         i + 1 < lines.length &&
-        lines[i + 1].indexOf(
-          "tr:"
-        ) === 0
+        lines[i + 1].indexOf("tr:") === 0
       ) {
-
         lines[i + 1] =
           "tr: " + text;
-      }
-
-      else {
-
+      } else {
         lines.splice(
           i + 1,
           0,
@@ -1058,60 +690,40 @@ function writeTrLine(text) {
       }
 
       placed = true;
-
       break;
     }
   }
 
-  if (!placed) {
-    lines.push(
-      "tr: " + text
-    );
-  }
+  if (!placed)
+    lines.push("tr: " + text);
 
   output.textContent =
     lines.join("\n");
 }
 
-
-/* =========================================================
-   CIRCLE / SERVER
-   ========================================================= */
-
 function circleTimeExponential() {
-
-  const d =
-    new Date();
-
-  const hour =
-    d.getHours();
-
-  const n =
-    Number(hour);
+  const d = new Date();
+  const hour = d.getHours();
+  const n = Number(hour);
 
   n.toExponential();
 
   return n.toFixed(1) + "^1";
 }
 
-
 function handleSquareLiteralClick(slot) {
-
   const accepted =
     window.confirm(
       "Would you like to enter an undefined/null instance for this square's empty string literal \"\" ?"
     );
 
-  if (!accepted) {
-    return;
-  }
+  if (!accepted) return;
 
   slot.value = null;
   slot.literal = "";
   slot.undefinedNull = true;
 
   if (slot.el) {
-
     slot.el.setAttribute(
       "data-literal",
       ""
@@ -1124,69 +736,39 @@ function handleSquareLiteralClick(slot) {
   }
 }
 
-
 function handleServerTypeClick(kind, el) {
+  const spec = ServerTypes[kind];
 
-  const spec =
-    ServerTypes[kind];
-
-  if (!spec) {
-    return;
-  }
+  if (!spec) return;
 
   if (kind === "circle") {
-
     writeTrLine(
       circleTimeExponential()
     );
   }
 }
 
-
-/* =========================================================
-   SHAPE GENERATION
-   ========================================================= */
-
 function analyzeSVGShapes(shapeList) {
-
   var squareCount = 0;
 
-  for (
-    var i = 0;
-    i < shapeList.length;
-    i++
-  ) {
-
-    if (
-      shapeList[i].type ===
-      "square"
-    ) {
+  for (var i = 0; i < shapeList.length; i++)
+    if (shapeList[i].type === "square")
       squareCount++;
-    }
-  }
 
-  if (squareCount > 5) {
-
+  if (squareCount > 5)
     return {
       avoid: true,
-      reason:
-        "Page contains more than 5 squares."
+      reason: "Page contains more than 5 squares."
     };
-  }
 
   return {
     avoid: false,
-    reason:
-      "Page is safe."
+    reason: "Page is safe."
   };
 }
 
-
 function generateRandomShapes(count) {
-
-  if (count == null) {
-    count = 5;
-  }
+  if (count == null) count = 5;
 
   const types = [
     "square",
@@ -1197,18 +779,12 @@ function generateRandomShapes(count) {
 
   const shapes = [];
 
-  for (
-    var i = 0;
-    i < count;
-    i++
-  ) {
-
+  for (var i = 0; i < count; i++) {
     shapes.push({
       type:
         types[
           Math.floor(
-            Math.random() *
-            types.length
+            Math.random() * types.length
           )
         ]
     });
@@ -1217,9 +793,7 @@ function generateRandomShapes(count) {
   return shapes;
 }
 
-
 function generateTypeShapes(typeNumber) {
-
   const radianMap = {
     "1": Math.PI / 6,
     "2": Math.PI,
@@ -1227,9 +801,7 @@ function generateTypeShapes(typeNumber) {
   };
 
   const theta =
-    radianMap[
-      String(typeNumber)
-    ] ||
+    radianMap[String(typeNumber)] ||
     Math.PI / 6;
 
   const cosTheta =
@@ -1237,50 +809,35 @@ function generateTypeShapes(typeNumber) {
 
   var shapes;
 
-  if (cosTheta > 0.5) {
-
+  if (cosTheta > 0.5)
     shapes = [
       { type: "circle" },
       { type: "circle" },
       { type: "square" }
     ];
-
-  }
-
-  else if (cosTheta < -0.5) {
-
+  else if (cosTheta < -0.5)
     shapes = [
       { type: "square" },
       { type: "square" },
       { type: "triangle" }
     ];
-
-  }
-
-  else {
-
+  else
     shapes = [
       { type: "triangle" },
       { type: "triangle" },
       { type: "circle" }
     ];
-  }
 
-  return shapes.map(
-    function (s) {
-
-      return {
-        type: s.type,
-        theta: theta,
-        cosTheta: cosTheta
-      };
-    }
-  );
+  return shapes.map(function (s) {
+    return {
+      type: s.type,
+      theta: theta,
+      cosTheta: cosTheta
+    };
+  });
 }
 
-
 function generateTriangleDifferentialShapes() {
-
   const regions = [
     "square",
     "circle",
@@ -1289,18 +846,12 @@ function generateTriangleDifferentialShapes() {
 
   const shapes = [];
 
-  for (
-    var i = 0;
-    i < 8;
-    i++
-  ) {
-
+  for (var i = 0; i < 8; i++) {
     shapes.push({
       type:
         regions[
           Math.floor(
-            Math.random() *
-            regions.length
+            Math.random() * regions.length
           )
         ]
     });
@@ -1309,27 +860,18 @@ function generateTriangleDifferentialShapes() {
   return shapes;
 }
 
-
-/* =========================================================
-   DRAW SVG SHAPES
-   ========================================================= */
-
 function drawSVGShapes(shapeList) {
+  resetThetaZeroCycle();
 
   const svg =
-    document.getElementById(
-      "svg-area"
-    );
+    document.getElementById("svg-area");
 
-  if (!svg) {
-    return;
-  }
+  if (!svg) return;
 
   svg.innerHTML = "";
 
   const svgNS =
     "http://www.w3.org/2000/svg";
-
 
   const limit =
     document.createElementNS(
@@ -1337,38 +879,26 @@ function drawSVGShapes(shapeList) {
       "line"
     );
 
-  limit.setAttribute(
-    "x1",
-    "16"
-  );
-
-  limit.setAttribute(
-    "x2",
-    "384"
-  );
-
+  limit.setAttribute("x1", "16");
+  limit.setAttribute("x2", "384");
   limit.setAttribute(
     "y1",
     String(FIELD.limitY)
   );
-
   limit.setAttribute(
     "y2",
     String(FIELD.limitY)
   );
-
   limit.setAttribute(
     "stroke",
     "#c9a227"
   );
-
   limit.setAttribute(
     "stroke-dasharray",
     "6 4"
   );
 
   svg.appendChild(limit);
-
 
   const curve =
     document.createElementNS(
@@ -1380,17 +910,14 @@ function drawSVGShapes(shapeList) {
     "d",
     curvePathD()
   );
-
   curve.setAttribute(
     "fill",
     "none"
   );
-
   curve.setAttribute(
     "stroke",
     "#2563eb"
   );
-
   curve.setAttribute(
     "stroke-width",
     "2"
@@ -1398,38 +925,26 @@ function drawSVGShapes(shapeList) {
 
   svg.appendChild(curve);
 
-
   const placements = [];
 
   var firstSquareEl = null;
   var firstSquareSeen = false;
-
   var circleIndex = 0;
   var circleRecords = [];
-
 
   for (
     var i = 0;
     i < shapeList.length;
     i++
   ) {
-
-    const shape =
-      shapeList[i];
-
+    const shape = shapeList[i];
     var el = null;
 
     const isLead =
       shape.type === "square" &&
       !firstSquareSeen;
 
-
-    /* =====================================================
-       SQUARE
-       ===================================================== */
-
     if (shape.type === "square") {
-
       el =
         document.createElementNS(
           svgNS,
@@ -1440,7 +955,6 @@ function drawSVGShapes(shapeList) {
         "width",
         "32"
       );
-
       el.setAttribute(
         "height",
         "32"
@@ -1448,18 +962,14 @@ function drawSVGShapes(shapeList) {
 
       el.setAttribute(
         "fill",
-        isLead
-          ? "#fb7185"
-          : "red"
+        isLead ? "#fb7185" : "red"
       );
 
       if (isLead) {
-
         el.setAttribute(
           "stroke",
           "#111"
         );
-
         el.setAttribute(
           "stroke-width",
           "2"
@@ -1479,9 +989,7 @@ function drawSVGShapes(shapeList) {
       el.style.cursor =
         "pointer";
 
-
-      (function (squareEl) {
-
+      (function(squareEl) {
         const slot = {
           el: squareEl,
           literal: "",
@@ -1498,27 +1006,14 @@ function drawSVGShapes(shapeList) {
 
         squareEl.addEventListener(
           "click",
-          function (ev) {
-
+          function(ev) {
             ev.stopPropagation();
-
-            handleSquareLiteralClick(
-              slot
-            );
+            handleSquareLiteralClick(slot);
           }
         );
-
       })(el);
 
-
-    /* =====================================================
-       CIRCLE
-       ===================================================== */
-
-    } else if (
-      shape.type === "circle"
-    ) {
-
+    } else if (shape.type === "circle") {
       el =
         document.createElementNS(
           svgNS,
@@ -1538,17 +1033,15 @@ function drawSVGShapes(shapeList) {
         circleIndex;
 
       const nc =
-        ServerTypes
-          .circle
-          .negotiator
-          .apply(circleIndex);
+        ServerTypes.circle.negotiator &&
+        ServerTypes.circle.negotiator.apply(
+          circleIndex
+        );
 
       shape._negotiated =
         !!nc;
 
-
       if (nc) {
-
         el.setAttribute(
           "fill",
           "none"
@@ -1578,28 +1071,21 @@ function drawSVGShapes(shapeList) {
           "data-side",
           "server"
         );
-
       } else {
-
         el.setAttribute(
           "fill",
           "blue"
         );
       }
 
-
       el.setAttribute(
         "data-type",
-        ServerTypes
-          .circle
-          .dataType
+        ServerTypes.circle.dataType
       );
 
       el.setAttribute(
         "data-typeset",
-        ServerTypes
-          .circle
-          .typeSet
+        ServerTypes.circle.typeSet
       );
 
       el.setAttribute(
@@ -1610,20 +1096,16 @@ function drawSVGShapes(shapeList) {
       el.style.cursor =
         "pointer";
 
-
       el.addEventListener(
         "click",
-        function (ev) {
-
+        function(ev) {
           ev.stopPropagation();
-
           handleServerTypeClick(
             "circle",
             this
           );
         }
       );
-
 
       var area =
         Math.PI *
@@ -1638,16 +1120,12 @@ function drawSVGShapes(shapeList) {
       shape._area =
         area;
 
-
       with (Math) {
-
         shape._log2e =
-          log(area) *
-          LOG2E;
+          log(area) * LOG2E;
 
         shape._aboveLog10e =
-          shape._log2e >
-          LOG10E;
+          shape._log2e > LOG10E;
 
         shape._primes =
           shape._aboveLog10e
@@ -1657,7 +1135,6 @@ function drawSVGShapes(shapeList) {
         shape._primesCorrect =
           shape._aboveLog10e;
       }
-
 
       el.setAttribute(
         "data-primes",
@@ -1671,15 +1148,7 @@ function drawSVGShapes(shapeList) {
           : ""
       );
 
-
-    /* =====================================================
-       TRIANGLE
-       ===================================================== */
-
-    } else if (
-      shape.type === "triangle"
-    ) {
-
+    } else if (shape.type === "triangle") {
       el =
         document.createElementNS(
           svgNS,
@@ -1698,16 +1167,12 @@ function drawSVGShapes(shapeList) {
 
       el.setAttribute(
         "data-type",
-        ServerTypes
-          .triangle
-          .dataType
+        ServerTypes.triangle.dataType
       );
 
       el.setAttribute(
         "data-typeset",
-        ServerTypes
-          .triangle
-          .typeSet
+        ServerTypes.triangle.typeSet
       );
 
       el.setAttribute(
@@ -1720,10 +1185,8 @@ function drawSVGShapes(shapeList) {
 
       el.addEventListener(
         "click",
-        function (ev) {
-
+        function(ev) {
           ev.stopPropagation();
-
           handleServerTypeClick(
             "triangle",
             this
@@ -1731,15 +1194,7 @@ function drawSVGShapes(shapeList) {
         }
       );
 
-
-    /* =====================================================
-       HEXAGON
-       ===================================================== */
-
-    } else if (
-      shape.type === "hexagon"
-    ) {
-
+    } else if (shape.type === "hexagon") {
       el =
         document.createElementNS(
           svgNS,
@@ -1757,22 +1212,11 @@ function drawSVGShapes(shapeList) {
       );
     }
 
-
-    if (!el) {
-      continue;
-    }
-
-
-    /* =====================================================
-       POSITION
-       ===================================================== */
+    if (!el) continue;
 
     if (isLead) {
-
       firstSquareSeen = true;
-
-      firstSquareEl =
-        el;
+      firstSquareEl = el;
 
       const s =
         curvePointAtT(
@@ -1787,9 +1231,7 @@ function drawSVGShapes(shapeList) {
         s.y +
         ")"
       );
-
     } else {
-
       const x =
         20 +
         Math.random() *
@@ -1816,18 +1258,9 @@ function drawSVGShapes(shapeList) {
       });
     }
 
-
     svg.appendChild(el);
 
-
-    /* =====================================================
-       RECORD CIRCLES
-       ===================================================== */
-
-    if (
-      shape.type === "circle"
-    ) {
-
+    if (shape.type === "circle") {
       const tr =
         el.getAttribute(
           "transform"
@@ -1839,35 +1272,24 @@ function drawSVGShapes(shapeList) {
         .exec(tr);
 
       circleRecords.push({
-
         el: el,
-
         x: mm
           ? parseFloat(mm[1])
           : 0,
-
         y: mm
           ? parseFloat(mm[2])
           : 0,
-
         above:
           !!shape._aboveLog10e,
-
         index:
           shape._circleIndex
       });
     }
 
-
-    /* =====================================================
-       CIRCLE MARKERS
-       ===================================================== */
-
     if (
       shape.type === "circle" &&
       shape._negotiated
     ) {
-
       const ncMark =
         document.createElementNS(
           svgNS,
@@ -1914,12 +1336,10 @@ function drawSVGShapes(shapeList) {
         ncMark
       );
 
-
     } else if (
       shape.type === "circle" &&
       shape._circleIndex % 3 === 0
     ) {
-
       const mark =
         document.createElementNS(
           svgNS,
@@ -1962,23 +1382,38 @@ function drawSVGShapes(shapeList) {
         "none"
       );
 
+      mark.setAttribute(
+        "data-theta-zero-index",
+        String(shape._circleIndex)
+      );
+
       mark.textContent =
         shape._log2e.toFixed(3);
 
       svg.appendChild(
         mark
       );
+
+      if (
+        String(mark.textContent)
+          .indexOf("0") !== -1
+      ) {
+        mark.style.fontStyle =
+          "italic";
+
+        mark.style.fontWeight =
+          "700";
+
+        checkThetaZero(
+          shape._circleIndex,
+          mark.textContent
+        );
+      }
     }
   }
 
-
   SubstrState.lastCircles =
     circleRecords.slice();
-
-
-  /* =====================================================
-     CREATE DOTTED CIRCLE
-     ===================================================== */
 
   var seed = null;
   var n;
@@ -1988,69 +1423,55 @@ function drawSVGShapes(shapeList) {
     n < circleRecords.length;
     n++
   ) {
-
     if (
       circleRecords[n].above
     ) {
-
       seed =
         circleRecords[n];
-
       break;
     }
   }
-
 
   if (
     seed &&
     circleRecords.length > 1
   ) {
-
     var near = null;
     var best = 1e9;
-
 
     for (
       n = 0;
       n < circleRecords.length;
       n++
     ) {
-
       const other =
         circleRecords[n];
 
       if (
         other.el === seed.el
-      ) {
-        continue;
-      }
+      ) continue;
 
       const dx =
-        other.x -
-        seed.x;
+        other.x - seed.x;
 
       const dy =
-        other.y -
-        seed.y;
+        other.y - seed.y;
 
       const d =
         dx * dx +
         dy * dy;
 
       if (d < best) {
-
         best = d;
         near = other;
       }
     }
-
 
     if (
       near &&
       Math.random() < 0.5 &&
       circleRecords.length > 2
     ) {
-
       const pick =
         circleRecords[
           1 +
@@ -2062,35 +1483,27 @@ function drawSVGShapes(shapeList) {
 
       if (
         pick.el !== seed.el
-      ) {
+      )
         near = pick;
-      }
     }
 
-
     if (near) {
-
-      if (near.el.parentNode) {
+      if (near.el.parentNode)
         near.el.parentNode.removeChild(
           near.el
         );
-      }
 
-      const cx = near.x;
-      const cy = near.y;
+      const cx =
+        near.x;
 
-
-      /* =================================================
-         FIVE BLACK DOTS
-         NOW CLICKABLE
-         ================================================= */
+      const cy =
+        near.y;
 
       for (
         n = 0;
         n < 5;
         n++
       ) {
-
         const black =
           document.createElementNS(
             svgNS,
@@ -2101,7 +1514,6 @@ function drawSVGShapes(shapeList) {
           (n / 5) *
           Math.PI *
           2;
-
 
         black.setAttribute(
           "r",
@@ -2116,17 +1528,13 @@ function drawSVGShapes(shapeList) {
         black.setAttribute(
           "transform",
           "translate(" +
-          (
-            cx +
+          (cx +
             Math.cos(ang) *
-            12
-          ) +
+            12) +
           "," +
-          (
-            cy +
+          (cy +
             Math.sin(ang) *
-            12
-          ) +
+            12) +
           ")"
         );
 
@@ -2135,57 +1543,21 @@ function drawSVGShapes(shapeList) {
           "5"
         );
 
-        /*
-         * NEW:
-         * identify this as part of the dotted ring
-         */
-        black.setAttribute(
-          "data-dotted-ring",
-          "1"
-        );
-
-        /*
-         * NEW:
-         * make each black dot clickable
-         */
-        black.style.cursor =
-          "pointer";
-
-
-        /*
-         * NEW:
-         * clicking a black dot opens
-         * the substr() TB
-         */
-        black.addEventListener(
-          "click",
-          function (ev) {
-
-            ev.stopPropagation();
-
-            openSubstrTB();
-          }
-        );
-
-
         svg.appendChild(
           black
         );
       }
 
-
       SubstrState.lastCircles =
         SubstrState.lastCircles.filter(
-          function (c) {
+          function(c) {
             return c.el !== near.el;
           }
         );
     }
   }
 
-
-  if (firstSquareEl) {
-
+  if (firstSquareEl)
     slideSquareAlongCurve(
       firstSquareEl,
       curveSquareState.t,
@@ -2193,18 +1565,10 @@ function drawSVGShapes(shapeList) {
         placements
       )
     );
-  }
 
-
-  if (SubstrState.generated) {
+  if (SubstrState.generated)
     drawClosestCircleLine();
-  }
 }
-
-
-/* =========================================================
-   AI STATE
-   ========================================================= */
 
 const AIState = {
   mode: "PRIMI",
@@ -2213,41 +1577,32 @@ const AIState = {
   lastTypeSet: null
 };
 
-
 function countType(shapeList, type) {
-
   var n = 0;
 
   for (
     var i = 0;
     i < shapeList.length;
     i++
-  ) {
-
+  )
     if (
       shapeList[i].type === type
-    ) {
+    )
       n++;
-    }
-  }
 
   return n;
 }
 
-
 function computeDifferential(shapeList) {
-
   return (
     countType(
       shapeList,
       "square"
     ) * 0.4 +
-
     countType(
       shapeList,
       "triangle"
     ) * 0.2 -
-
     countType(
       shapeList,
       "circle"
@@ -2255,89 +1610,111 @@ function computeDifferential(shapeList) {
   );
 }
 
-
 function updateAIMode(
   tension,
   typeNumber
 ) {
-
   AIState.lastTypeSet =
     typeNumber;
 
   AIState.tension =
     tension;
 
-  if (tension > 1.5) {
-    AIState.mode =
-      "ANTI";
-  }
-
-  else if (tension < -0.5) {
-    AIState.mode =
-      "ANTI-ANTI";
-  }
-
-  else {
-    AIState.mode =
-      "PRIMI";
-  }
+  if (tension > 1.5)
+    AIState.mode = "ANTI";
+  else if (tension < -0.5)
+    AIState.mode = "ANTI-ANTI";
+  else
+    AIState.mode = "PRIMI";
 
   return AIState.mode;
 }
 
-
 function generateAIResponse() {
+  if (
+    AIState.mode === "ANTI"
+  )
+    return "AI MODE: ANTI — High tension detected. Defensive pattern activated.";
 
   if (
-    AIState.mode ===
-    "ANTI"
-  ) {
+    AIState.mode === "ANTI-ANTI"
+  )
+    return "AI MODE: ANTI-ANTI — Inversion mode. Reversal logic engaged.";
 
-    return (
-      "AI MODE: ANTI — High tension detected. Defensive pattern activated."
-    );
-  }
-
-  if (
-    AIState.mode ===
-    "ANTI-ANTI"
-  ) {
-
-    return (
-      "AI MODE: ANTI-ANTI — Inversion mode. Reversal logic engaged."
-    );
-  }
-
-  return (
-    "AI MODE: PRIMI — Stable, constructive, low-tension processing."
-  );
+  return "AI MODE: PRIMI — Stable, constructive, low-tension processing.";
 }
 
-
 function updateRadianCircle(theta) {
-
   const rc =
     document.getElementById(
       "radian-circle"
     );
 
-  if (!rc) {
-    return;
-  }
+  if (!rc) return;
 
-  rc.textContent =
+  const thetaValue =
+    theta.toFixed(2);
+
+  const thetaText =
     "θ = " +
-    theta.toFixed(2) +
+    thetaValue +
     "  (" +
     Math.cos(theta).toFixed(2) +
     ", " +
     Math.sin(theta).toFixed(2) +
     ")";
+
+  rc.textContent = "";
+
+  for (
+    let i = 0;
+    i < thetaText.length;
+    i++
+  ) {
+    const character =
+      thetaText.charAt(i);
+
+    if (
+      character === "0"
+    ) {
+      const zero =
+        document.createElement(
+          "span"
+        );
+
+      zero.className =
+        "theta-zero-display";
+
+      zero.textContent =
+        "0";
+
+      rc.appendChild(
+        zero
+      );
+    } else {
+      rc.appendChild(
+        document.createTextNode(
+          character
+        )
+      );
+    }
+  }
+
+  if (
+    thetaValue.indexOf("0") !== -1
+  ) {
+    resetThetaZeroCycle();
+
+    checkThetaZero(
+      "radian-circle",
+      thetaValue
+    );
+  } else {
+    resetThetaZeroCycle();
+  }
 }
 
-
 function updateCallBox(typeNumber) {
-
   const meta =
     TYPE_SETS[
       String(typeNumber)
@@ -2354,37 +1731,29 @@ function updateCallBox(typeNumber) {
       "call-box-id"
     );
 
-  if (line) {
-
+  if (line)
     line.textContent =
       "calling " +
       meta.label;
-  }
 
-  if (idLine) {
-
+  if (idLine)
     idLine.textContent =
       "div id = " +
       meta.id +
       " → " +
       meta.href;
-  }
-
 
   for (
     var n = 1;
     n <= 3;
     n++
   ) {
-
     const slot =
       document.getElementById(
         "type-set-" + n
       );
 
-    if (!slot) {
-      continue;
-    }
+    if (!slot) continue;
 
     const on =
       String(n) ===
@@ -2392,37 +1761,23 @@ function updateCallBox(typeNumber) {
 
     slot.setAttribute(
       "data-call",
-      on
-        ? "active"
-        : "idle"
+      on ? "active" : "idle"
     );
 
     slot.style.borderStyle =
-      on
-        ? "solid"
-        : "dashed";
+      on ? "solid" : "dashed";
 
     slot.style.background =
-      on
-        ? "#e8f0ff"
-        : "#fff";
+      on ? "#e8f0ff" : "#fff";
 
     slot.style.fontWeight =
-      on
-        ? "700"
-        : "400";
+      on ? "700" : "400";
   }
 }
-
-
-/* =========================================================
-   TYPE PROTOCOL
-   ========================================================= */
 
 function initializeTypeProtocol(
   typeNumber
 ) {
-
   console.log(
     "Protocol initialized for TYPE SET:",
     typeNumber
@@ -2478,49 +1833,30 @@ function initializeTypeProtocol(
     );
 
   if (output) {
-
     output.textContent =
-      (
-        result.avoid
-          ? "AVOID PAGE: "
-          : "PAGE OK: "
-      ) +
+      (result.avoid
+        ? "AVOID PAGE: "
+        : "PAGE OK: ") +
       result.reason +
-
       "\n\nTENSION: " +
       tension.toFixed(2) +
-
       "\n" +
       generateAIResponse() +
-
       (
         sectorState.active
           ? "\nACTIVE SECTOR: " +
             sectorState.active
           : ""
       ) +
-
       (
         SubstrState.generated
           ? "\nsubstr(): \"" +
             SubstrState.result +
             "\""
           : ""
-      ) +
-
-      (
-        SubstrState.tbChoice
-          ? "\nsubstr() TB: " +
-            SubstrState.tbChoice
-          : ""
       );
   }
 }
-
-
-/* =========================================================
-   FIGURE EIGHT
-   ========================================================= */
 
 function sectorPath(
   sx,
@@ -2529,28 +1865,21 @@ function sectorPath(
   oy,
   scale
 ) {
-
   const n = 40;
-
   var d =
     "M " +
     ox +
     " " +
     oy;
 
-  var i;
-  var x;
-  var y;
-
+  var i, x, y;
 
   if (sy > 0) {
-
     for (
       i = 0;
       i <= n;
       i++
     ) {
-
       x =
         sx *
         (i / n);
@@ -2586,7 +1915,6 @@ function sectorPath(
       " Z";
 
   } else {
-
     d +=
       " L " +
       (
@@ -2602,7 +1930,6 @@ function sectorPath(
       i >= 0;
       i--
     ) {
-
       x =
         sx *
         (i / n);
@@ -2633,17 +1960,13 @@ function sectorPath(
   return d;
 }
 
-
 function drawFigureEight() {
-
   const svg =
     document.getElementById(
       "eight-area"
     );
 
-  if (!svg) {
-    return;
-  }
+  if (!svg) return;
 
   svg.innerHTML = "";
 
@@ -2653,7 +1976,6 @@ function drawFigureEight() {
   const ox = 220;
   const oy = 170;
   const scale = 140;
-
 
   const xA =
     document.createElementNS(
@@ -2688,7 +2010,6 @@ function drawFigureEight() {
 
   svg.appendChild(xA);
 
-
   const yA =
     document.createElementNS(
       NS,
@@ -2722,7 +2043,6 @@ function drawFigureEight() {
 
   svg.appendChild(yA);
 
-
   const defs = [
     ["Q1", 1, 1],
     ["Q2", -1, 1],
@@ -2730,13 +2050,11 @@ function drawFigureEight() {
     ["Q4", 1, -1]
   ];
 
-
   for (
     var i = 0;
     i < defs.length;
     i++
   ) {
-
     const id =
       defs[i][0];
 
@@ -2748,7 +2066,6 @@ function drawFigureEight() {
 
     const meta =
       SECTORS[id];
-
 
     const p =
       document.createElementNS(
@@ -2785,26 +2102,20 @@ function drawFigureEight() {
     p.style.cursor =
       "pointer";
 
-
     p.addEventListener(
       "click",
-      (
-        function (sectorId) {
-
-          return function () {
-
-            selectSector(
-              sectorId
-            );
-          };
-
-        }
-      )(id)
+      (function(
+        sectorId
+      ) {
+        return function() {
+          selectSector(
+            sectorId
+          );
+        };
+      })(id)
     );
 
-
     svg.appendChild(p);
-
 
     const lab =
       document.createElementNS(
@@ -2850,24 +2161,15 @@ function drawFigureEight() {
     lab.textContent =
       id;
 
-    svg.appendChild(
-      lab
-    );
+    svg.appendChild(lab);
   }
 }
 
-
-/* =========================================================
-   SECTOR FUNCTIONS
-   ========================================================= */
-
 function snippetFor(id) {
-
   const m =
     SECTORS[id];
 
   return [
-
     "<div id=\"" +
       m.div +
       "\" data-sector=\"" +
@@ -2891,21 +2193,16 @@ function snippetFor(id) {
     "  </script>",
 
     "</div>"
-
   ].join("\n");
 }
 
-
 function drawSectorChart() {
-
   const svg =
     document.getElementById(
       "sector-chart"
     );
 
-  if (!svg) {
-    return;
-  }
+  if (!svg) return;
 
   svg.innerHTML = "";
 
@@ -2928,13 +2225,11 @@ function drawSectorChart() {
       sectorState.counts.Q4
     );
 
-
   for (
     var i = 0;
     i < keys.length;
     i++
   ) {
-
     const k =
       keys[i];
 
@@ -2942,8 +2237,7 @@ function drawSectorChart() {
       (
         sectorState.counts[k] /
         max
-      ) *
-      100;
+      ) * 100;
 
     const x =
       40 +
@@ -2952,7 +2246,6 @@ function drawSectorChart() {
 
     const meta =
       SECTORS[k];
-
 
     const bar =
       document.createElementNS(
@@ -2997,28 +2290,22 @@ function drawSectorChart() {
     bar.style.cursor =
       "pointer";
 
-
     bar.addEventListener(
       "click",
-      (
-        function (sectorId) {
-
-          return function () {
-
-            selectSector(
-              sectorId
-            );
-          };
-
-        }
-      )(k)
+      (function(
+        sectorId
+      ) {
+        return function() {
+          selectSector(
+            sectorId
+          );
+        };
+      })(k)
     );
-
 
     svg.appendChild(
       bar
     );
-
 
     const lab =
       document.createElementNS(
@@ -3055,12 +2342,10 @@ function drawSectorChart() {
   }
 }
 
-
 function applyWordToRandomLine(
   source,
   word
 ) {
-
   const lines =
     source.split("\n");
 
@@ -3071,18 +2356,14 @@ function applyWordToRandomLine(
     i < lines.length;
     i++
   ) {
-
     if (
       lines[i].trim()
-    ) {
-
+    )
       idxs.push(i);
-    }
   }
 
-  if (!idxs.length) {
+  if (!idxs.length)
     return source;
-  }
 
   const pick =
     idxs[
@@ -3095,35 +2376,33 @@ function applyWordToRandomLine(
   lines[pick] =
     word;
 
-  return lines.join("\n");
+  return lines.join(
+    "\n"
+  );
 }
 
-
-var pendingSector = null;
-
+var pendingSector =
+  null;
 
 function finishSectorPrompt(
   accepted
 ) {
-
   const modal =
     document.getElementById(
       "sector-modal"
     );
 
-  if (modal) {
+  if (modal)
     modal.style.display =
       "none";
-  }
 
   const id =
     pendingSector;
 
-  pendingSector = null;
+  pendingSector =
+    null;
 
-  if (!id) {
-    return;
-  }
+  if (!id) return;
 
   const m =
     SECTORS[id];
@@ -3131,23 +2410,21 @@ function finishSectorPrompt(
   sectorState.active =
     id;
 
-  sectorState.counts[id] += 1;
+  sectorState.counts[id] +=
+    1;
 
   drawFigureEight();
-
   drawSectorChart();
 
   let snippet =
     snippetFor(id);
 
-  if (accepted) {
-
+  if (accepted)
     snippet =
       applyWordToRandomLine(
         snippet,
         m.word
       );
-  }
 
   const output =
     document.getElementById(
@@ -3155,22 +2432,18 @@ function finishSectorPrompt(
     );
 
   if (output) {
-
     output.textContent =
       "SECTOR " +
       id +
       " selected\n" +
-
       "host div: #" +
       m.div +
-
-      "\nenclosed area: 1/3   (full figure-eight = 4/3)" +
-
-      "\nprompt word: " +
+      "\n" +
+      "enclosed area: 1/3   (full figure-eight = 4/3)\n" +
+      "prompt word: " +
       m.word +
-
-      "\nreplace line: " +
-
+      "\n" +
+      "replace line: " +
       (
         accepted
           ? "YES - one random line swapped for \"" +
@@ -3180,21 +2453,17 @@ function finishSectorPrompt(
       );
   }
 
-
   const codeOut =
     document.getElementById(
       "code-out"
     );
 
-  if (codeOut) {
+  if (codeOut)
     codeOut.textContent =
       snippet;
-  }
 }
 
-
 function selectSector(id) {
-
   const m =
     SECTORS[id];
 
@@ -3211,18 +2480,14 @@ function selectSector(id) {
       "sector-modal"
     );
 
-
   if (!modal || !text) {
-
     finishSectorPrompt(
       window.confirm(
         m.prompt
       )
     );
-
     return;
   }
-
 
   text.textContent =
     m.prompt;
@@ -3231,42 +2496,21 @@ function selectSector(id) {
     "flex";
 }
 
-
-/* =========================================================
-   BOOT
-   ========================================================= */
-
 function boot() {
-
   ensureHostNodes();
-
-  /*
-   * NEW:
-   * make sure the substr() TB exists
-   */
-  ensureSubstrTB();
-
   drawFigureEight();
-
   drawSectorChart();
-
-  initializeTypeProtocol(
-    "1"
-  );
+  initializeTypeProtocol("1");
 }
-
 
 if (
   document.readyState ===
   "loading"
 ) {
-
   document.addEventListener(
     "DOMContentLoaded",
     boot
   );
-
 } else {
-
   boot();
 }
