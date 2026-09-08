@@ -64,9 +64,6 @@
             z-index: 20;
             box-sizing: border-box;
             border-radius: 8px;
-
-            /* REQUIRED for pixel positioning */
-            position: absolute;
         }
 
         #svg-area { border: 1px solid black; }
@@ -78,16 +75,6 @@
 
         #code-out { white-space: pre-wrap; border: 1px solid #333; padding: 10px; }
         #output { white-space: pre-wrap; margin: 8px 0; }
-
-        /* Highlight object for TYPE SET 2 */
-        .highlight-object {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: red;
-            border-radius: 50%;
-            z-index: 999;
-        }
     </style>
 </head>
 <body>
@@ -182,24 +169,26 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<!-- TYPE SET 2 — RANDOM 3PX OBJECT INSIDE CALL-BOX-TWIN FOR 3 SECONDS -->
+<!-- TYPE SET 2 — RANDOM 3PX BLACK DOT ANYWHERE ON SCREEN FOR 3 SECONDS -->
 <script>
 document.getElementById("type-set-2-btn").addEventListener("click", () => {
 
-    const box = document.getElementById("call-box-twin");
-
-    // Random coordinate INSIDE the call-box-twin
-    const x = Math.floor(Math.random() * (box.clientWidth - 3));
-    const y = Math.floor(Math.random() * (box.clientHeight - 3));
+    // Random coordinate anywhere on the screen
+    const x = Math.floor(Math.random() * window.innerWidth);
+    const y = Math.floor(Math.random() * window.innerHeight);
 
     // Create the object
     const obj = document.createElement("div");
-    obj.className = "highlight-object";
+    obj.style.position = "absolute";
+    obj.style.width = "3px";
+    obj.style.height = "3px";
+    obj.style.background = "black";   // black dot
     obj.style.left = x + "px";
     obj.style.top = y + "px";
+    obj.style.zIndex = 9999;
 
-    // Append INSIDE the second call box
-    box.appendChild(obj);
+    // Append to the screen
+    document.body.appendChild(obj);
 
     // Remove after 3 seconds
     setTimeout(() => {
