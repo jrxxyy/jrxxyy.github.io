@@ -1134,7 +1134,6 @@ function drawSVGShapes(shapeList) {
 
         shape._primesCorrect =
           shape._aboveLog10e;
-      }
 
       el.setAttribute(
         "data-primes",
