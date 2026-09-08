@@ -64,6 +64,9 @@
             z-index: 20;
             box-sizing: border-box;
             border-radius: 8px;
+
+            /* REQUIRED for pixel positioning */
+            position: absolute;
         }
 
         #svg-area { border: 1px solid black; }
@@ -179,13 +182,15 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<!-- TYPE SET 2 — RANDOM 3PX OBJECT HIGHLIGHT FOR 3 SECONDS -->
+<!-- TYPE SET 2 — RANDOM 3PX OBJECT INSIDE CALL-BOX-TWIN FOR 3 SECONDS -->
 <script>
 document.getElementById("type-set-2-btn").addEventListener("click", () => {
 
-    // Random coordinate (you can change range later)
-    const x = Math.floor(Math.random() * 400);
-    const y = Math.floor(Math.random() * 300);
+    const box = document.getElementById("call-box-twin");
+
+    // Random coordinate INSIDE the call-box-twin
+    const x = Math.floor(Math.random() * (box.clientWidth - 3));
+    const y = Math.floor(Math.random() * (box.clientHeight - 3));
 
     // Create the object
     const obj = document.createElement("div");
@@ -193,7 +198,8 @@ document.getElementById("type-set-2-btn").addEventListener("click", () => {
     obj.style.left = x + "px";
     obj.style.top = y + "px";
 
-    document.body.appendChild(obj);
+    // Append INSIDE the second call box
+    box.appendChild(obj);
 
     // Remove after 3 seconds
     setTimeout(() => {
