@@ -49,14 +49,13 @@
             margin: 8px 0;
         }
 
-        /* ✅ 70% smaller second call box, moved to right side */
+        /* 70% smaller second call box */
         #call-box-twin {
             position: absolute;
             right: 20px;
-            top: 540px; /* below first call-box */
-            width: 140px; /* 70% of 200px */
+            top: 540px;
+            width: 140px;
             min-height: 60px;
-
             border: 1px solid #000;
             padding: 8px;
             background: rgba(255,255,255,0.94);
@@ -76,6 +75,16 @@
 
         #code-out { white-space: pre-wrap; border: 1px solid #333; padding: 10px; }
         #output { white-space: pre-wrap; margin: 8px 0; }
+
+        /* Highlight object for TYPE SET 2 */
+        .highlight-object {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: red;
+            border-radius: 50%;
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
@@ -86,7 +95,7 @@
 
 <div id="type-controls">
     <button data-action="select-type" data-type="1">TYPE SET 1</button>
-    <button data-action="select-type" data-type="2">TYPE SET 2</button>
+    <button data-action="select-type" data-type="2" id="type-set-2-btn">TYPE SET 2</button>
     <button data-action="select-type" data-type="3">TYPE SET 3</button>
 </div>
 
@@ -124,7 +133,7 @@
     <svg id="eight-area" viewBox="0 0 440 340" width="440" height="340"></svg>
 </div>
 
-<!-- ✅ Moved OUTSIDE field-wrap and resized -->
+<!-- SECOND CALL BOX (70% smaller, right side) -->
 <div id="call-box-twin">
     <strong>CALL BOX · FIELD</strong>
     <div id="call-box-twin-line">waiting for type set…</div>
@@ -144,6 +153,51 @@
 </div>
 
 <pre id="code-out">Click Q1–Q4 on the figure-eight or the Q bars for a copyable block.</pre>
+
+<!-- TYPE SET 1 ARRAY -->
+<script>
+var varMyarray = [
+    "482910374",
+    "991204883",
+    "550192837",
+    "774001928",
+    "120398457"
+];
+
+window.addEventListener("DOMContentLoaded", () => {
+    if (window.SECTORS && SECTORS.Q1) {
+        SECTORS.Q1.myArray = varMyarray;
+    }
+
+    const box = document.getElementById("type-set-1");
+    if (box) {
+        box.textContent = "#type-set-1 ARRAY → " + varMyarray.join(", ");
+    }
+});
+</script>
+
+<!-- TYPE SET 2 — RANDOM 3PX OBJECT HIGHLIGHT FOR 3 SECONDS -->
+<script>
+document.getElementById("type-set-2-btn").addEventListener("click", () => {
+
+    // Random coordinate (you can change range later)
+    const x = Math.floor(Math.random() * 400);
+    const y = Math.floor(Math.random() * 300);
+
+    // Create the object
+    const obj = document.createElement("div");
+    obj.className = "highlight-object";
+    obj.style.left = x + "px";
+    obj.style.top = y + "px";
+
+    document.body.appendChild(obj);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        obj.remove();
+    }, 3000);
+});
+</script>
 
 <script src="outcome.js"></script>
 
