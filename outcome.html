@@ -49,7 +49,6 @@
             margin: 8px 0;
         }
 
-        /* 70% smaller second call box */
         #call-box-twin {
             position: absolute;
             right: 20px;
@@ -85,10 +84,7 @@
 
 <div id="type-controls">
     <button data-action="select-type" data-type="1">TYPE SET 1</button>
-
-    <!-- UPDATED BUTTON WITH ID -->
     <button id="type-set-2-btn" data-action="select-type" data-type="2">TYPE SET 2</button>
-
     <button data-action="select-type" data-type="3">TYPE SET 3</button>
 </div>
 
@@ -126,26 +122,20 @@
     <svg id="eight-area" viewBox="0 0 440 340" width="440" height="340"></svg>
 </div>
 
-<!-- SECOND CALL BOX (70% smaller, right side) -->
 <div id="call-box-twin">
     <strong>CALL BOX · FIELD</strong>
     <div id="call-box-twin-line">waiting for type set…</div>
     <div id="call-box-twin-id"></div>
 
-    <div class="type-slot" data-type-set="1" data-call="idle" data-href="https://jrxxyy.github.io/index.html">
-        #type-set-1
-    </div>
-
-    <div class="type-slot" data-type-set="2" data-call="idle" data-href="https://jrxxyy.github.io/beta.html">
-        #type-set-2
-    </div>
-
-    <div class="type-slot" data-type-set="3" data-call="idle" data-href="https://jrxxyy.github.io/visa.html">
-        #type-set-3
-    </div>
+    <div class="type-slot" data-type-set="1">#type-set-1</div>
+    <div class="type-slot" data-type-set="2">#type-set-2</div>
+    <div class="type-slot" data-type-set="3">#type-set-3</div>
 </div>
 
 <pre id="code-out">Click Q1–Q4 on the figure-eight or the Q bars for a copyable block.</pre>
+
+<!-- LOAD outcome.js FIRST -->
+<script src="outcome.js"></script>
 
 <!-- TYPE SET 1 ARRAY -->
 <script>
@@ -157,7 +147,7 @@ var varMyarray = [
     "120398457"
 ];
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
     if (window.SECTORS && SECTORS.Q1) {
         SECTORS.Q1.myArray = varMyarray;
     }
@@ -173,31 +163,23 @@ window.addEventListener("DOMContentLoaded", () => {
 <script>
 document.getElementById("type-set-2-btn").addEventListener("click", () => {
 
-    // Random coordinate anywhere on the screen
     const x = Math.floor(Math.random() * window.innerWidth);
     const y = Math.floor(Math.random() * window.innerHeight);
 
-    // Create the object
     const obj = document.createElement("div");
     obj.style.position = "absolute";
     obj.style.width = "3px";
     obj.style.height = "3px";
-    obj.style.background = "black";   // black dot
+    obj.style.background = "black";
     obj.style.left = x + "px";
     obj.style.top = y + "px";
     obj.style.zIndex = 9999;
 
-    // Append to the screen
     document.body.appendChild(obj);
 
-    // Remove after 3 seconds
-    setTimeout(() => {
-        obj.remove();
-    }, 3000);
+    setTimeout(() => obj.remove(), 3000);
 });
 </script>
-
-<script src="outcome.js"></script>
 
 </body>
 </html>
