@@ -1121,13 +1121,12 @@ function drawSVGShapes(shapeList) {
       shape._area =
         area;
 
-      with (Math) {
-        shape._log2e =
-          log(area) * LOG2E;
+      shape._log2e =
+        Math.log(area) * Math.LOG2E;
 
-        shape._aboveLog10e =
-          shape._log2e > LOG10E;
-
+      shape._aboveLog10e =
+        shape._log2e > Math.LOG10E;
+        
         shape._primes =
           shape._aboveLog10e
             ? [2, 3, 5, 7, 11]
