@@ -99,15 +99,15 @@
     <div id="call-box-line">waiting for type set…</div>
     <div id="call-box-id"></div>
 
-    <div id="type-set-1" class="type-slot" data-type-set="1" data-call="idle" data-href="https://jrxxyy.github.io/index.html">
+    <div id="type-set-1" class="type-slot" data-type-set="1">
         #type-set-1 → https://jrxxyy.github.io/index.html
     </div>
 
-    <div id="type-set-2" class="type-slot" data-type-set="2" data-call="idle" data-href="https://jrxxyy.github.io/beta.html">
+    <div id="type-set-2" class="type-slot" data-type-set="2">
         #type-set-2 → https://jrxxyy.github.io/beta.html
     </div>
 
-    <div id="type-set-3" class="type-slot" data-type-set="3" data-call="idle" data-href="https://jrxxyy.github.io/visa.html">
+    <div id="type-set-3" class="type-slot" data-type-set="3">
         #type-set-3 → https://jrxxyy.github.io/visa.html
     </div>
 </div>
@@ -134,7 +134,7 @@
 
 <pre id="code-out">Click Q1–Q4 on the figure-eight or the Q bars for a copyable block.</pre>
 
-<!-- LOAD outcome.js FIRST -->
+<!-- Load outcome.js FIRST -->
 <script src="outcome.js"></script>
 
 <!-- TYPE SET 1 ARRAY -->
@@ -159,7 +159,7 @@ window.addEventListener("load", () => {
 });
 </script>
 
-<!-- TYPE SET 2 — RANDOM 3PX BLACK DOT ANYWHERE ON SCREEN FOR 3 SECONDS -->
+<!-- TYPE SET 2 — BLINKING 3PX BLACK DOT ANYWHERE ON SCREEN FOR 3 SECONDS -->
 <script>
 document.getElementById("type-set-2-btn").addEventListener("click", () => {
 
@@ -177,7 +177,18 @@ document.getElementById("type-set-2-btn").addEventListener("click", () => {
 
     document.body.appendChild(obj);
 
-    setTimeout(() => obj.remove(), 3000);
+    // Blink every 200ms
+    let visible = true;
+    const blink = setInterval(() => {
+        visible = !visible;
+        obj.style.visibility = visible ? "visible" : "hidden";
+    }, 200);
+
+    // Stop blinking after 3 seconds
+    setTimeout(() => {
+        clearInterval(blink);
+        obj.remove();
+    }, 3000);
 });
 </script>
 
