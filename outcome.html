@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>JR.CLOUD</title>
+
     <style>
         #radian-circle {
             width: 200px;
@@ -65,80 +66,200 @@
             border-radius: 8px;
         }
 
-        #svg-area { border: 1px solid black; }
-        #eight-area, #sector-chart {
+        #svg-area {
+            border: 1px solid black;
+        }
+
+        #eight-area,
+        #sector-chart {
             border: 1px solid black;
             display: block;
             margin: 8px 0;
         }
 
-        #code-out { white-space: pre-wrap; border: 1px solid #333; padding: 10px; }
-        #output { white-space: pre-wrap; margin: 8px 0; }
+        #code-out {
+            white-space: pre-wrap;
+            border: 1px solid #333;
+            padding: 10px;
+        }
+
+        #output {
+            white-space: pre-wrap;
+            margin: 8px 0;
+        }
+
+        /* TYPE SET 2 BLINKING DOT */
+        @keyframes typeSet2Blink {
+            0%, 49% {
+                opacity: 1;
+            }
+
+            50%, 100% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<button id="run-outcome" data-action="go-search">JR.CLOUD</button>
+<button id="run-outcome" data-action="go-search">
+    JR.CLOUD
+</button>
 
 <h3>TYPE INDEX UP — SHAPE GENERATOR</h3>
 
 <div id="type-controls">
-    <button data-action="select-type" data-type="1">TYPE SET 1</button>
-    <button id="type-set-2-btn" data-action="select-type" data-type="2">TYPE SET 2</button>
-    <button data-action="select-type" data-type="3">TYPE SET 3</button>
+
+    <button
+        data-action="select-type"
+        data-type="1">
+        TYPE SET 1
+    </button>
+
+    <button
+        id="type-set-2-btn"
+        data-action="select-type"
+        data-type="2">
+        TYPE SET 2
+    </button>
+
+    <button
+        data-action="select-type"
+        data-type="3">
+        TYPE SET 3
+    </button>
+
 </div>
 
 <div id="output"></div>
 
-<svg id="svg-area" width="400" height="300"></svg>
+<svg
+    id="svg-area"
+    width="400"
+    height="300">
+</svg>
 
-<div id="radian-circle">θ = ?</div>
-
-<div id="call-box">
-    <strong>CALL BOX</strong>
-    <div id="call-box-line">waiting for type set…</div>
-    <div id="call-box-id"></div>
-
-    <div id="type-set-1" class="type-slot" data-type-set="1">
-        #type-set-1 → https://jrxxyy.github.io/index.html
-    </div>
-
-    <div id="type-set-2" class="type-slot" data-type-set="2">
-        #type-set-2 → https://jrxxyy.github.io/beta.html
-    </div>
-
-    <div id="type-set-3" class="type-slot" data-type-set="3">
-        #type-set-3 → https://jrxxyy.github.io/visa.html
-    </div>
+<div id="radian-circle">
+    θ = ?
 </div>
 
-<p>Sector chart under type-set square (each lobe = 1/3)</p>
+<div id="call-box">
 
-<svg id="sector-chart" viewBox="0 0 400 160" width="400" height="160"></svg>
+    <strong>CALL BOX</strong>
 
-<p>Cartesian field under θ — four interactive sectors y² = x² − x⁴</p>
+    <div id="call-box-line">
+        waiting for type set…
+    </div>
+
+    <div id="call-box-id"></div>
+
+    <div
+        id="type-set-1"
+        class="type-slot"
+        data-type-set="1">
+
+        #type-set-1 → https://jrxxyy.github.io/index.html
+
+    </div>
+
+    <div
+        id="type-set-2"
+        class="type-slot"
+        data-type-set="2">
+
+        #type-set-2 → https://jrxxyy.github.io/beta.html
+
+    </div>
+
+    <div
+        id="type-set-3"
+        class="type-slot"
+        data-type-set="3">
+
+        #type-set-3 → https://jrxxyy.github.io/visa.html
+
+    </div>
+
+</div>
+
+<p>
+    Sector chart under type-set square
+    (each lobe = 1/3)
+</p>
+
+<svg
+    id="sector-chart"
+    viewBox="0 0 400 160"
+    width="400"
+    height="160">
+</svg>
+
+<p>
+    Cartesian field under θ —
+    four interactive sectors
+    y² = x² − x⁴
+</p>
 
 <div id="field-wrap">
-    <svg id="eight-area" viewBox="0 0 440 340" width="440" height="340"></svg>
+
+    <svg
+        id="eight-area"
+        viewBox="0 0 440 340"
+        width="440"
+        height="340">
+    </svg>
+
 </div>
 
 <div id="call-box-twin">
+
     <strong>CALL BOX · FIELD</strong>
-    <div id="call-box-twin-line">waiting for type set…</div>
+
+    <div id="call-box-twin-line">
+        waiting for type set…
+    </div>
+
     <div id="call-box-twin-id"></div>
 
-    <div class="type-slot" data-type-set="1">#type-set-1</div>
-    <div class="type-slot" data-type-set="2">#type-set-2</div>
-    <div class="type-slot" data-type-set="3">#type-set-3</div>
+    <div
+        class="type-slot"
+        data-type-set="1">
+        #type-set-1
+    </div>
+
+    <div
+        class="type-slot"
+        data-type-set="2">
+        #type-set-2
+    </div>
+
+    <div
+        class="type-slot"
+        data-type-set="3">
+        #type-set-3
+    </div>
+
 </div>
 
-<pre id="code-out">Click Q1–Q4 on the figure-eight or the Q bars for a copyable block.</pre>
+<pre id="code-out">
+Click Q1–Q4 on the figure-eight or the Q bars for a copyable block.
+</pre>
 
-<!-- Load outcome.js FIRST -->
+
+<!-- ========================================================= -->
+<!-- LOAD outcome.js FIRST                                     -->
+<!-- ========================================================= -->
+
 <script src="outcome.js"></script>
 
-<!-- TYPE SET 1 ARRAY -->
+
+<!-- ========================================================= -->
+<!-- TYPE SET 1 ARRAY                                          -->
+<!-- ========================================================= -->
+
 <script>
+
 var varMyarray = [
     "482910374",
     "991204883",
@@ -148,49 +269,148 @@ var varMyarray = [
 ];
 
 window.addEventListener("load", () => {
+
     if (window.SECTORS && SECTORS.Q1) {
         SECTORS.Q1.myArray = varMyarray;
     }
 
-    const box = document.getElementById("type-set-1");
+    const box =
+        document.getElementById("type-set-1");
+
     if (box) {
-        box.textContent = "#type-set-1 ARRAY → " + varMyarray.join(", ");
+
+        box.textContent =
+            "#type-set-1 ARRAY → " +
+            varMyarray.join(", ");
+
     }
+
 });
+
 </script>
 
-<!-- TYPE SET 2 — BLINKING 3PX BLACK DOT ANYWHERE ON SCREEN FOR 3 SECONDS -->
+
+<!-- ========================================================= -->
+<!-- TYPE SET 2 — RANDOM 3PX BLACK BLINKING DOT               -->
+<!-- ========================================================= -->
+
 <script>
-document.getElementById("type-set-2-btn").addEventListener("click", () => {
 
-    const x = Math.floor(Math.random() * window.innerWidth);
-    const y = Math.floor(Math.random() * window.innerHeight);
+const typeSet2Button =
+    document.getElementById("type-set-2-btn");
 
-    const obj = document.createElement("div");
-    obj.style.position = "absolute";
-    obj.style.width = "3px";
-    obj.style.height = "3px";
-    obj.style.background = "black";
-    obj.style.left = x + "px";
-    obj.style.top = y + "px";
-    obj.style.zIndex = 9999;
+if (typeSet2Button) {
 
-    document.body.appendChild(obj);
+    typeSet2Button.addEventListener("click", () => {
 
-    // Blink every 200ms
-    let visible = true;
-    const blink = setInterval(() => {
-        visible = !visible;
-        obj.style.visibility = visible ? "visible" : "hidden";
-    }, 200);
+        /*
+         * Random position inside the visible viewport.
+         */
+        const x =
+            Math.floor(
+                Math.random() *
+                Math.max(
+                    1,
+                    window.innerWidth - 3
+                )
+            );
 
-    // Stop blinking after 3 seconds
-    setTimeout(() => {
-        clearInterval(blink);
-        obj.remove();
-    }, 3000);
-});
+        const y =
+            Math.floor(
+                Math.random() *
+                Math.max(
+                    1,
+                    window.innerHeight - 3
+                )
+            );
+
+
+        /*
+         * Create the 3px × 3px dot.
+         */
+        const obj =
+            document.createElement("div");
+
+
+        /*
+         * Position.
+         */
+        obj.style.position = "fixed";
+
+        obj.style.left =
+            x + "px";
+
+        obj.style.top =
+            y + "px";
+
+
+        /*
+         * EXACTLY 3px × 3px.
+         */
+        obj.style.width = "3px";
+
+        obj.style.height = "3px";
+
+
+        /*
+         * Black dot.
+         */
+        obj.style.backgroundColor =
+            "#000";
+
+
+        /*
+         * Make sure it is above everything.
+         */
+        obj.style.zIndex =
+            "999999";
+
+
+        /*
+         * Don't let the dot interfere
+         * with mouse clicks.
+         */
+        obj.style.pointerEvents =
+            "none";
+
+
+        /*
+         * Start visible.
+         */
+        obj.style.opacity =
+            "1";
+
+
+        /*
+         * Blink continuously.
+         */
+        obj.style.animation =
+            "typeSet2Blink 200ms steps(1, end) infinite";
+
+
+        /*
+         * Add it to the page.
+         */
+        document.body.appendChild(obj);
+
+
+        /*
+         * Remove after exactly 3 seconds.
+         */
+        setTimeout(() => {
+
+            if (obj.parentNode) {
+                obj.parentNode.removeChild(obj);
+            }
+
+        }, 3000);
+
+    });
+
+}
+
 </script>
+
 
 </body>
 </html>
