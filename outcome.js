@@ -642,11 +642,12 @@ document.addEventListener("click", function (e) {
   const pane =
     e.target.closest("[data-type-set]");
 
-  if (
-    pane &&
-    pane.id &&
-    pane.id.indexOf("type-set-") === 0
-  ) {
+if (
+  pane &&
+  pane.id &&
+  pane.id.indexOf("type-set-") === 0
+) {
+
     const key =
       pane.getAttribute("data-type-set");
 
@@ -1716,62 +1717,29 @@ function updateRadianCircle(theta) {
 
 function updateCallBox(typeNumber) {
   const meta =
-    TYPE_SETS[
-      String(typeNumber)
-    ] ||
-    TYPE_SETS["1"];
+    TYPE_SETS[String(typeNumber)] || TYPE_SETS["1"];
 
-  const line =
-    document.getElementById(
-      "call-box-line"
-    );
+  const line = document.getElementById("call-box-line");
+  const idLine = document.getElementById("call-box-id");
+  const twinLine = document.getElementById("call-box-twin-line");
+  const twinId = document.getElementById("call-box-twin-id");
 
-  const idLine =
-    document.getElementById(
-      "call-box-id"
-    );
+  const msg = "calling " + meta.label;
+  const idMsg = "div id = " + meta.id + " → " + meta.href;
 
-  if (line)
-    line.textContent =
-      "calling " +
-      meta.label;
+  if (line) line.textContent = msg;
+  if (idLine) idLine.textContent = idMsg;
+  if (twinLine) twinLine.textContent = msg;
+  if (twinId) twinId.textContent = idMsg;
 
-  if (idLine)
-    idLine.textContent =
-      "div id = " +
-      meta.id +
-      " → " +
-      meta.href;
-
-  for (
-    var n = 1;
-    n <= 3;
-    n++
-  ) {
-    const slot =
-      document.getElementById(
-        "type-set-" + n
-      );
-
-    if (!slot) continue;
-
-    const on =
-      String(n) ===
-      String(typeNumber);
-
-    slot.setAttribute(
-      "data-call",
-      on ? "active" : "idle"
-    );
-
-    slot.style.borderStyle =
-      on ? "solid" : "dashed";
-
-    slot.style.background =
-      on ? "#e8f0ff" : "#fff";
-
-    slot.style.fontWeight =
-      on ? "700" : "400";
+  const slots = document.querySelectorAll("[data-type-set]");
+  for (var i = 0; i < slots.length; i++) {
+    const slot = slots[i];
+    const on = String(slot.getAttribute("data-type-set")) === String(typeNumber);
+    slot.setAttribute("data-call", on ? "active" : "idle");
+    slot.style.borderStyle = on ? "solid" : "dashed";
+    slot.style.background = on ? "#e8f0ff" : "#fff";
+    slot.style.fontWeight = on ? "700" : "400";
   }
 }
 
