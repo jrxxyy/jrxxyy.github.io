@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>JR.CLOUD</title>
-
     <style>
         #radian-circle {
             width: 200px;
@@ -21,7 +20,6 @@
             padding: 8px;
             box-sizing: border-box;
         }
-
         #call-box {
             position: absolute;
             right: 20px;
@@ -35,7 +33,6 @@
             font-size: 13px;
             z-index: 20;
         }
-
         #call-box .type-slot,
         #call-box-twin .type-slot {
             margin-top: 6px;
@@ -43,13 +40,11 @@
             border: 1px dashed #999;
             cursor: pointer;
         }
-
         #field-wrap {
             position: relative;
             width: 440px;
             margin: 8px 0;
         }
-
         #call-box-twin {
             position: absolute;
             right: 20px;
@@ -65,201 +60,82 @@
             box-sizing: border-box;
             border-radius: 8px;
         }
-
-        #svg-area {
-            border: 1px solid black;
-        }
-
+        #svg-area,
         #eight-area,
         #sector-chart {
             border: 1px solid black;
             display: block;
             margin: 8px 0;
         }
-
+        #svg-area-3d,
+        #sector-chart-3d,
+        #eight-area-3d {
+            border: 1px solid #234;
+            display: block;
+            margin: 8px 0 16px;
+            background: #eef2f8;
+        }
         #code-out {
             white-space: pre-wrap;
             border: 1px solid #333;
             padding: 10px;
         }
-
         #output {
             white-space: pre-wrap;
             margin: 8px 0;
         }
-
-        /* TYPE SET 2 BLINKING DOT */
         @keyframes typeSet2Blink {
-            0%, 49% {
-                opacity: 1;
-            }
-
-            50%, 100% {
-                opacity: 0;
-            }
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
         }
     </style>
 </head>
-
 <body>
-
 <button id="run-outcome" data-action="go-search">
     JR.CLOUD
 </button>
-
 <h3>TYPE INDEX UP — SHAPE GENERATOR</h3>
-
 <div id="type-controls">
-
-    <button
-        data-action="select-type"
-        data-type="1">
-        TYPE SET 1
-    </button>
-
-    <button
-        id="type-set-2-btn"
-        data-action="select-type"
-        data-type="2">
-        TYPE SET 2
-    </button>
-
-    <button
-        data-action="select-type"
-        data-type="3">
-        TYPE SET 3
-    </button>
-
+    <button data-action="select-type" data-type="1">TYPE SET 1</button>
+    <button id="type-set-2-btn" data-action="select-type" data-type="2">TYPE SET 2</button>
+    <button data-action="select-type" data-type="3">TYPE SET 3</button>
 </div>
-
 <div id="output"></div>
-
-<svg
-    id="svg-area"
-    width="400"
-    height="300">
-</svg>
-
+<svg id="svg-area" width="400" height="300"></svg>
+<p>3D companion — same θ field, drag to orbit</p>
+<canvas id="svg-area-3d" width="400" height="300"></canvas>
 <div id="radian-circle">
     θ = ?
 </div>
-
 <div id="call-box">
-
     <strong>CALL BOX</strong>
-
-    <div id="call-box-line">
-        waiting for type set…
-    </div>
-
+    <div id="call-box-line">waiting for type set…</div>
     <div id="call-box-id"></div>
-
-    <div
-        id="type-set-1"
-        class="type-slot"
-        data-type-set="1">
-
-        #type-set-1 → https://jrxxyy.github.io/index.html
-
-    </div>
-
-    <div
-        id="type-set-2"
-        class="type-slot"
-        data-type-set="2">
-
-        #type-set-2 → https://jrxxyy.github.io/beta.html
-
-    </div>
-
-    <div
-        id="type-set-3"
-        class="type-slot"
-        data-type-set="3">
-
-        #type-set-3 → https://jrxxyy.github.io/visa.html
-
-    </div>
-
+    <div id="type-set-1" class="type-slot" data-type-set="1">#type-set-1 → https://jrxxyy.github.io/index.html</div>
+    <div id="type-set-2" class="type-slot" data-type-set="2">#type-set-2 → https://jrxxyy.github.io/beta.html</div>
+    <div id="type-set-3" class="type-slot" data-type-set="3">#type-set-3 → https://jrxxyy.github.io/visa.html</div>
 </div>
-
-<p>
-    Sector chart under type-set square
-    (each lobe = 1/3)
-</p>
-
-<svg
-    id="sector-chart"
-    viewBox="0 0 400 160"
-    width="400"
-    height="160">
-</svg>
-
-<p>
-    Cartesian field under θ —
-    four interactive sectors
-    y² = x² − x⁴
-</p>
-
+<p>Sector chart under type-set square (each lobe = 1/3)</p>
+<svg id="sector-chart" viewBox="0 0 400 160" width="400" height="160"></svg>
+<canvas id="sector-chart-3d" width="400" height="160"></canvas>
+<p>Cartesian field under θ — four interactive sectors y² = x² − x⁴</p>
 <div id="field-wrap">
-
-    <svg
-        id="eight-area"
-        viewBox="0 0 440 340"
-        width="440"
-        height="340">
-    </svg>
-
+    <svg id="eight-area" viewBox="0 0 440 340" width="440" height="340"></svg>
+    <canvas id="eight-area-3d" width="440" height="340"></canvas>
 </div>
-
 <div id="call-box-twin">
-
     <strong>CALL BOX · FIELD</strong>
-
-    <div id="call-box-twin-line">
-        waiting for type set…
-    </div>
-
+    <div id="call-box-twin-line">waiting for type set…</div>
     <div id="call-box-twin-id"></div>
-
-    <div
-        class="type-slot"
-        data-type-set="1">
-        #type-set-1
-    </div>
-
-    <div
-        class="type-slot"
-        data-type-set="2">
-        #type-set-2
-    </div>
-
-    <div
-        class="type-slot"
-        data-type-set="3">
-        #type-set-3
-    </div>
-
+    <div class="type-slot" data-type-set="1">#type-set-1</div>
+    <div class="type-slot" data-type-set="2">#type-set-2</div>
+    <div class="type-slot" data-type-set="3">#type-set-3</div>
 </div>
-
 <pre id="code-out">
 Click Q1–Q4 on the figure-eight or the Q bars for a copyable block.
 </pre>
-
-
-<!-- ========================================================= -->
-<!-- LOAD outcome.js FIRST                                     -->
-<!-- ========================================================= -->
-
 <script src="outcome.js"></script>
-
-
-<!-- ========================================================= -->
-<!-- TYPE SET 1 ARRAY                                          -->
-<!-- ========================================================= -->
-
 <script>
-
 var varMyarray = [
     "482910374",
     "991204883",
@@ -267,150 +143,208 @@ var varMyarray = [
     "774001928",
     "120398457"
 ];
-
 window.addEventListener("load", () => {
-
     if (window.SECTORS && SECTORS.Q1) {
         SECTORS.Q1.myArray = varMyarray;
     }
-
-    const box =
-        document.getElementById("type-set-1");
-
+    const box = document.getElementById("type-set-1");
     if (box) {
-
-        box.textContent =
-            "#type-set-1 ARRAY → " +
-            varMyarray.join(", ");
-
+        box.textContent = "#type-set-1 ARRAY → " + varMyarray.join(", ");
     }
-
 });
-
 </script>
-
-
-<!-- ========================================================= -->
-<!-- TYPE SET 2 — RANDOM 3PX BLACK BLINKING DOT               -->
-<!-- ========================================================= -->
-
 <script>
-
-const typeSet2Button =
-    document.getElementById("type-set-2-btn");
-
+const typeSet2Button = document.getElementById("type-set-2-btn");
 if (typeSet2Button) {
-
     typeSet2Button.addEventListener("click", () => {
-
-        /*
-         * Random position inside the visible viewport.
-         */
-        const x =
-            Math.floor(
-                Math.random() *
-                Math.max(
-                    1,
-                    window.innerWidth - 3
-                )
-            );
-
-        const y =
-            Math.floor(
-                Math.random() *
-                Math.max(
-                    1,
-                    window.innerHeight - 3
-                )
-            );
-
-
-        /*
-         * Create the 3px × 3px dot.
-         */
-        const obj =
-            document.createElement("div");
-
-
-        /*
-         * Position.
-         */
+        const x = Math.floor(Math.random() * Math.max(1, window.innerWidth - 3));
+        const y = Math.floor(Math.random() * Math.max(1, window.innerHeight - 3));
+        const obj = document.createElement("div");
         obj.style.position = "fixed";
-
-        obj.style.left =
-            x + "px";
-
-        obj.style.top =
-            y + "px";
-
-
-        /*
-         * EXACTLY 3px × 3px.
-         */
+        obj.style.left = x + "px";
+        obj.style.top = y + "px";
         obj.style.width = "3px";
-
         obj.style.height = "3px";
-
-
-        /*
-         * Black dot.
-         */
-        obj.style.backgroundColor =
-            "#000";
-
-
-        /*
-         * Make sure it is above everything.
-         */
-        obj.style.zIndex =
-            "999999";
-
-
-        /*
-         * Don't let the dot interfere
-         * with mouse clicks.
-         */
-        obj.style.pointerEvents =
-            "none";
-
-
-        /*
-         * Start visible.
-         */
-        obj.style.opacity =
-            "1";
-
-
-        /*
-         * Blink continuously.
-         */
-        obj.style.animation =
-            "typeSet2Blink 200ms steps(1, end) infinite";
-
-
-        /*
-         * Add it to the page.
-         */
+        obj.style.backgroundColor = "#000";
+        obj.style.zIndex = "999999";
+        obj.style.pointerEvents = "none";
+        obj.style.opacity = "1";
+        obj.style.animation = "typeSet2Blink 200ms steps(1, end) infinite";
         document.body.appendChild(obj);
-
-
-        /*
-         * Remove after exactly 3 seconds.
-         */
         setTimeout(() => {
-
-            if (obj.parentNode) {
-                obj.parentNode.removeChild(obj);
-            }
-
+            if (obj.parentNode) obj.parentNode.removeChild(obj);
         }, 3000);
-
     });
-
 }
-
 </script>
-
-
+<script>
+(function () {
+    const view3d = { yaw: 0.55, pitch: 0.42 };
+    function project3d(x, y, z, w, h, scale) {
+        const cy = Math.cos(view3d.yaw), sy = Math.sin(view3d.yaw);
+        const cp = Math.cos(view3d.pitch), sp = Math.sin(view3d.pitch);
+        const x1 = x * cy - z * sy;
+        const z1 = x * sy + z * cy;
+        const y1 = y * cp - z1 * sp;
+        const z2 = y * sp + z1 * cp;
+        const d = 4.2 + z2;
+        return { x: w / 2 + (x1 * scale) / d * 3.2, y: h / 2 - (y1 * scale) / d * 3.2, z: z2 };
+    }
+    function bindOrbit(canvas) {
+        if (!canvas) return;
+        let drag = false, lx = 0, ly = 0;
+        canvas.addEventListener("pointerdown", function (e) {
+            drag = true; lx = e.clientX; ly = e.clientY;
+            canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener("pointerup", function () { drag = false; });
+        canvas.addEventListener("pointermove", function (e) {
+            if (!drag) return;
+            view3d.yaw += (e.clientX - lx) * 0.01;
+            view3d.pitch += (e.clientY - ly) * 0.008;
+            if (view3d.pitch > 1.1) view3d.pitch = 1.1;
+            if (view3d.pitch < -0.2) view3d.pitch = -0.2;
+            lx = e.clientX; ly = e.clientY;
+            draw3dAll();
+        });
+    }
+    function eightPoints() {
+        const pts = [];
+        for (let i = 0; i <= 160; i++) {
+            const x = -1 + i / 80;
+            const inner = x * x - x * x * x * x;
+            if (inner < 0) continue;
+            pts.push({ x: x, y: Math.sqrt(inner) });
+        }
+        for (let i = 160; i >= 0; i--) {
+            const x = -1 + i / 80;
+            const inner = x * x - x * x * x * x;
+            if (inner < 0) continue;
+            pts.push({ x: x, y: -Math.sqrt(inner) });
+        }
+        return pts;
+    }
+    function line3d(ctx, a, b) {
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+    }
+    function drawAxes3d(ctx, w, h, scale) {
+        const o = project3d(0, 0, 0, w, h, scale);
+        const X = project3d(1.2, 0, 0, w, h, scale);
+        const Y = project3d(0, 1.2, 0, w, h, scale);
+        const Z = project3d(0, 0, 1.2, w, h, scale);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#c33"; line3d(ctx, o, X); ctx.fillStyle = "#c33"; ctx.fillText("x", X.x + 4, X.y);
+        ctx.strokeStyle = "#393"; line3d(ctx, o, Y); ctx.fillStyle = "#393"; ctx.fillText("y", Y.x + 4, Y.y);
+        ctx.strokeStyle = "#33c"; line3d(ctx, o, Z); ctx.fillStyle = "#33c"; ctx.fillText("z", Z.x + 4, Z.y);
+    }
+    function drawShapeBox3d(ctx, w, h) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "#eef2f8";
+        ctx.fillRect(0, 0, w, h);
+        drawAxes3d(ctx, w, h, 90);
+        const rim = [];
+        for (let i = 0; i <= 48; i++) {
+            const t = i / 48 * Math.PI * 2;
+            rim.push(project3d(Math.cos(t), Math.sin(t), 0.15, w, h, 70));
+        }
+        ctx.beginPath();
+        ctx.moveTo(rim[0].x, rim[0].y);
+        rim.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+        ctx.closePath();
+        ctx.fillStyle = "rgba(40,90,180,0.18)";
+        ctx.strokeStyle = "#234";
+        ctx.fill();
+        ctx.stroke();
+        const theta = (performance.now() / 800) % (Math.PI * 2);
+        const needle = project3d(Math.cos(theta), Math.sin(theta), 0.15, w, h, 70);
+        const origin = project3d(0, 0, 0.15, w, h, 70);
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 2;
+        line3d(ctx, origin, needle);
+    }
+    function drawSectors3d(ctx, w, h) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "#eef2f8";
+        ctx.fillRect(0, 0, w, h);
+        const colors = ["#c45", "#3a7", "#36a"];
+        for (let k = 0; k < 3; k++) {
+            const a0 = k * Math.PI * 2 / 3;
+            const a1 = (k + 1) * Math.PI * 2 / 3;
+            const top = [], bot = [];
+            for (let i = 0; i <= 16; i++) {
+                const a = a0 + (a1 - a0) * i / 16;
+                top.push(project3d(Math.cos(a) * 0.9, 0.28, Math.sin(a) * 0.9, w, h, 55));
+                bot.push(project3d(Math.cos(a) * 0.9, -0.28, Math.sin(a) * 0.9, w, h, 55));
+            }
+            ctx.beginPath();
+            const c0 = project3d(0, 0.28, 0, w, h, 55);
+            ctx.moveTo(c0.x, c0.y);
+            top.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+            ctx.closePath();
+            ctx.fillStyle = colors[k];
+            ctx.globalAlpha = 0.75;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = "#111";
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(top[0].x, top[0].y);
+            ctx.lineTo(bot[0].x, bot[0].y);
+            bot.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+            for (let i = bot.length - 1; i >= 0; i--) ctx.lineTo(top[i].x, top[i].y);
+            ctx.closePath();
+            ctx.fillStyle = colors[k];
+            ctx.globalAlpha = 0.35;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.stroke();
+        }
+    }
+    function drawEight3d(ctx, w, h) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "#eef2f8";
+        ctx.fillRect(0, 0, w, h);
+        drawAxes3d(ctx, w, h, 110);
+        const pts = eightPoints();
+        const top = pts.map(function (p) { return project3d(p.x, p.y, 0.18, w, h, 110); });
+        const bot = pts.map(function (p) { return project3d(p.x, p.y, -0.18, w, h, 110); });
+        ctx.beginPath();
+        ctx.moveTo(top[0].x, top[0].y);
+        top.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+        for (let i = bot.length - 1; i >= 0; i--) ctx.lineTo(bot[i].x, bot[i].y);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(20,40,80,0.28)";
+        ctx.fill();
+        ctx.strokeStyle = "#112";
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(top[0].x, top[0].y);
+        top.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+        ctx.stroke();
+        ctx.fillStyle = "#000";
+        ctx.font = "11px sans-serif";
+        [["Q1", 0.55, 0.28], ["Q2", -0.55, 0.28], ["Q3", -0.55, -0.28], ["Q4", 0.55, -0.28]].forEach(function (q) {
+            const p = project3d(q[1], q[2], 0.22, w, h, 110);
+            ctx.fillText(q[0], p.x - 8, p.y);
+        });
+    }
+    function draw3dAll() {
+        const a = document.getElementById("svg-area-3d");
+        const b = document.getElementById("sector-chart-3d");
+        const c = document.getElementById("eight-area-3d");
+        if (a) drawShapeBox3d(a.getContext("2d"), 400, 300);
+        if (b) drawSectors3d(b.getContext("2d"), 400, 160);
+        if (c) drawEight3d(c.getContext("2d"), 440, 340);
+    }
+    bindOrbit(document.getElementById("svg-area-3d"));
+    bindOrbit(document.getElementById("sector-chart-3d"));
+    bindOrbit(document.getElementById("eight-area-3d"));
+    draw3dAll();
+    setInterval(draw3dAll, 40);
+})();
+</script>
 </body>
 </html>
