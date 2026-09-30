@@ -84,6 +84,21 @@
             white-space: pre-wrap;
             margin: 8px 0;
         }
+        .event-store {
+            display: inline-block;
+            width: 3px;
+            height: 3px;
+            margin: 0 2px;
+            border-radius: 50%;
+            background: transparent;
+            border: 1px solid rgba(0,0,0,.28);
+            vertical-align: super;
+            cursor: pointer;
+            box-sizing: content-box;
+        }
+        .event-store[data-has-event="1"] {
+            background: rgba(0,0,0,.35);
+        }
         @keyframes typeSet2Blink {
             0%, 49% { opacity: 1; }
             50%, 100% { opacity: 0; }
@@ -91,9 +106,7 @@
     </style>
 </head>
 <body>
-<button id="run-outcome" data-action="go-search">
-    JR.CLOUD
-</button>
+<button id="run-outcome" data-action="go-search">JR.CLOUD</button>
 <h3>TYPE INDEX UP — SHAPE GENERATOR</h3>
 <div id="type-controls">
     <button data-action="select-type" data-type="1">TYPE SET 1</button>
@@ -104,9 +117,7 @@
 <svg id="svg-area" width="400" height="300"></svg>
 <p>3D companion — same θ field, drag to orbit</p>
 <canvas id="svg-area-3d" width="400" height="300"></canvas>
-<div id="radian-circle">
-    θ = ?
-</div>
+<div id="radian-circle">θ = ?</div>
 <div id="call-box">
     <strong>CALL BOX</strong>
     <div id="call-box-line">waiting for type set…</div>
@@ -344,6 +355,64 @@ if (typeSet2Button) {
     bindOrbit(document.getElementById("eight-area-3d"));
     draw3dAll();
     setInterval(draw3dAll, 40);
+})();
+</script>
+<script>
+(function () {
+    const stores = [];
+    function isPrintedWord(text) {
+        const s = String(text || "").trim();
+        if (!s) return false;
+        return /[A-Za-z]{2,}/.test(s) && /[A-Za-z]{2,}/.test(s.replace(/[^A-Za-z\s'-]/g, " "));
+    }
+    function makeDot(label) {
+        const dot = document.createElement("i");
+        dot.className = "event-store";
+        dot.setAttribute("data-event-store", "");
+        dot.setAttribute("data-label", label || "");
+        dot.title = "clear";
+        const bin = { events: [] };
+        stores.push({ el: dot, bin: bin });
+        dot.addEventListener("click", function (e) {
+            e.stopPropagation();
+            bin.events.push({ t: Date.now(), src: label || "" });
+            dot.setAttribute("data-has-event", "1");
+            const out = document.getElementById("output");
+            if (out) out.textContent += "\nSTORE " + (label || "dot") + " +" + bin.events.length;
+        });
+        return dot;
+    }
+    function tagNode(node) {
+        if (!node || node.nodeType !== 3) return;
+        const raw = node.nodeValue;
+        if (raw == null || !String(raw).trim()) return;
+        if (isPrintedWord(raw)) return;
+        if (node.parentNode && node.parentNode.classList && node.parentNode.classList.contains("event-store")) return;
+        const wrap = document.createElement("span");
+        wrap.setAttribute("data-glyph", String(raw).trim());
+        node.parentNode.insertBefore(wrap, node);
+        wrap.appendChild(node);
+        wrap.appendChild(makeDot(String(raw).trim().slice(0, 24)));
+    }
+    function walk(root) {
+        const skip = { SCRIPT:1, STYLE:1, TEXTAREA:1, PRE:1 };
+        const nodes = [];
+        const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (n) {
+                const p = n.parentNode;
+                if (!p || skip[p.tagName]) return NodeFilter.FILTER_REJECT;
+                if (!String(n.nodeValue || "").trim()) return NodeFilter.FILTER_REJECT;
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        });
+        let n;
+        while ((n = w.nextNode())) nodes.push(n);
+        nodes.forEach(tagNode);
+    }
+    window.addEventListener("load", function () {
+        walk(document.body);
+        window.__EVENT_STORES__ = stores;
+    });
 })();
 </script>
 </body>
