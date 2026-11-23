@@ -22,6 +22,28 @@
             transform: scale(1.35);
             opacity: 0.75;
         }
+
+/* Micro-alert styling */
+        #micro-alert {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0,0,0,0.75);
+            color: #fff;
+            padding: 0.45rem 0.6rem;
+            border-radius: 6px;
+            font-family: system-ui, sans-serif;
+            font-size: 12px;
+            line-height: 1;
+            transform: translateY(-8px);
+            opacity: 0;
+            transition: transform .25s ease, opacity .25s ease;
+            pointer-events: none;
+            min-width: 10rem;
+            text-align: left;
+        }
+        #micro-alert.visible { transform: translateY(0); opacity: 1; }
+        #micro-alert b { display:inline-block; width:5.2rem; font-weight:600; }
     </style>
 </head>
 <body>
@@ -57,5 +79,38 @@
     document.addEventListener('mousemove', window.parentMouseHandler);
     document.addEventListener('mouseleave', window.parentMouseLeave);
 </script>
+
+    <!-- Micro-alert (math-focused) -->
+    <div id="micro-alert" aria-hidden="true">
+        <div><b>Angle:</b> <span id="ma-angle">0°</span></div>
+        <div><b>Cosine:</b> <span id="ma-cos">1.000</span></div>
+        <div><b>Distance:</b> <span id="ma-dist">0 px</span></div>
+    </div>
+
+    <script>
+    // Helper: format numbers
+    function fmt(v, digits=3){ return v.toFixed(digits); }
+
+    // Wrap and extend the existing parentMouseHandler to update the micro-alert
+    (function(){
+        const orig = window.parentMouseHandler;
+        window.parentMouseHandler = function(event){
+            orig && orig(event);
+            const alertEl = document.getElementById('micro-alert');
+            if (!alertEl) return;
+            const cx = window.innerWidth/2, cy = window.innerHeight/2;
+            const dx = event.clientX - cx, dy = event.clientY - cy;
+            const dist = Math.hypot(dx, dy);
+            const angleRad = Math.atan2(dy, dx);
+            const angleDeg = angleRad * 180 / Math.PI;
+            const cosVal = Math.cos(angleRad);
+            document.getElementById('ma-angle').textContent = (Math.round(angleDeg) + '°');
+            document.getElementById('ma-cos').textContent = fmt(cosVal,3);
+            document.getElementById('ma-dist').textContent = Math.round(dist) + ' px';
+            const isLeftSide = event.clientX < (window.innerWidth / 2);
+            if (isLeftSide && pointer) alertEl.classList.add('visible'); else alertEl.classList.remove('visible');
+        };
+    })();
+    </script>
 </body>
 </html>
